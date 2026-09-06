@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>العملاء والاتفاقيات والطلبيات - Commercial Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/state.js"></script>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+<style>
+  .tab-active { border-bottom: 3px solid #012d1d; color: #012d1d; font-weight: 700; }
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+
+    <div class="space-y-gutter max-w-[1440px] mx-auto">
+
+        <!-- Page Header & Actions -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h1 class="font-bold text-xl text-display-lg text-primary flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">receipt_long</span>
+                    <span>العملاء والاتفاقيات والطلبيات (Commercial Management)</span>
+                </h1>
+                <p class="text-sm text-body-md text-on-surface-variant mt-1">إدارة بيانات العملاء المستوردين، العقود السنوية، أسعار المنتجات المتفق عليها، وتتبع تنفيذ الطلبيات</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openAddCustomerModal()" class="bg-primary hover:bg-primary-container text-on-primary font-bold text-lg text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>+ إضافة عميل</span>
+                </button>
+                <button onclick="openAddAgreementModal()" class="bg-surface border border-outline-variant hover:bg-surface-variant font-bold text-lg text-title-sm px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition-all">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>+ إضافة اتفاقية / عقد</span>
+                </button>
+                <button onclick="openAddOrderModal()" class="bg-primary/10 hover:bg-primary text-primary hover:text-white font-bold text-lg text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                    <span>+ إضافة طلبية جديدة</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Clarification Banner: Business Chain -->
+        <div class="bg-surface border border-outline-variant p-4 rounded-2xl flex items-center justify-between gap-4 text-xs text-on-surface mb-6">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-xl">account_tree</span>
+                <div>
+                    <strong>تسلسل الدورة التجاري المعتمد:</strong>
+                    <span>العميل ➔ اتفاقية / عقد (أسعار محددة) ➔ طلبية عميل ➔ حجز مخزن الجاهز ➔ إنشاء شحنة تصدير ➔ المديونية والتحصيل</span>
+                </div>
+            </div>
+            <a href="shipment-create.html" class="bg-primary text-on-primary px-3.5 py-1.5 rounded-lg font-bold flex items-center gap-1 shrink-0">
+                <span>صفحة إنشاء الشحنات</span>
+                <span class="material-symbols-outlined text-sm">arrow_left</span>
+            </a>
+        </div>
+
+        <!-- KPI Summary Cards (6 Metrics) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+            <!-- KPI 1 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي العملاء</span>
+                    <span class="material-symbols-outlined text-primary text-xl">group</span>
+                </div>
+                <div id="kpiTotalCust" class="text-2xl font-bold text-on-surface font-['IBM_Plex_Sans']">42</div>
+                <span class="text-[11px] text-on-surface-variant">عميل مستورد</span>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">العملاء النشطون</span>
+                    <span class="material-symbols-outlined text-green-600 text-xl">check_circle</span>
+                </div>
+                <div id="kpiActiveCust" class="text-2xl font-bold text-green-700 font-['IBM_Plex_Sans']">35</div>
+                <span class="text-[11px] text-on-surface-variant">عقود جارية</span>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">الاتفاقيات النشطة</span>
+                    <span class="material-symbols-outlined text-primary text-xl">handshake</span>
+                </div>
+                <div id="kpiActiveAgreements" class="text-2xl font-bold text-primary font-['IBM_Plex_Sans']">18</div>
+                <span class="text-[11px] text-on-surface-variant">عقد تصدير ساري</span>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">الطلبيات المفتوحة</span>
+                    <span class="material-symbols-outlined text-amber-600 text-xl">pending_actions</span>
+                </div>
+                <div id="kpiOpenOrders" class="text-2xl font-bold text-amber-700 font-['IBM_Plex_Sans']">27</div>
+                <span class="text-[11px] text-on-surface-variant">طلبية تحت الشحن</span>
+            </div>
+            <!-- KPI 5 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">قيمة الطلبيات المفتوحة</span>
+                    <span class="material-symbols-outlined text-primary text-xl">payments</span>
+                </div>
+                <div id="kpiTotalOrderVal" class="text-lg font-bold text-primary font-['IBM_Plex_Sans']">8,450,000</div>
+                <span class="text-[11px] text-on-surface-variant">جنيه مصري / USD</span>
+            </div>
+            <!-- KPI 6 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">المتبقي للشحن</span>
+                    <span class="material-symbols-outlined text-primary text-xl">scale</span>
+                </div>
+                <div id="kpiRemainingKg" class="text-lg font-bold text-primary font-['IBM_Plex_Sans']">125,000</div>
+                <span class="text-[11px] text-on-surface-variant">كيلو طرد متبقي بالطلبيات</span>
+            </div>
+        </div>
+
+        <!-- Filter & Navigation Tabs Panel -->
+        <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <!-- 4 Main Navigation Tabs -->
+            <div class="flex items-center gap-2 border-b md:border-b-0 pb-2 md:pb-0 w-full md:w-auto overflow-x-auto">
+                <button onclick="switchCommercialTab('customers')" id="tabBtn-customers" class="px-4 py-2 rounded-xl text-xs font-bold bg-primary text-on-primary shadow-sm flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">group</span>
+                    <span>1. العملاء (Customers)</span>
+                </button>
+                <button onclick="switchCommercialTab('agreements')" id="tabBtn-agreements" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">handshake</span>
+                    <span>2. الاتفاقيات والعقود</span>
+                </button>
+                <button onclick="switchCommercialTab('orders')" id="tabBtn-orders" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">shopping_cart</span>
+                    <span>3. طلبيات العملاء</span>
+                </button>
+                <button onclick="switchCommercialTab('pricebook')" id="tabBtn-pricebook" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">sell</span>
+                    <span>4. المنتجات والأسعار</span>
+                </button>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input id="commSearchInput" type="text" onkeyup="filterCommercialTable()" placeholder="بحث بالاسم، الكود، الدولة..." class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 text-sm focus:outline-none focus:border-primary"/>
+                </div>
+                <div>
+                    <select id="filterCountry" onchange="filterCommercialTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل الدول</option>
+                        <option value="ألمانيا">ألمانيا</option>
+                        <option value="السعودية">السعودية</option>
+                        <option value="المملكة المتحدة">المملكة المتحدة</option>
+                        <option value="الإمارات">الإمارات</option>
+                        <option value="إيطاليا">إيطاليا</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+        <div id="mainCommercialContainer">
+            <!-- Rendered dynamically depending on active tab -->
+        </div>
+
+    </div>
+
+
+
+<!-- ADD CUSTOMER MODAL -->
+<div id="addCustomerModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[90vh]">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">person_add</span>
+                <span>إضافة عميل مستورد جديد (Add New Customer)</span>
+            </h3>
+            <button onclick="closeAddCustomerModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اسم الشركة / العميل *</label>
+                    <input id="cName" type="text" placeholder="مثال: شركة الخليج للتوريدات" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">كود العميل (Customer Code) *</label>
+                    <input id="cCode" type="text" value="CUS-005" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الدولة *</label>
+                    <input id="cCountry" type="text" placeholder="ألمانيا، السعودية..." class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المدينة</label>
+                    <input id="cCity" type="text" placeholder="برلين، هامبورغ..." class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الشخص المسؤول (Contact Person)</label>
+                    <input id="cContactPerson" type="text" placeholder="Mr. Hans Schmidt" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رقم الهاتف الدولي *</label>
+                    <input id="cPhone" type="text" placeholder="+49 40 12345678" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">البريد الإلكتروني *</label>
+                    <input id="cEmail" type="email" placeholder="import@abc-trading.de" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">العملة المفضلة</label>
+                    <select id="cCurrency" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="EGP">EGP (ج.م)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">حد الائتمان (Credit Limit)</label>
+                    <input id="cCreditLimit" type="number" value="100000" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">شروط الدفع</label>
+                    <select id="cPaymentTerms" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="30 Days LC">LC 30 Days</option>
+                        <option value="50% Advance, 50% BL">50% Advance / 50% BL</option>
+                        <option value="CAD Sight">CAD Sight</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-variant border-t flex justify-between items-center">
+            <button onclick="closeAddCustomerModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveCustomer()" class="px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">حفظ العميل</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADD AGREEMENT / CONTRACT MODAL -->
+<div id="addAgreementModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">handshake</span>
+                <span>إضافة اتفاقية / عقد تصدير (New Agreement)</span>
+            </h3>
+            <button onclick="closeAddAgreementModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">العميل الطرف الثاني *</label>
+                    <select id="agCustomer" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="شركة ABC للتجارة الدولية">شركة ABC للتجارة الدولية (ألمانيا)</option>
+                        <option value="شركة النور للتصدير">شركة النور للتصدير (السعودية)</option>
+                        <option value="Global Foods Demo">Global Foods Demo (المملكة المتحدة)</option>
+                        <option value="Frozen Market Demo">Frozen Market Demo (الإمارات)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رقم العقد / الاتفاقية *</label>
+                    <input id="agNumber" type="text" value="AGR-2026-005" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ بداية العقد *</label>
+                    <input id="agStartDate" type="date" value="2026-01-01" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ الانتهاء *</label>
+                    <input id="agEndDate" type="date" value="2026-12-31" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">عملة العقد *</label>
+                    <select id="agCurrency" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="EGP">EGP (ج.م)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Agreed Products List -->
+            <div>
+                <h4 class="font-bold text-xs text-primary mb-2">المنتجات والأسعار المتفق عليها بالعقد:</h4>
+                <div class="p-3 bg-surface border rounded-xl space-y-3">
+                    <div class="grid grid-cols-4 gap-2 font-bold text-[11px]">
+                        <div>المنتج</div>
+                        <div>السعر المتفق عليه (USD/KG)</div>
+                        <div>الحد الأقصى (KG)</div>
+                        <div>شروط التسليم</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <select id="agProd1" class="bg-surface border rounded p-1.5 text-xs"><option value="فراولة مجمدة IQF">فراولة مجمدة IQF</option><option value="مانجو مكعبات مجمدة">مانجو مكعبات مجمدة</option></select>
+                        <input id="agPrice1" type="number" value="2.50" class="bg-surface border rounded p-1.5 text-xs font-['IBM_Plex_Sans'] font-bold"/>
+                        <input id="agMax1" type="number" value="50000" class="bg-surface border rounded p-1.5 text-xs font-['IBM_Plex_Sans']"/>
+                        <input id="agIncoterm1" type="text" value="FOB Alexandria" class="bg-surface border rounded p-1.5 text-xs"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-variant border-t flex justify-between items-center">
+            <button onclick="closeAddAgreementModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveAgreement()" class="px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">اعتماد وتوثيق العقد</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADD CUSTOMER ORDER MODAL -->
+<div id="addOrderModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-primary/10 text-primary flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                    <span>إضافة طلبية عميل جديدة (New Customer Order)</span>
+                </h3>
+                <p class="text-xs text-primary/80 mt-0.5">ربط الطلبية بـ العقد المعتمد والسعر المتفق عليه تلقائياً</p>
+            </div>
+            <button onclick="closeAddOrderModal()" class="text-primary hover:opacity-80"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">العميل المستورد *</label>
+                    <select id="ordCustomer" onchange="updateOrderAgreementsDropdown()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="شركة ABC للتجارة الدولية">شركة ABC للتجارة الدولية (ألمانيا)</option>
+                        <option value="شركة النور للتصدير">شركة النور للتصدير (السعودية)</option>
+                        <option value="Global Foods Demo">Global Foods Demo (المملكة المتحدة)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">العقد المعتمد (Active Agreement) *</label>
+                    <select id="ordAgreement" onchange="updateOrderProductsFromAgreement()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] font-bold focus:border-primary">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المنتج المطلوب *</label>
+                    <select id="ordProduct" onchange="onOrderProductChanged()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">الكمية المطلوبة (KG) *</label>
+                    <input id="ordQty" type="number" value="10000" oninput="calculateOrderTotalVal()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">السعر المتفق عليه بالعقد *</label>
+                    <input id="ordPrice" type="number" value="2.50" readonly class="w-full bg-surface-variant border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-['IBM_Plex_Sans'] text-primary"/>
+                </div>
+            </div>
+
+            <div class="bg-primary-container/20 p-3.5 rounded-xl flex justify-between items-center font-bold text-xs text-primary">
+                <span>إجمالي قيمة الطلبية الإرادية:</span>
+                <strong id="ordTotalValDisplay" class="text-base font-['IBM_Plex_Sans'] text-primary">25,000 USD</strong>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رقم الطلبية التلقائي *</label>
+                    <input id="ordNumber" type="text" value="ORD-1075" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ الاستلام المستهدف *</label>
+                    <input id="ordDeliveryDate" type="date" value="2026-09-15" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-variant border-t flex justify-between items-center">
+            <button onclick="closeAddOrderModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveOrder()" class="px-6 py-2.5 bg-primary/10 text-primary font-bold text-xs rounded-xl shadow-md hover:bg-primary hover:text-white transition-all">تأكيد اعتماد الطلبية</button>
+        </div>
+    </div>
+</div>
+
+<!-- CUSTOMER DETAILS DRAWER (WITH 7 TABS) -->
+<div id="customerDetailsDrawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end hidden">
+    <div class="bg-surface w-full max-w-4xl h-full flex flex-col shadow-2xl overflow-hidden border-r border-outline-variant">
+        <!-- Drawer Header -->
+        <div class="p-5 bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg border border-primary-fixed-dim">
+                    <span id="drawerCustInitials">AB</span>
+                </div>
+                <div>
+                    <h3 id="drawerCustName" class="text-xl font-bold">شركة ABC للتجارة الدولية</h3>
+                    <p id="drawerCustSubtitle" class="text-xs text-outline">CUS-001 • ألمانيا • الحد الائتماني: 100,000 USD</p>
+                </div>
+            </div>
+            <button onclick="closeCustomerDrawer()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Drawer Sub-tabs (7 Tabs) -->
+        <div class="bg-surface-variant border-b border-outline-variant px-6 flex gap-4 text-xs font-bold shrink-0 overflow-x-auto">
+            <button onclick="switchCustDrawerSubtab('overview')" id="cSub-overview" class="py-3 tab-active">نظرة عامة</button>
+            <button onclick="switchCustDrawerSubtab('agreements')" id="cSub-agreements" class="py-3 text-on-surface-variant">الاتفاقيات والعقود</button>
+            <button onclick="switchCustDrawerSubtab('orders')" id="cSub-orders" class="py-3 text-on-surface-variant">الطلبيات المفتوحة</button>
+            <button onclick="switchCustDrawerSubtab('shipments')" id="cSub-shipments" class="py-3 text-on-surface-variant">سجل الشحنات</button>
+            <button onclick="switchCustDrawerSubtab('statement')" id="cSub-statement" class="py-3 text-on-surface-variant">كشف الحساب</button>
+            <button onclick="switchCustDrawerSubtab('payments')" id="cSub-payments" class="py-3 text-on-surface-variant">المدفوعات</button>
+            <button onclick="switchCustDrawerSubtab('documents')" id="cSub-documents" class="py-3 text-on-surface-variant">المستندات والعقود</button>
+        </div>
+
+        <!-- Drawer Body -->
+        <div id="custDrawerBody" class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-outline-variant bg-surface-variant flex justify-between items-center shrink-0">
+            <div id="drawerCustStatusBadge"></div>
+            <div class="flex gap-2">
+                <a href="shipment-create.html" class="px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-xl shadow hover:bg-primary-container">
+                    إنشاء شحنة لطلبية هذا العميل
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT MOCK STATE & LOGIC -->
+<script>
+const DEFAULT_CUSTOMERS = [
+    {
+        id: "CUS-001",
+        code: "CUS-001",
+        name: "شركة ABC للتجارة الدولية",
+        country: "ألمانيا",
+        city: "هامبورغ",
+        contactPerson: "Hans Schmidt",
+        phone: "+49 40 12345678",
+        email: "import@abc-trading.de",
+        taxNo: "DE-991204821",
+        currency: "USD",
+        creditLimit: 100000,
+        paymentTerms: "30 Days LC",
+        agreementsCount: 2,
+        ordersCount: 12,
+        totalSalesEgp: 2450000,
+        balanceEgp: 350000,
+        status: "نشط"
+    },
+    {
+        id: "CUS-002",
+        code: "CUS-002",
+        name: "شركة النور للتصدير",
+        country: "السعودية",
+        city: "الرياض",
+        contactPerson: "الشيخ عبد الله الدوسري",
+        phone: "+966 11 9876543",
+        email: "orders@alnoor-food.sa",
+        taxNo: "SA-3001928401",
+        currency: "USD",
+        creditLimit: 150000,
+        paymentTerms: "50% Advance, 50% BL",
+        agreementsCount: 1,
+        ordersCount: 8,
+        totalSalesEgp: 1850000,
+        balanceEgp: 0,
+        status: "نشط"
+    },
+    {
+        id: "CUS-003",
+        code: "CUS-003",
+        name: "Global Foods Demo",
+        country: "المملكة المتحدة",
+        city: "لندن",
+        contactPerson: "David Smith",
+        phone: "+44 20 79460912",
+        email: "info@globalfoods.uk",
+        taxNo: "GB-123456789",
+        currency: "USD",
+        creditLimit: 80000,
+        paymentTerms: "30 Days LC",
+        agreementsCount: 1,
+        ordersCount: 5,
+        totalSalesEgp: 1200000,
+        balanceEgp: 150000,
+        status: "نشط"
+    },
+    {
+        id: "CUS-004",
+        code: "CUS-004",
+        name: "Frozen Market Demo",
+        country: "الإمارات",
+        city: "دبي",
+        contactPerson: "طارق منصور",
+        phone: "+971 4 3214567",
+        email: "trade@frozenmarket.ae",
+        taxNo: "AE-1002938471",
+        currency: "USD",
+        creditLimit: 50000,
+        paymentTerms: "CAD Sight",
+        agreementsCount: 1,
+        ordersCount: 3,
+        totalSalesEgp: 950000,
+        balanceEgp: 80000,
+        status: "نشط"
+    }
+];
+
+const DEFAULT_AGREEMENTS = [
+    {
+        agrId: "AGR-2026-001",
+        customerName: "شركة ABC للتجارة الدولية",
+        startDate: "2026-01-01",
+        endDate: "2026-12-31",
+        currency: "USD",
+        paymentTerms: "30 Days LC",
+        incoterms: "FOB Alexandria",
+        status: "نشطة",
+        products: [
+            { productName: "فراولة مجمدة IQF", price: 2.50, unit: "KG", minQty: 10000, maxQty: 50000 },
+            { productName: "مانجو مكعبات مجمدة", price: 3.20, unit: "KG", minQty: 5000, maxQty: 20000 }
+        ]
+    },
+    {
+        agrId: "AGR-2026-002",
+        customerName: "شركة النور للتصدير",
+        startDate: "2026-02-01",
+        endDate: "2026-11-30",
+        currency: "USD",
+        paymentTerms: "50% Advance",
+        incoterms: "CIF Jeddah",
+        status: "نشطة",
+        products: [
+            { productName: "بامية مجمدة", price: 2.10, unit: "KG", minQty: 8000, maxQty: 30000 }
+        ]
+    }
+];
+
+const DEFAULT_CUSTOMER_ORDERS = [
+    {
+        orderId: "ORD-1025",
+        customerName: "شركة ABC للتجارة الدولية",
+        agrId: "AGR-2026-001",
+        orderDate: "2026-08-10",
+        productName: "فراولة مجمدة IQF",
+        priceUsd: 2.50,
+        orderedKg: 10000,
+        shippedKg: 4000,
+        remainingKg: 6000,
+        totalValueUsd: 25000,
+        status: "جزئية التنفيذ"
+    },
+    {
+        orderId: "ORD-1040",
+        customerName: "شركة ABC للتجارة الدولية",
+        agrId: "AGR-2026-001",
+        orderDate: "2026-08-12",
+        productName: "مانجو مكعبات مجمدة",
+        priceUsd: 3.20,
+        orderedKg: 5000,
+        shippedKg: 0,
+        remainingKg: 5000,
+        totalValueUsd: 16000,
+        status: "مفتوحة"
+    },
+    {
+        orderId: "ORD-1052",
+        customerName: "Global Foods Demo",
+        agrId: "AGR-2026-003",
+        orderDate: "2026-08-15",
+        productName: "فراولة مجمدة IQF",
+        priceUsd: 2.45,
+        orderedKg: 15000,
+        shippedKg: 5000,
+        remainingKg: 10000,
+        totalValueUsd: 36750,
+        status: "جزئية التنفيذ"
+    },
+    {
+        orderId: "ORD-1060",
+        customerName: "شركة النور للتصدير",
+        agrId: "AGR-2026-002",
+        orderDate: "2026-08-18",
+        productName: "بامية مجمدة",
+        priceUsd: 2.10,
+        orderedKg: 8000,
+        shippedKg: 2000,
+        remainingKg: 6000,
+        totalValueUsd: 16800,
+        status: "جزئية التنفيذ"
+    }
+];
+
+let customersState = [];
+let agreementsState = [];
+let ordersState = [];
+let activeCommercialTab = 'customers';
+
+function initCommercialPrototype() {
+    const savedC = localStorage.getItem("stitch_frozex_customers");
+    const savedA = localStorage.getItem("stitch_frozex_agreements");
+    const savedO = localStorage.getItem("stitch_frozex_orders");
+
+    if (savedC) { try { customersState = JSON.parse(savedC); } catch(e) { loadDefaultCommData(); } } else { loadDefaultCommData(); }
+    if (savedA) { try { agreementsState = JSON.parse(savedA); } catch(e) { agreementsState = DEFAULT_AGREEMENTS; } } else { agreementsState = DEFAULT_AGREEMENTS; }
+    if (savedO) { try { ordersState = JSON.parse(savedO); } catch(e) { ordersState = DEFAULT_CUSTOMER_ORDERS; } } else { ordersState = DEFAULT_CUSTOMER_ORDERS; }
+
+    renderMainContent();
+    updateCommercialKpis();
+}
+
+function loadDefaultCommData() {
+    customersState = JSON.parse(JSON.stringify(DEFAULT_CUSTOMERS));
+    agreementsState = JSON.parse(JSON.stringify(DEFAULT_AGREEMENTS));
+    ordersState = JSON.parse(JSON.stringify(DEFAULT_CUSTOMER_ORDERS));
+    saveCommState();
+}
+
+function saveCommState() {
+    localStorage.setItem("stitch_frozex_customers", JSON.stringify(customersState));
+    localStorage.setItem("stitch_frozex_agreements", JSON.stringify(agreementsState));
+    localStorage.setItem("stitch_frozex_orders", JSON.stringify(ordersState));
+}
+
+function resetCommercialPrototypeData() {
+    if (confirm("إعادة ضبط بيانات العملاء والاتفاقيات للوضع الافتراضي؟")) {
+        loadDefaultCommData();
+        renderMainContent();
+        updateCommercialKpis();
+        showToast("تم إعادة ضبط بيانات العملاء والطلبيات بنجاح", "info");
+    }
+}
+
+function updateCommercialKpis() {
+    const totalC = customersState.length;
+    const activeC = customersState.filter(c => c.status === "نشط").length;
+    const activeAgr = agreementsState.filter(a => a.status === "نشطة").length;
+    const openOrd = ordersState.filter(o => o.status !== "مكتملة" && o.status !== "ملغاة").length;
+    const totalValUsd = ordersState.reduce((acc, curr) => acc + curr.totalValueUsd, 0);
+    const remKg = ordersState.reduce((acc, curr) => acc + curr.remainingKg, 0);
+
+    document.getElementById("kpiTotalCust").innerText = totalC;
+    document.getElementById("kpiActiveCust").innerText = activeC;
+    document.getElementById("kpiActiveAgreements").innerText = activeAgr;
+    document.getElementById("kpiOpenOrders").innerText = openOrd;
+    document.getElementById("kpiTotalOrderVal").innerText = Math.round(totalValUsd).toLocaleString() + " USD";
+    document.getElementById("kpiRemainingKg").innerText = remKg.toLocaleString();
+}
+
+function switchCommercialTab(tabName) {
+    activeCommercialTab = tabName;
+    ['customers', 'agreements', 'orders', 'pricebook'].forEach(t => {
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (btn) {
+            btn.className = t === tabName
+                ? "px-4 py-2 rounded-xl text-xs font-bold bg-primary text-on-primary shadow-sm flex items-center gap-1.5"
+                : "px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5";
+        }
+    });
+    renderMainContent();
+}
+
+function renderMainContent() {
+    const container = document.getElementById("mainCommercialContainer");
+    container.innerHTML = "";
+
+    const searchText = (document.getElementById("commSearchInput")?.value || document.getElementById("topSearchInput")?.value || "").toLowerCase();
+    const filterCountry = document.getElementById("filterCountry")?.value || "";
+
+    if (activeCommercialTab === 'customers') {
+        renderCustomersView(container, searchText, filterCountry);
+    } else if (activeCommercialTab === 'agreements') {
+        renderAgreementsView(container, searchText);
+    } else if (activeCommercialTab === 'orders') {
+        renderOrdersView(container, searchText);
+    } else if (activeCommercialTab === 'pricebook') {
+        renderPricebookView(container, searchText);
+    }
+}
+
+// 1. CUSTOMERS TAB VIEW
+function renderCustomersView(container, searchText, filterCountry) {
+    const filtered = customersState.filter(c => {
+        const matchesCountry = !filterCountry || c.country === filterCountry;
+        const matchesText = c.name.toLowerCase().includes(searchText) || c.code.toLowerCase().includes(searchText) || c.country.toLowerCase().includes(searchText);
+        return matchesCountry && matchesText;
+    });
+
+    let tableHtml = `
+        <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse whitespace-nowrap">
+                    <thead class="bg-surface-variant border-b border-outline-variant text-xs text-on-surface-variant">
+                        <tr>
+                            <th class="py-3.5 px-4 font-bold">اسم العميل المستورد</th>
+                            <th class="py-3.5 px-4 font-bold">الكود</th>
+                            <th class="py-3.5 px-4 font-bold">الدولة / المدينة</th>
+                            <th class="py-3.5 px-4 font-bold">عدد العقود</th>
+                            <th class="py-3.5 px-4 font-bold">الطلبيات</th>
+                            <th class="py-3.5 px-4 font-bold">إجمالي المبيعات</th>
+                            <th class="py-3.5 px-4 font-bold">المديونية الحالية</th>
+                            <th class="py-3.5 px-4 font-bold text-center">الحالة</th>
+                            <th class="py-3.5 px-4 font-bold text-left">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/60 text-sm">
+    `;
+
+    if (filtered.length === 0) {
+        tableHtml += `<tr><td colspan="9" class="p-8 text-center text-on-surface-variant font-medium">لا يوجد عملاء مطابقون للبحث</td></tr>`;
+    } else {
+        filtered.forEach(c => {
+            tableHtml += `
+                <tr class="hover:bg-surface transition-colors cursor-pointer" onclick="openCustomerDrawer('${c.id}')">
+                    <td class="py-3.5 px-4 font-bold text-on-surface">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">
+                                ${c.name.substring(0, 2)}
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm text-primary">${c.name}</div>
+                                <div class="text-[11px] text-on-surface-variant">${c.contactPerson}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4 font-bold font-['IBM_Plex_Sans'] text-xs">${c.code}</td>
+                    <td class="py-3.5 px-4 text-xs font-semibold">${c.country} - ${c.city}</td>
+                    <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] text-xs"><span class="bg-surface-variant px-2 py-0.5 rounded font-bold">${c.agreementsCount} عقود</span></td>
+                    <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] text-xs">${c.ordersCount} طلبية</td>
+                    <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] font-bold">${c.totalSalesEgp.toLocaleString()} EGP</td>
+                    <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] font-bold text-primary">${c.balanceEgp.toLocaleString()} EGP</td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="inline-block px-2.5 py-1 rounded-full text-xs bg-green-100 text-green-800 font-bold">${c.status}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-left">
+                        <div class="flex items-center gap-1 justify-end">
+                            <button onclick="event.stopPropagation(); openCustomerDrawer('${c.id}')" class="p-1.5 rounded hover:bg-surface-variant text-primary" title="عرض ملف العميل">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </button>
+                            <a href="shipment-create.html" onclick="event.stopPropagation();" class="p-1.5 rounded hover:bg-primary/10/20 text-primary" title="إنشاء شحنة">
+                                <span class="material-symbols-outlined text-lg">local_shipping</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    tableHtml += `</tbody></table></div></div>`;
+    container.innerHTML = tableHtml;
+}
+
+// 2. AGREEMENTS TAB VIEW
+function renderAgreementsView(container, searchText) {
+    let rows = agreementsState.filter(a => !searchText || a.customerName.toLowerCase().includes(searchText) || a.agrId.toLowerCase().includes(searchText)).map(a => `
+        <tr class="hover:bg-surface transition-colors">
+            <td class="py-3.5 px-4 font-bold font-['IBM_Plex_Sans'] text-primary">${a.agrId}</td>
+            <td class="py-3.5 px-4 font-bold">${a.customerName}</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] text-xs">${a.startDate} إلى ${a.endDate}</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] text-xs font-bold">${a.currency}</td>
+            <td class="py-3.5 px-4 text-xs">${a.paymentTerms}</td>
+            <td class="py-3.5 px-4 text-xs">${a.incoterms}</td>
+            <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">${a.status}</span></td>
+            <td class="py-3.5 px-4 text-left">
+                <button onclick="openAddOrderForAgreement('${a.customerName}', '${a.agrId}')" class="px-3 py-1 bg-primary/10 text-primary rounded text-xs font-bold hover:bg-primary hover:text-white">+ طلبية من العقد</button>
+            </td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-variant font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">رقم العقد / الاتفاقية</th>
+                        <th class="p-3">العميل الطرف الثاني</th>
+                        <th class="p-3">فترة سريان العقد</th>
+                        <th class="p-3">العملة</th>
+                        <th class="p-3">شروط الدفع</th>
+                        <th class="p-3">شروط التسليم</th>
+                        <th class="p-3 text-center">حالة العقد</th>
+                        <th class="p-3 text-left">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 text-sm">${rows || '<tr><td colspan="8" class="p-6 text-center">لا توجد اتفاقيات مطابقة للبحث</td></tr>'}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 3. ORDERS TAB VIEW
+function renderOrdersView(container, searchText) {
+    const state = ERPState.load();
+    const orders = (state.clientOrders && state.clientOrders.length > 0) ? state.clientOrders : ordersState;
+    let rows = orders.filter(o => !searchText || (o.customerName && o.customerName.toLowerCase().includes(searchText)) || (o.orderId && o.orderId.toLowerCase().includes(searchText)) || (o.productName && o.productName.toLowerCase().includes(searchText))).map(o => {
+        const remainingKg = o.unfulfilledQtyKg !== undefined ? o.unfulfilledQtyKg : (o.remainingKg !== undefined ? o.remainingKg : (o.orderedQtyKg || 0));
+        const shippedKg = o.fulfilledQtyKg !== undefined ? o.fulfilledQtyKg : (o.shippedKg || 0);
+        const isComplete = remainingKg <= 0;
+        const statusBadge = isComplete
+            ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">مكتملة الشحن</span>`
+            : (shippedKg > 0 
+                ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">شحن جزئي</span>`
+                : `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300">جاهزة للشحن</span>`);
+
+        const totalVal = o.totalValueEur || o.totalValueUsd || ((o.orderedQtyKg || 10000) * (o.unitPriceEur || 1.85));
+
+        return `
+        <tr class="hover:bg-surface transition-colors">
+            <td class="py-3.5 px-4 font-bold font-['IBM_Plex_Sans'] text-primary">${o.orderId}</td>
+            <td class="py-3.5 px-4 font-bold">${o.customerName}</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] text-xs">${o.agreementRef || o.agrId || 'AGR-2026'}</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] text-xs">${o.orderDate || '2026-08-15'}</td>
+            <td class="py-3.5 px-4 font-bold text-on-surface">${o.productName}</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] font-bold">${(o.orderedQtyKg || o.orderedKg || 0).toLocaleString()} KG</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] font-bold text-green-700">${shippedKg.toLocaleString()} KG</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] font-bold text-amber-800">${remainingKg.toLocaleString()} KG</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] font-bold text-primary">${Math.round(totalVal).toLocaleString()} EUR</td>
+            <td class="py-3.5 px-4 text-center">${statusBadge}</td>
+            <td class="py-3.5 px-4 text-left">
+                ${!isComplete 
+                    ? `<a href="shipment-create.html?orderId=${encodeURIComponent(o.orderId)}" class="px-3 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-bold shadow-xs hover:bg-primary-container inline-flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[15px]">local_shipping</span>
+                        تجهيز وشحن
+                       </a>`
+                    : `<span class="text-xs text-on-surface-variant font-bold">تم الشحن بالكامل</span>`}
+            </td>
+        </tr>
+    `}).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-variant font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">رقم الطلبية</th>
+                        <th class="p-3">العميل المستورد</th>
+                        <th class="p-3">العقد المرجعي</th>
+                        <th class="p-3">تاريخ الطلب</th>
+                        <th class="p-3">المنتج المتعاقد عليه</th>
+                        <th class="p-3">الكمية المطلوبة</th>
+                        <th class="p-3">تم شحنه</th>
+                        <th class="p-3">المتبقي</th>
+                        <th class="p-3">إجمالي القيمة</th>
+                        <th class="p-3 text-center">حالة الطلبية</th>
+                        <th class="p-3 text-left">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 text-sm">${rows || '<tr><td colspan="11" class="p-6 text-center">لا توجد طلبيات مسجلة</td></tr>'}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 4. PRICEBOOK TAB VIEW
+function renderPricebookView(container, searchText) {
+    let rows = [];
+    agreementsState.forEach(a => {
+        a.products.forEach(p => {
+            if (searchText && !a.customerName.toLowerCase().includes(searchText) && !p.productName.toLowerCase().includes(searchText)) return;
+            rows.push(`
+                <tr>
+                    <td class="py-3 px-4 font-bold text-primary">${p.productName}</td>
+                    <td class="py-3 px-4 font-bold">${a.customerName}</td>
+                    <td class="py-3 px-4 font-['IBM_Plex_Sans'] text-xs">${a.agrId}</td>
+                    <td class="py-3 px-4 font-['IBM_Plex_Sans'] font-bold text-primary">${p.price} ${a.currency}/${p.unit}</td>
+                    <td class="py-3 px-4 font-['IBM_Plex_Sans'] text-xs">${p.minQty.toLocaleString()} KG</td>
+                    <td class="py-3 px-4 font-['IBM_Plex_Sans'] text-xs">${p.maxQty.toLocaleString()} KG</td>
+                    <td class="py-3 px-4 text-xs">${a.incoterms}</td>
+                </tr>
+            `);
+        });
+    });
+
+    container.innerHTML = `
+        <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-variant font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">المنتج المجمد</th>
+                        <th class="p-3">العميل المستورد</th>
+                        <th class="p-3">العقد</th>
+                        <th class="p-3">السعر المتفق عليه</th>
+                        <th class="p-3">الحد الأدنى</th>
+                        <th class="p-3">الحد الأقصى</th>
+                        <th class="p-3">شروط التسليم</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 text-sm">${rows.join('') || '<tr><td colspan="7" class="p-6 text-center">لا توجد أسعار مسجلة</td></tr>'}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+function filterCommercialTable() { renderMainContent(); }
+
+// MODAL LOGIC
+function openAddCustomerModal() { document.getElementById("addCustomerModal").classList.remove("hidden"); }
+function closeAddCustomerModal() { document.getElementById("addCustomerModal").classList.add("hidden"); }
+function confirmSaveCustomer() {
+    const name = document.getElementById("cName").value.trim();
+    const code = document.getElementById("cCode").value.trim();
+    const country = document.getElementById("cCountry").value.trim() || "ألمانيا";
+
+    if (!name) { showToast("أدخل اسم العميل المستورد", "error"); return; }
+
+    customersState.unshift({
+        id: code || ("CUS-00" + (customersState.length + 1)),
+        code: code || ("CUS-00" + (customersState.length + 1)),
+        name: name,
+        country: country,
+        city: document.getElementById("cCity").value || "برلين",
+        contactPerson: document.getElementById("cContactPerson").value || "مسؤول التصدير",
+        phone: document.getElementById("cPhone").value || "+49 00 0000",
+        email: document.getElementById("cEmail").value || "contact@client.com",
+        taxNo: "DE-000000",
+        currency: document.getElementById("cCurrency").value,
+        creditLimit: parseFloat(document.getElementById("cCreditLimit").value) || 100000,
+        paymentTerms: document.getElementById("cPaymentTerms").value,
+        agreementsCount: 0,
+        ordersCount: 0,
+        totalSalesEgp: 0,
+        balanceEgp: 0,
+        status: "نشط"
+    });
+
+    saveCommState();
+    renderMainContent();
+    updateCommercialKpis();
+    closeAddCustomerModal();
+    showToast(`تم حفظ العميل الجديد ${name} بنجاح!`, "success");
+}
+
+function openAddAgreementModal() { document.getElementById("addAgreementModal").classList.remove("hidden"); }
+function closeAddAgreementModal() { document.getElementById("addAgreementModal").classList.add("hidden"); }
+function confirmSaveAgreement() {
+    const cust = document.getElementById("agCustomer").value;
+    const num = document.getElementById("agNumber").value;
+    const price = parseFloat(document.getElementById("agPrice1").value) || 2.50;
+
+    agreementsState.unshift({
+        agrId: num,
+        customerName: cust,
+        startDate: document.getElementById("agStartDate").value,
+        endDate: document.getElementById("agEndDate").value,
+        currency: document.getElementById("agCurrency").value,
+        paymentTerms: "30 Days LC",
+        incoterms: "FOB Alexandria",
+        status: "نشطة",
+        products: [
+            { productName: document.getElementById("agProd1").value, price: price, unit: "KG", minQty: 5000, maxQty: 50000 }
+        ]
+    });
+
+    saveCommState();
+    renderMainContent();
+    updateCommercialKpis();
+    closeAddAgreementModal();
+    showToast(`تم اعتماد وتوثيق العقد ${num} للعميل ${cust}!`, "success");
+}
+
+function openAddOrderModal() {
+    document.getElementById("addOrderModal").classList.remove("hidden");
+    updateOrderAgreementsDropdown();
+}
+function openAddOrderForAgreement(custName, agrId) {
+    document.getElementById("ordCustomer").value = custName;
+    openAddOrderModal();
+}
+function closeAddOrderModal() { document.getElementById("addOrderModal").classList.add("hidden"); }
+
+function updateOrderAgreementsDropdown() {
+    const cust = document.getElementById("ordCustomer").value;
+    const select = document.getElementById("ordAgreement");
+    select.innerHTML = "";
+
+    const activeAgrs = agreementsState.filter(a => a.customerName === cust && a.status === "نشطة");
+    if (activeAgrs.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.innerText = "لا توجد عقود نشطة له؛ يرجى إضافة اتفاقية أولاً";
+        select.appendChild(opt);
+        updateOrderProductsFromAgreement();
+        return;
+    }
+
+    activeAgrs.forEach(a => {
+        const opt = document.createElement("option");
+        opt.value = a.agrId;
+        opt.innerText = `${a.agrId} (ساري حتى ${a.endDate})`;
+        select.appendChild(opt);
+    });
+
+    updateOrderProductsFromAgreement();
+}
+
+function updateOrderProductsFromAgreement() {
+    const agrId = document.getElementById("ordAgreement").value;
+    const select = document.getElementById("ordProduct");
+    select.innerHTML = "";
+
+    const agr = agreementsState.find(a => a.agrId === agrId);
+    if (!agr || !agr.products || agr.products.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.innerText = "لا توجد منتجات بالعقد";
+        select.appendChild(opt);
+        onOrderProductChanged();
+        return;
+    }
+
+    agr.products.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.productName;
+        opt.innerText = `${p.productName} (${p.price} ${agr.currency}/KG)`;
+        select.appendChild(opt);
+    });
+
+    onOrderProductChanged();
+}
+
+function onOrderProductChanged() {
+    const agrId = document.getElementById("ordAgreement").value;
+    const prodName = document.getElementById("ordProduct").value;
+    const agr = agreementsState.find(a => a.agrId === agrId);
+
+    if (agr) {
+        const prod = agr.products.find(p => p.productName === prodName);
+        if (prod) {
+            document.getElementById("ordPrice").value = prod.price;
+        }
+    }
+    calculateOrderTotalVal();
+}
+
+function calculateOrderTotalVal() {
+    const q = parseFloat(document.getElementById("ordQty").value) || 0;
+    const p = parseFloat(document.getElementById("ordPrice").value) || 0;
+    document.getElementById("ordTotalValDisplay").innerText = (q * p).toLocaleString() + " USD";
+}
+
+function confirmSaveOrder() {
+    const cust = document.getElementById("ordCustomer").value;
+    const agrId = document.getElementById("ordAgreement").value;
+    const prod = document.getElementById("ordProduct").value;
+    const qty = parseFloat(document.getElementById("ordQty").value) || 0;
+    const price = parseFloat(document.getElementById("ordPrice").value) || 0;
+    const num = document.getElementById("ordNumber").value || "ORD-1099";
+
+    if (!agrId) { showToast("لا تتوفر اتفاقية نشطة للعميل للبدء في طلبية", "error"); return; }
+    if (qty <= 0) { showToast("أدخل كمية طلبيات أكبر من صفر", "error"); return; }
+
+    ordersState.unshift({
+        orderId: num,
+        customerName: cust,
+        agrId: agrId,
+        orderDate: new Date().toISOString().split('T')[0],
+        productName: prod,
+        priceUsd: price,
+        orderedKg: qty,
+        shippedKg: 0,
+        remainingKg: qty,
+        totalValueUsd: (qty * price),
+        status: "مفتوحة"
+    });
+
+    saveCommState();
+    renderMainContent();
+    updateCommercialKpis();
+    closeAddOrderModal();
+    showToast(`تم اعتماد الطلبية الجديدة ${num} للعميل ${cust} بنجاح!`, "success");
+}
+
+// CUSTOMER DETAILS DRAWER LOGIC
+let activeDrawerCustomer = null;
+function openCustomerDrawer(cId) {
+    activeDrawerCustomer = customersState.find(c => c.id === cId);
+    if (!activeDrawerCustomer) return;
+
+    const c = activeDrawerCustomer;
+    document.getElementById("drawerCustInitials").innerText = c.name.substring(0, 2);
+    document.getElementById("drawerCustName").innerText = c.name;
+    document.getElementById("drawerCustSubtitle").innerText = `${c.code} • ${c.country} • حد الائتمان: ${c.creditLimit.toLocaleString()} USD`;
+
+    document.getElementById("drawerCustStatusBadge").innerHTML = `<span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-800 font-bold">الحالة: ${c.status}</span>`;
+
+    switchCustDrawerSubtab('overview');
+    document.getElementById("customerDetailsDrawer").classList.remove("hidden");
+}
+function closeCustomerDrawer() { document.getElementById("customerDetailsDrawer").classList.add("hidden"); }
+
+function switchCustDrawerSubtab(subName) {
+    ['overview', 'agreements', 'orders', 'shipments', 'statement', 'payments', 'documents'].forEach(t => {
+        const btn = document.getElementById(`cSub-${t}`);
+        if (btn) btn.className = t === subName ? "py-3 tab-active" : "py-3 text-on-surface-variant";
+    });
+
+    const body = document.getElementById("custDrawerBody");
+    const c = activeDrawerCustomer;
+    if (!c) return;
+
+    if (subName === 'overview') {
+        body.innerHTML = `
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">المسؤول:</span>
+                    <strong class="text-sm">${c.contactPerson}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">رقم الهاتف:</span>
+                    <strong class="text-sm font-['IBM_Plex_Sans']">${c.phone}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">البريد الإلكتروني:</span>
+                    <strong class="text-sm font-['IBM_Plex_Sans']">${c.email}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">الرقم الضريبي:</span>
+                    <strong class="text-sm font-['IBM_Plex_Sans']">${c.taxNo}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">شروط الدفع:</span>
+                    <strong class="text-sm">${c.paymentTerms}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">المديونية الحالية:</span>
+                    <strong class="text-sm font-['IBM_Plex_Sans'] text-primary">${c.balanceEgp.toLocaleString()} EGP</strong>
+                </div>
+            </div>
+        `;
+    } else if (subName === 'agreements') {
+        const agrs = agreementsState.filter(a => a.customerName === c.name);
+        let rows = agrs.map(a => `
+            <tr>
+                <td class="p-2.5 font-bold font-['IBM_Plex_Sans']">${a.agrId}</td>
+                <td class="p-2.5 font-['IBM_Plex_Sans'] text-xs">${a.startDate} إلى ${a.endDate}</td>
+                <td class="p-2.5 font-['IBM_Plex_Sans'] font-bold">${a.currency}</td>
+                <td class="p-2.5"><span class="px-2 py-0.5 rounded text-xs bg-green-100 text-green-800 font-bold">${a.status}</span></td>
+            </tr>
+        `).join('');
+        body.innerHTML = `
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-variant font-bold"><tr><th class="p-2">رقم العقد</th><th class="p-2">فترة السريان</th><th class="p-2">العملة</th><th class="p-2">الحالة</th></tr></thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="4" class="p-4 text-center">لا توجد عقود مسجلة لهذا العميل</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (subName === 'orders') {
+        const ords = ordersState.filter(o => o.customerName === c.name);
+        let rows = ords.map(o => `
+            <tr>
+                <td class="p-2.5 font-bold font-['IBM_Plex_Sans'] text-primary">${o.orderId}</td>
+                <td class="p-2.5 font-bold">${o.productName}</td>
+                <td class="p-2.5 font-['IBM_Plex_Sans'] font-bold">${o.orderedKg.toLocaleString()} KG</td>
+                <td class="p-2.5 font-['IBM_Plex_Sans'] text-amber-800">${o.remainingKg.toLocaleString()} KG</td>
+                <td class="p-2.5 font-['IBM_Plex_Sans'] font-bold text-primary">${o.totalValueUsd.toLocaleString()} USD</td>
+            </tr>
+        `).join('');
+        body.innerHTML = `
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-variant font-bold"><tr><th class="p-2">الطلبية</th><th class="p-2">المنتج</th><th class="p-2">المطلوب</th><th class="p-2">المتبقي</th><th class="p-2">القيمة</th></tr></thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="5" class="p-4 text-center">لا توجد طلبيات مسجلة</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else {
+        body.innerHTML = `<p class="text-xs text-on-surface-variant">يتم محاكاة وعرض التبيينات المحاسبية والمستندات بداخل النموذج الفرونت إند.</p>`;
+    }
+}
+
+// TOAST HELPERS
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// DOM LOADED
+document.addEventListener("DOMContentLoaded", () => {
+    initCommercialPrototype();
+});
+</script>
+
+
+  </main>
+</body>
+</html>

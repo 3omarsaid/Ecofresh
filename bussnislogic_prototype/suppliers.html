@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>الموردون والتوريدات - نظام تجميد للتصدير</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #c4c6cd; border-radius: 4px; }
+        .tab-active { border-bottom: 3px solid #041627; color: #041627; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+
+<!-- SideNavBar Navigation -->
+<nav class="fixed right-0 top-0 h-screen w-[280px] z-50 flex flex-col bg-primary text-on-primary shadow-xl border-l border-outline-variant/10">
+    <div class="h-toolbar-height flex flex-col justify-center px-6 border-b border-outline-variant/20 py-4 bg-primary shrink-0">
+        <h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">نظام تجميد للتصدير</h1>
+        <p class="font-label-sm text-label-sm text-primary-fixed-dim">Glacier Ledger ERP</p>
+    </div>
+    <div class="flex-1 overflow-y-auto py-3 px-3">
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>لوحة القيادة التنفيذية</span>
+                </a>
+            </li>
+            <li>
+                <a href="supplies.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>إدارة المستلزمات (Supplies)</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold bg-secondary-container text-on-secondary-container border-r-4 border-surface-variant transition-all">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>الموردون والتوريدات (Suppliers ERP)</span>
+                </a>
+            </li>
+            <li>
+                <a href="raw-materials.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>مخزن المواد الخام (Raw Inventory)</span>
+                </a>
+            </li>
+            <li>
+                <a href="processing-operations.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">autorenew</span>
+                    <span>عمليات التدوير (Processing)</span>
+                </a>
+            </li>
+            <li>
+                <a href="finished-goods.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory</span>
+                    <span>مخزن المنتج الجاهز (Finished Goods)</span>
+                </a>
+            </li>
+            <li>
+                <a href="employees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">badge</span>
+                    <span>إدارة الموظفين (Employees)</span>
+                </a>
+            </li>
+            <li>
+                <a href="create-shipment.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>إنشاء شحنة تصدير</span>
+                </a>
+            </li>
+            <li>
+                <a href="client-orders.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>طلبات العملاء والاتفاقيات</span>
+                </a>
+            </li>
+            <li>
+                <a href="new-operation.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">conveyor_belt</span>
+                    <span>عملية تشغيل جديدة</span>
+                </a>
+            </li>
+            <li>
+                <a href="treasury-payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات</span>
+                </a>
+            </li>
+            <li>
+                <a href="stations-management.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">factory</span>
+                    <span>إدارة المحطات</span>
+                </a>
+            </li>
+            <li>
+                <a href="exports-contractors.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>إدارة المقاولين والصادرات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="p-4 border-t border-outline-variant/20 shrink-0 bg-primary-container/30">
+        <div class="flex items-center gap-3 text-xs text-primary-fixed-dim">
+            <span class="material-symbols-outlined text-green-400 text-base">check_circle</span>
+            <span>ربط ملكية التوريد بالمخزن active</span>
+        </div>
+    </div>
+</nav>
+
+<!-- TopNavBar -->
+<header class="bg-surface fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding border-b border-outline-variant">
+    <div class="flex items-center gap-4">
+        <h2 class="font-title-sm text-title-sm font-black text-primary">نظام تجميد للتصدير - إدارة الموردين والتوريدات (Suppliers & Supply ERP)</h2>
+        <span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-xs font-bold font-data-mono">PROTOTYPE ONLY</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative hidden lg:block">
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input id="topSearchInput" class="bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-4 pr-10 text-body-md font-body-md focus:outline-none focus:border-primary w-64 text-on-surface" placeholder="بحث بالمورد أو رقم التوريد..." type="text" onkeyup="filterSuppliersTable()"/>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" title="التنبيهات">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" onclick="resetSuppliersPrototypeData()" title="إعادة ضبط البيانات التجريبية">
+                <span class="material-symbols-outlined">restart_alt</span>
+            </button>
+        </div>
+        <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant shrink-0">
+            <img alt="صورة المستخدم" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByztzte-7HG582Cqe_OCtfzP-23PrUqNwLlLKTTX96RHPgxCDROx15p3gKfgy7bRsiZyRSy2CJKPAAoU4Ap_Jra0RLti2ZthCxcTyK472-hCGMhTug7bvSfpiuQQJJmpTgix3-ONAd5-2TDY04W1GHPZQla8t5urxJCFKTNJOzmSgZpWcD4ynve2FL4nv6CqOvLC5wEm8-Nnc1qpYBThQnSXMJfYQuQATCq16IC8ALWBY2xm5FkfaO"/>
+        </div>
+    </div>
+</header>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Main Content Canvas -->
+<main class="mr-[280px] pt-toolbar-height min-h-screen p-container-padding">
+    <div class="space-y-gutter max-w-[1440px] mx-auto">
+
+        <!-- Page Header & Actions -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h1 class="font-display-lg text-display-lg text-primary flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">group</span>
+                    <span>الموردون والتوريدات (Suppliers & Raw Supply)</span>
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-1">إدارة بيانات الموردين ومتابعة توريدات المواد الخام وأرصدة حيازتهم في المحطات والمعاملات المالية</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openAddSupplyModal()" class="bg-primary hover:bg-primary-container text-on-primary font-title-sm text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">add_box</span>
+                    <span>+ تسجيل توريد خام</span>
+                </button>
+                <button onclick="openAddSupplierModal()" class="bg-surface border border-outline-variant hover:bg-surface-variant font-title-sm text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition-all">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>+ إضافة مورد جديد</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Business Context Banner: Supplier-Specific Inventory Link -->
+        <div class="bg-surface-container-low border border-outline-variant p-4 rounded-2xl flex items-center justify-between gap-4 text-xs text-on-surface mb-6">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-xl">link</span>
+                <div>
+                    <strong>قاعدة ربط المورد بالمخزن:</strong> المورد ليس مجرد عنوان؛ التوريدات تدخل فوراً في <strong>مخزن المواد الخام</strong> بصفة <strong>حصة مخصصة باسم المورد</strong> مع توليد حركة استلام ومستحق مالي.
+                </div>
+            </div>
+            <a href="raw-materials.html" class="bg-primary text-on-primary px-3.5 py-1.5 rounded-lg font-bold flex items-center gap-1 shrink-0">
+                <span>مخزن المواد الخام والتخصيص</span>
+                <span class="material-symbols-outlined text-sm">arrow_left</span>
+            </a>
+        </div>
+
+        <!-- KPI Summary Cards (6 Metrics) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+            <!-- KPI 1 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي الموردين</span>
+                    <span class="material-symbols-outlined text-primary text-xl">group</span>
+                </div>
+                <div id="kpiTotalSuppliers" class="text-2xl font-bold text-on-surface font-data-mono">42</div>
+                <span class="text-[11px] text-on-surface-variant">مورد مسجل</span>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">الموردون النشطون</span>
+                    <span class="material-symbols-outlined text-green-600 text-xl">check_circle</span>
+                </div>
+                <div id="kpiActiveSuppliers" class="text-2xl font-bold text-green-700 font-data-mono">35</div>
+                <span class="text-[11px] text-on-surface-variant">تعاملات جارية</span>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي التوريدات</span>
+                    <span class="material-symbols-outlined text-primary text-xl">payments</span>
+                </div>
+                <div id="kpiTotalSuppliesVal" class="text-lg font-bold text-primary font-data-mono">4,850,000</div>
+                <span class="text-[11px] text-on-surface-variant">جنيه مصري إجمالي تراكمي</span>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">رصيد الخام للموردين</span>
+                    <span class="material-symbols-outlined text-tertiary-container text-xl">scale</span>
+                </div>
+                <div id="kpiRawInventoryKg" class="text-lg font-bold text-tertiary-container font-data-mono">125,500</div>
+                <span class="text-[11px] text-on-surface-variant">كيلو بمخازن المحطات</span>
+            </div>
+            <!-- KPI 5 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">المستحق للموردين</span>
+                    <span class="material-symbols-outlined text-amber-600 text-xl">account_balance_wallet</span>
+                </div>
+                <div id="kpiPayableBal" class="text-lg font-bold text-amber-700 font-data-mono">1,250,000</div>
+                <span class="text-[11px] text-on-surface-variant">ذمم دائنة غير مسددة</span>
+            </div>
+            <!-- KPI 6 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">توريدات اليوم</span>
+                    <span class="material-symbols-outlined text-green-700 text-xl">today</span>
+                </div>
+                <div id="kpiTodaySupplyKg" class="text-lg font-bold text-green-700 font-data-mono">35,000</div>
+                <span class="text-[11px] text-on-surface-variant">كيلو جرام تم استلامه</span>
+            </div>
+        </div>
+
+        <!-- Filter & Navigation Tabs Panel -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <!-- 4 Main View Tabs -->
+            <div class="flex items-center gap-2 border-b md:border-b-0 pb-2 md:pb-0 w-full md:w-auto overflow-x-auto">
+                <button onclick="switchSuppliersTab('suppliers')" id="tabBtn-suppliers" class="px-4 py-2 rounded-xl text-xs font-bold bg-primary text-on-primary shadow-sm flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">group</span>
+                    <span>1. الموردون (Suppliers)</span>
+                </button>
+                <button onclick="switchSuppliersTab('supplies')" id="tabBtn-supplies" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">local_shipping</span>
+                    <span>2. سجل التوريدات</span>
+                </button>
+                <button onclick="switchSuppliersTab('inventory')" id="tabBtn-inventory" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">inventory_2</span>
+                    <span>3. أرصدة الخامات (حصة المورد)</span>
+                </button>
+                <button onclick="switchSuppliersTab('financial')" id="tabBtn-financial" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">account_balance_wallet</span>
+                    <span>4. المعاملات المالية والمستحقات</span>
+                </button>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input id="supSearchInput" type="text" onkeyup="filterSuppliersTable()" placeholder="بحث بالمورد، الكود، رقم التوريد..." class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 text-sm focus:outline-none focus:border-primary"/>
+                </div>
+                <div>
+                    <select id="filterType" onchange="filterSuppliersTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل أنواع الموردين</option>
+                        <option value="مورد خام">مورد خام</option>
+                        <option value="مورد مستلزمات">مورد مستلزمات</option>
+                        <option value="مورد خام ومستلزمات">مورد خام ومستلزمات</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+        <div id="mainSuppliersContainer">
+            <!-- Rendered dynamically depending on active tab -->
+        </div>
+
+    </div>
+</main>
+
+<!-- ADD SUPPLIER MODAL -->
+<div id="addSupplierModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[90vh]">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-tertiary-fixed">person_add</span>
+                <span>إضافة مورد جديد (Add New Supplier)</span>
+            </h3>
+            <button onclick="closeAddSupplierModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اسم المورد / الشركة *</label>
+                    <input id="sName" type="text" placeholder="مثال: شركة الخير للتوريدات" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">كود المورد (Supplier Code) *</label>
+                    <input id="sCode" type="text" value="SUP-006" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">نوع المورد *</label>
+                    <select id="sType" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="مورد خام">مورد خام (Raw Material Supplier)</option>
+                        <option value="مورد مستلزمات">مورد مستلزمات (Packaging Supplier)</option>
+                        <option value="مورد خام ومستلزمات">مورد خام ومستلزمات</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الشخص المسؤول (Contact)</label>
+                    <input id="sContactPerson" type="text" placeholder="أحمد السيد" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رقم الهاتف *</label>
+                    <input id="sPhone" type="text" placeholder="01012345678" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">البريد الإلكتروني</label>
+                    <input id="sEmail" type="email" placeholder="info@supplier.com" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الرقم الضريبي / السجل</label>
+                    <input id="sTaxNo" type="text" placeholder="300-192-881" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">شروط الدفع</label>
+                    <select id="sPaymentTerms" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="آجل 30 يوم">آجل 30 يوم</option>
+                        <option value="نقدي عند الاستلام">نقدي عند الاستلام</option>
+                        <option value="دفعة مقدمة 50%">دفعة مقدمة 50%</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closeAddSupplierModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveSupplier()" class="px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">حفظ المورد</button>
+        </div>
+    </div>
+</div>
+
+<!-- RECORD RAW SUPPLY MODAL / DRAWER -->
+<div id="addSupplyModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-tertiary-container text-on-tertiary-container flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_box</span>
+                    <span>تسجيل توريد خام جديد (Receive Raw Material Supply)</span>
+                </h3>
+                <p class="text-xs text-on-tertiary-container/80 mt-0.5">خصخصة الكمية الموردة لمصلحة المورد وإدخالها لمخزن المحطة</p>
+            </div>
+            <button onclick="closeAddSupplyModal()" class="text-on-tertiary-container hover:opacity-80"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المورد صاحب الحصة *</label>
+                    <select id="spSupplier" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="شركة الخير للتوريدات">شركة الخير للتوريدات</option>
+                        <option value="أحمد السيد لتوريد الخامات">أحمد السيد لتوريد الخامات</option>
+                        <option value="محمد حسن">محمد حسن</option>
+                        <option value="مؤسسة النور">مؤسسة النور</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المحطة / المخزن المستلم *</label>
+                    <select id="spStation" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="محطة النخيل">محطة النخيل</option>
+                        <option value="محطة السلام">محطة السلام</option>
+                        <option value="محطة المدينة">محطة المدينة</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الصنف الخام *</label>
+                    <select id="spProduct" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="فراولة">فراولة</option>
+                        <option value="مانجو">مانجو</option>
+                        <option value="بامية">بامية</option>
+                        <option value="بسلة">بسلة</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface font-body-md">الكمية الموردة (KG) *</label>
+                    <input id="spQty" type="number" value="10000" oninput="calculateSupplyTotalVal()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface font-body-md">سعر الكيلو (EGP/KG) *</label>
+                    <input id="spPrice" type="number" value="30" oninput="calculateSupplyTotalVal()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-data-mono focus:border-primary"/>
+                </div>
+            </div>
+
+            <div class="bg-primary-container/20 p-3.5 rounded-xl flex justify-between items-center font-bold text-xs text-primary">
+                <span>إجمالي مستحق التوريد للمورد:</span>
+                <strong id="spTotalValDisplay" class="text-base font-data-mono text-tertiary-container">300,000 EGP</strong>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رقم اللوط / Batch *</label>
+                    <input id="spBatch" type="text" value="FR-260823-001" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ التوريد والاستلام *</label>
+                    <input id="spDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">ملاحظات الفحص والاستلام</label>
+                <input id="spNotes" type="text" placeholder="فحص الجودة مطابق للمواصفات..." class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closeAddSupplyModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveSupply()" class="px-6 py-2.5 bg-tertiary-container text-on-tertiary-container font-bold text-xs rounded-xl shadow-md hover:bg-primary hover:text-white transition-all">تأكيد اعتماد التوريد وإضافته للمخزن</button>
+        </div>
+    </div>
+</div>
+
+<!-- SUPPLIER DETAILS DRAWER (WITH 6 TABS) -->
+<div id="supplierDetailsDrawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end hidden">
+    <div class="bg-surface-container-lowest w-full max-w-4xl h-full flex flex-col shadow-2xl overflow-hidden border-r border-outline-variant">
+        <!-- Drawer Header -->
+        <div class="p-5 bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg border border-primary-fixed-dim">
+                    <span id="drawerSupInitials">خ</span>
+                </div>
+                <div>
+                    <h3 id="drawerSupName" class="text-xl font-bold">شركة الخير للتوريدات</h3>
+                    <p id="drawerSupSubtitle" class="text-xs text-primary-fixed-dim">SUP-001 • مورد خام • المستحق المالي الحالي: 350,000 EGP</p>
+                </div>
+            </div>
+            <button onclick="closeSupplierDrawer()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Drawer Sub-tabs (6 Tabs) -->
+        <div class="bg-surface-container border-b border-outline-variant px-6 flex gap-4 text-xs font-bold shrink-0 overflow-x-auto">
+            <button onclick="switchSupDrawerSubtab('overview')" id="sSub-overview" class="py-3 tab-active">نظرة عامة</button>
+            <button onclick="switchSupDrawerSubtab('supplies')" id="sSub-supplies" class="py-3 text-on-surface-variant">سجل التوريدات</button>
+            <button onclick="switchSupDrawerSubtab('stock')" id="sSub-stock" class="py-3 text-on-surface-variant">رصيد الخام (حصة المورد)</button>
+            <button onclick="switchSupDrawerSubtab('financial')" id="sSub-financial" class="py-3 text-on-surface-variant">المعاملات المالية</button>
+            <button onclick="switchSupDrawerSubtab('statement')" id="sSub-statement" class="py-3 text-on-surface-variant">كشف الحساب</button>
+            <button onclick="switchSupDrawerSubtab('documents')" id="sSub-documents" class="py-3 text-on-surface-variant">المستندات والتراخيص</button>
+        </div>
+
+        <!-- Drawer Body -->
+        <div id="supDrawerBody" class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-outline-variant bg-surface-container flex justify-between items-center shrink-0">
+            <div id="drawerSupStatusBadge"></div>
+            <div class="flex gap-2">
+                <button onclick="openAddSupplyForSupplier(); closeSupplierDrawer();" class="px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-xl shadow hover:bg-primary-container">
+                    + تسجيل توريد جديد لهذا المورد
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT MOCK STATE & LOGIC -->
+<script>
+const DEFAULT_SUPPLIERS = [
+    {
+        id: "SUP-001",
+        code: "SUP-001",
+        name: "شركة الخير للتوريدات",
+        type: "مورد خام",
+        contactPerson: "أحمد علي",
+        phone: "01012345678",
+        email: "alkhair@supplies.com",
+        taxNo: "300-192-881",
+        paymentTerms: "آجل 30 يوم",
+        suppliesCount: 27,
+        totalSuppliesValEgp: 1250000,
+        rawInventoryKg: 22000,
+        payableBalanceEgp: 350000,
+        lastSupplyDate: "2026-08-23",
+        status: "نشط"
+    },
+    {
+        id: "SUP-002",
+        code: "SUP-002",
+        name: "أحمد السيد لتوريد الخامات",
+        type: "مورد خام",
+        contactPerson: "أحمد السيد",
+        phone: "01198765432",
+        email: "ahmed.sayed@raw.com",
+        taxNo: "300-192-882",
+        paymentTerms: "نقدي عند الاستلام",
+        suppliesCount: 15,
+        totalSuppliesValEgp: 850000,
+        rawInventoryKg: 15500,
+        payableBalanceEgp: 0,
+        lastSupplyDate: "2026-08-20",
+        status: "نشط"
+    },
+    {
+        id: "SUP-003",
+        code: "SUP-003",
+        name: "محمد حسن",
+        type: "مورد خام",
+        contactPerson: "محمد حسن",
+        phone: "01234567890",
+        email: "m.hassan@raw.com",
+        taxNo: "300-192-883",
+        paymentTerms: "دفعة مقدمة 50%",
+        suppliesCount: 10,
+        totalSuppliesValEgp: 650000,
+        rawInventoryKg: 9000,
+        payableBalanceEgp: 120000,
+        lastSupplyDate: "2026-08-18",
+        status: "نشط"
+    },
+    {
+        id: "SUP-004",
+        code: "SUP-004",
+        name: "مؤسسة النور",
+        type: "مورد خام ومستلزمات",
+        contactPerson: "محمود النور",
+        phone: "01055554444",
+        email: "elnoor@supplies.com",
+        taxNo: "300-192-884",
+        paymentTerms: "آجل 30 يوم",
+        suppliesCount: 18,
+        totalSuppliesValEgp: 1100000,
+        rawInventoryKg: 18000,
+        payableBalanceEgp: 200000,
+        lastSupplyDate: "2026-08-15",
+        status: "نشط"
+    }
+];
+
+const DEFAULT_SUPPLIES_LOG = [
+    {
+        supplyId: "SUPPLY-0025",
+        supplierName: "شركة الخير للتوريدات",
+        productName: "فراولة",
+        station: "محطة النخيل",
+        qtyKg: 10000,
+        unitPrice: 30,
+        totalVal: 300000,
+        batch: "FR-260823-001",
+        date: "2026-08-23",
+        status: "معتمد"
+    },
+    {
+        supplyId: "SUPPLY-0026",
+        supplierName: "أحمد السيد لتوريد الخامات",
+        productName: "فراولة",
+        station: "محطة النخيل",
+        qtyKg: 7000,
+        unitPrice: 32,
+        totalVal: 224000,
+        batch: "FR-260823-002",
+        date: "2026-08-20",
+        status: "معتمد"
+    },
+    {
+        supplyId: "SUPPLY-0027",
+        supplierName: "محمد حسن",
+        productName: "فراولة",
+        station: "محطة النخيل",
+        qtyKg: 5000,
+        unitPrice: 29,
+        totalVal: 145000,
+        batch: "FR-260823-003",
+        date: "2026-08-18",
+        status: "معتمد"
+    }
+];
+
+let suppliersState = [];
+let suppliesState = [];
+let activeSuppliersTab = 'suppliers';
+
+function initSuppliersPrototype() {
+    const savedS = localStorage.getItem("stitch_frozex_suppliers");
+    const savedSp = localStorage.getItem("stitch_frozex_supplies");
+
+    if (savedS) { try { suppliersState = JSON.parse(savedS); } catch(e) { loadDefaultSuppliersData(); } } else { loadDefaultSuppliersData(); }
+    if (savedSp) { try { suppliesState = JSON.parse(savedSp); } catch(e) { suppliesState = DEFAULT_SUPPLIES_LOG; } } else { suppliesState = DEFAULT_SUPPLIES_LOG; }
+
+    renderMainContent();
+    updateSuppliersKpis();
+}
+
+function loadDefaultSuppliersData() {
+    suppliersState = JSON.parse(JSON.stringify(DEFAULT_SUPPLIERS));
+    suppliesState = JSON.parse(JSON.stringify(DEFAULT_SUPPLIES_LOG));
+    saveSuppliersState();
+}
+
+function saveSuppliersState() {
+    localStorage.setItem("stitch_frozex_suppliers", JSON.stringify(suppliersState));
+    localStorage.setItem("stitch_frozex_supplies", JSON.stringify(suppliesState));
+}
+
+function resetSuppliersPrototypeData() {
+    if (confirm("إعادة ضبط بيانات الموردين والتوريدات للوضع الافتراضي؟")) {
+        loadDefaultSuppliersData();
+        renderMainContent();
+        updateSuppliersKpis();
+        showToast("تم إعادة ضبط بيانات الموردين بنجاح", "info");
+    }
+}
+
+function updateSuppliersKpis() {
+    const totalS = suppliersState.length;
+    const activeS = suppliersState.filter(s => s.status === "نشط").length;
+    const totalVal = suppliesState.reduce((acc, curr) => acc + curr.totalVal, 0);
+    const rawKg = suppliersState.reduce((acc, curr) => acc + curr.rawInventoryKg, 0);
+    const payable = suppliersState.reduce((acc, curr) => acc + curr.payableBalanceEgp, 0);
+
+    document.getElementById("kpiTotalSuppliers").innerText = totalS;
+    document.getElementById("kpiActiveSuppliers").innerText = activeS;
+    document.getElementById("kpiTotalSuppliesVal").innerText = Math.round(totalVal).toLocaleString();
+    document.getElementById("kpiRawInventoryKg").innerText = rawKg.toLocaleString();
+    document.getElementById("kpiPayableBal").innerText = Math.round(payable).toLocaleString();
+}
+
+function switchSuppliersTab(tabName) {
+    activeSuppliersTab = tabName;
+    ['suppliers', 'supplies', 'inventory', 'financial'].forEach(t => {
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (btn) {
+            btn.className = t === tabName
+                ? "px-4 py-2 rounded-xl text-xs font-bold bg-primary text-on-primary shadow-sm flex items-center gap-1.5"
+                : "px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5";
+        }
+    });
+    renderMainContent();
+}
+
+function renderMainContent() {
+    const container = document.getElementById("mainSuppliersContainer");
+    container.innerHTML = "";
+
+    const searchText = (document.getElementById("supSearchInput")?.value || document.getElementById("topSearchInput")?.value || "").toLowerCase();
+    const filterType = document.getElementById("filterType")?.value || "";
+
+    if (activeSuppliersTab === 'suppliers') {
+        renderSuppliersMasterView(container, searchText, filterType);
+    } else if (activeSuppliersTab === 'supplies') {
+        renderSuppliesLogView(container, searchText);
+    } else if (activeSuppliersTab === 'inventory') {
+        renderSupplierStockView(container, searchText);
+    } else if (activeSuppliersTab === 'financial') {
+        renderFinancialView(container, searchText);
+    }
+}
+
+// 1. SUPPLIERS MASTER VIEW
+function renderSuppliersMasterView(container, searchText, filterType) {
+    const filtered = suppliersState.filter(s => {
+        const matchesType = !filterType || s.type === filterType;
+        const matchesText = s.name.toLowerCase().includes(searchText) || s.code.toLowerCase().includes(searchText) || s.contactPerson.toLowerCase().includes(searchText);
+        return matchesType && matchesText;
+    });
+
+    let tableHtml = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse whitespace-nowrap">
+                    <thead class="bg-surface-container border-b border-outline-variant font-label-sm text-on-surface-variant">
+                        <tr>
+                            <th class="py-3.5 px-4 font-bold">اسم المورد</th>
+                            <th class="py-3.5 px-4 font-bold">الكود</th>
+                            <th class="py-3.5 px-4 font-bold">نوع المورد</th>
+                            <th class="py-3.5 px-4 font-bold">عدد التوريدات</th>
+                            <th class="py-3.5 px-4 font-bold">إجمالي التوريدات</th>
+                            <th class="py-3.5 px-4 font-bold">رصيد الخام الحالي</th>
+                            <th class="py-3.5 px-4 font-bold">المستحق المالي</th>
+                            <th class="py-3.5 px-4 font-bold">آخر توريد</th>
+                            <th class="py-3.5 px-4 font-bold text-center">الحالة</th>
+                            <th class="py-3.5 px-4 font-bold text-left">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/60 font-body-md">
+    `;
+
+    if (filtered.length === 0) {
+        tableHtml += `<tr><td colspan="10" class="p-8 text-center text-on-surface-variant font-medium">لا يوجد موردون مطابقون للبحث</td></tr>`;
+    } else {
+        filtered.forEach(s => {
+            tableHtml += `
+                <tr class="hover:bg-surface-container-low transition-colors cursor-pointer" onclick="openSupplierDrawer('${s.id}')">
+                    <td class="py-3.5 px-4 font-bold text-on-surface">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">
+                                ${s.name.substring(0, 2)}
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm text-primary">${s.name}</div>
+                                <div class="text-[11px] text-on-surface-variant">${s.contactPerson} • ${s.phone}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4 font-bold font-data-mono text-xs">${s.code}</td>
+                    <td class="py-3.5 px-4 text-xs"><span class="bg-surface-container px-2 py-0.5 rounded font-bold">${s.type}</span></td>
+                    <td class="py-3.5 px-4 font-data-mono text-xs">${s.suppliesCount} توريد</td>
+                    <td class="py-3.5 px-4 font-data-mono font-bold">${s.totalSuppliesValEgp.toLocaleString()} EGP</td>
+                    <td class="py-3.5 px-4 font-data-mono font-bold text-tertiary-container">${s.rawInventoryKg.toLocaleString()} KG</td>
+                    <td class="py-3.5 px-4 font-data-mono font-bold text-amber-800">${s.payableBalanceEgp.toLocaleString()} EGP</td>
+                    <td class="py-3.5 px-4 font-data-mono text-xs">${s.lastSupplyDate}</td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="inline-block px-2.5 py-1 rounded-full text-xs bg-green-100 text-green-800 font-bold">${s.status}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-left">
+                        <div class="flex items-center gap-1 justify-end">
+                            <button onclick="event.stopPropagation(); openSupplierDrawer('${s.id}')" class="p-1.5 rounded hover:bg-surface-variant text-primary" title="عرض ملف المورد">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </button>
+                            <button onclick="event.stopPropagation(); openAddSupplyForSupplierName('${s.name}')" class="p-1.5 rounded hover:bg-tertiary-container/20 text-tertiary-container" title="تسجيل توريد جديد">
+                                <span class="material-symbols-outlined text-lg">add_box</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    tableHtml += `</tbody></table></div></div>`;
+    container.innerHTML = tableHtml;
+}
+
+// 2. SUPPLIES LOG VIEW
+function renderSuppliesLogView(container, searchText) {
+    let rows = suppliesState.filter(sp => !searchText || sp.supplierName.toLowerCase().includes(searchText) || sp.supplyId.toLowerCase().includes(searchText) || sp.productName.toLowerCase().includes(searchText)).map(sp => `
+        <tr class="hover:bg-surface-container-low transition-colors">
+            <td class="py-3.5 px-4 font-bold font-data-mono text-primary">${sp.supplyId}</td>
+            <td class="py-3.5 px-4 font-bold">${sp.supplierName}</td>
+            <td class="py-3.5 px-4 font-bold text-on-surface">${sp.productName}</td>
+            <td class="py-3.5 px-4 text-xs font-medium">${sp.station}</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold">${sp.qtyKg.toLocaleString()} KG</td>
+            <td class="py-3.5 px-4 font-data-mono">${sp.unitPrice} EGP/KG</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-tertiary-container">${sp.totalVal.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 font-data-mono text-xs font-bold text-primary">${sp.batch}</td>
+            <td class="py-3.5 px-4 font-data-mono text-xs">${sp.date}</td>
+            <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">${sp.status}</span></td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">رقم التوريد</th>
+                        <th class="p-3">المورد صاحب الحصة</th>
+                        <th class="p-3">الصنف الخام</th>
+                        <th class="p-3">المحطة المستلمة</th>
+                        <th class="p-3">الكمية الموردة</th>
+                        <th class="p-3">سعر الكيلو</th>
+                        <th class="p-3">إجمالي القيمة</th>
+                        <th class="p-3">اللوط Batch</th>
+                        <th class="p-3">تاريخ الاستلام</th>
+                        <th class="p-3 text-center">الحالة</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows || '<tr><td colspan="10" class="p-6 text-center">لا توجد توريدات مسجلة</td></tr>'}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 3. SUPPLIER STOCK VIEW
+function renderSupplierStockView(container, searchText) {
+    let rows = [];
+    suppliersState.forEach(s => {
+        if (searchText && !s.name.toLowerCase().includes(searchText)) return;
+        rows.push(`
+            <tr class="hover:bg-surface-container-low transition-colors">
+                <td class="py-3.5 px-4 font-bold text-primary">${s.name}</td>
+                <td class="py-3.5 px-4 font-bold">فراولة خضراء/خام</td>
+                <td class="py-3.5 px-4 text-xs">محطة النخيل</td>
+                <td class="py-3.5 px-4 font-data-mono font-bold text-green-700">${s.rawInventoryKg.toLocaleString()} KG</td>
+                <td class="py-3.5 px-4 font-data-mono font-bold text-tertiary-container">${(s.rawInventoryKg * 30).toLocaleString()} EGP</td>
+                <td class="py-3.5 px-4 text-left">
+                    <a href="raw-materials.html" class="px-2.5 py-1 bg-surface border rounded text-xs font-bold hover:bg-surface-variant">تخصيص وسحب خام</a>
+                </td>
+            </tr>
+        `);
+    });
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">المورد صاحب الحصة</th>
+                        <th class="p-3">الصنف الخام</th>
+                        <th class="p-3">المحطة / المخزن</th>
+                        <th class="p-3">الرصيد المتاح حالياً</th>
+                        <th class="p-3">إجمالي القيمة المخزنية</th>
+                        <th class="p-3 text-left">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows.join('')}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 4. FINANCIAL VIEW
+function renderFinancialView(container, searchText) {
+    let rows = suppliersState.filter(s => !searchText || s.name.toLowerCase().includes(searchText)).map(s => `
+        <tr>
+            <td class="p-3 font-bold text-primary">${s.name}</td>
+            <td class="p-3 font-data-mono">${s.totalSuppliesValEgp.toLocaleString()} EGP</td>
+            <td class="p-3 font-data-mono text-green-700 font-bold">${(s.totalSuppliesValEgp - s.payableBalanceEgp).toLocaleString()} EGP</td>
+            <td class="p-3 font-data-mono text-amber-800 font-bold text-sm">${s.payableBalanceEgp.toLocaleString()} EGP</td>
+            <td class="p-3 text-xs">${s.paymentTerms}</td>
+            <td class="p-3 text-left">
+                <a href="treasury-payments.html" class="px-3 py-1 bg-tertiary-container text-on-tertiary-container rounded text-xs font-bold hover:bg-primary hover:text-white">صرف دفعة للمورد</a>
+            </td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">المورد</th>
+                        <th class="p-3">إجمالي التوريدات (دائن)</th>
+                        <th class="p-3">المسدد نقداً / بنك (مدين)</th>
+                        <th class="p-3">المستحق المالي المتبقي</th>
+                        <th class="p-3">شروط الدفع</th>
+                        <th class="p-3 text-left">الإجراء المالي</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+function filterSuppliersTable() { renderMainContent(); }
+
+// MODAL LOGIC
+function openAddSupplierModal() { document.getElementById("addSupplierModal").classList.remove("hidden"); }
+function closeAddSupplierModal() { document.getElementById("addSupplierModal").classList.add("hidden"); }
+function confirmSaveSupplier() {
+    const name = document.getElementById("sName").value.trim();
+    const code = document.getElementById("sCode").value.trim();
+
+    if (!name) { showToast("أدخل اسم المورد", "error"); return; }
+
+    suppliersState.unshift({
+        id: code || ("SUP-00" + (suppliersState.length + 1)),
+        code: code || ("SUP-00" + (suppliersState.length + 1)),
+        name: name,
+        type: document.getElementById("sType").value,
+        contactPerson: document.getElementById("sContactPerson").value || "مسؤول التوريدات",
+        phone: document.getElementById("sPhone").value || "0100000000",
+        email: document.getElementById("sEmail").value || "supplier@mail.com",
+        taxNo: document.getElementById("sTaxNo").value || "300-000",
+        paymentTerms: document.getElementById("sPaymentTerms").value,
+        suppliesCount: 0,
+        totalSuppliesValEgp: 0,
+        rawInventoryKg: 0,
+        payableBalanceEgp: 0,
+        lastSupplyDate: new Date().toISOString().split('T')[0],
+        status: "نشط"
+    });
+
+    saveSuppliersState();
+    renderMainContent();
+    updateSuppliersKpis();
+    closeAddSupplierModal();
+    showToast(`تم حفظ المورد الجديد ${name} بنجاح!`, "success");
+}
+
+function openAddSupplyModal() {
+    document.getElementById("addSupplyModal").classList.remove("hidden");
+    calculateSupplyTotalVal();
+}
+function openAddSupplyForSupplierName(sName) {
+    document.getElementById("spSupplier").value = sName;
+    openAddSupplyModal();
+}
+function closeAddSupplyModal() { document.getElementById("addSupplyModal").classList.add("hidden"); }
+
+function calculateSupplyTotalVal() {
+    const q = parseFloat(document.getElementById("spQty").value) || 0;
+    const p = parseFloat(document.getElementById("spPrice").value) || 0;
+    document.getElementById("spTotalValDisplay").innerText = (q * p).toLocaleString() + " EGP";
+}
+
+function confirmSaveSupply() {
+    const supName = document.getElementById("spSupplier").value;
+    const station = document.getElementById("spStation").value;
+    const prod = document.getElementById("spProduct").value;
+    const qty = parseFloat(document.getElementById("spQty").value) || 0;
+    const price = parseFloat(document.getElementById("spPrice").value) || 0;
+    const batch = document.getElementById("spBatch").value || "FR-260823-99";
+    const date = document.getElementById("spDate").value;
+
+    if (qty <= 0 || price < 0) { showToast("أدخل كمية وسعر صحيحين", "error"); return; }
+
+    const totalVal = qty * price;
+    const num = "SUPPLY-00" + (suppliesState.length + 28);
+
+    suppliesState.unshift({
+        supplyId: num,
+        supplierName: supName,
+        productName: prod,
+        station: station,
+        qtyKg: qty,
+        unitPrice: price,
+        totalVal: totalVal,
+        batch: batch,
+        date: date,
+        status: "معتمد"
+    });
+
+    const supObj = suppliersState.find(s => s.name === supName);
+    if (supObj) {
+        supObj.suppliesCount += 1;
+        supObj.totalSuppliesValEgp += totalVal;
+        supObj.rawInventoryKg += qty;
+        supObj.payableBalanceEgp += totalVal;
+        supObj.lastSupplyDate = date;
+    }
+
+    saveSuppliersState();
+    renderMainContent();
+    updateSuppliersKpis();
+    closeAddSupplyModal();
+    showToast(`تم تسجيل التوريد ${num} بقيمة ${totalVal.toLocaleString()} EGP وإضافته لحصة المورد ${supName} في مخزن ${station}!`, "success");
+}
+
+// SUPPLIER DETAILS DRAWER LOGIC
+let activeDrawerSupplier = null;
+function openSupplierDrawer(sId) {
+    activeDrawerSupplier = suppliersState.find(s => s.id === sId);
+    if (!activeDrawerSupplier) return;
+
+    const s = activeDrawerSupplier;
+    document.getElementById("drawerSupInitials").innerText = s.name.substring(0, 2);
+    document.getElementById("drawerSupName").innerText = s.name;
+    document.getElementById("drawerSupSubtitle").innerText = `${s.code} • ${s.type} • المستحق المالي: ${s.payableBalanceEgp.toLocaleString()} EGP`;
+
+    document.getElementById("drawerSupStatusBadge").innerHTML = `<span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-800 font-bold">الحالة: ${s.status}</span>`;
+
+    switchSupDrawerSubtab('overview');
+    document.getElementById("supplierDetailsDrawer").classList.remove("hidden");
+}
+function closeSupplierDrawer() { document.getElementById("supplierDetailsDrawer").classList.add("hidden"); }
+
+function switchSupDrawerSubtab(subName) {
+    ['overview', 'supplies', 'stock', 'financial', 'statement', 'documents'].forEach(t => {
+        const btn = document.getElementById(`sSub-${t}`);
+        if (btn) btn.className = t === subName ? "py-3 tab-active" : "py-3 text-on-surface-variant";
+    });
+
+    const body = document.getElementById("supDrawerBody");
+    const s = activeDrawerSupplier;
+    if (!s) return;
+
+    if (subName === 'overview') {
+        body.innerHTML = `
+            <div class="grid grid-cols-2 gap-4 text-xs">
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block">المسؤول:</span>
+                    <strong class="text-sm">${s.contactPerson}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block">رقم الهاتف:</span>
+                    <strong class="text-sm font-data-mono">${s.phone}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block">البريد الإلكتروني:</span>
+                    <strong class="text-sm font-data-mono">${s.email}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block">الرقم الضريبي:</span>
+                    <strong class="text-sm font-data-mono">${s.taxNo}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block">شروط الدفع:</span>
+                    <strong class="text-sm">${s.paymentTerms}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block">رصيد الخام بالمخازن:</span>
+                    <strong class="text-sm font-data-mono text-tertiary-container">${s.rawInventoryKg.toLocaleString()} KG</strong>
+                </div>
+            </div>
+        `;
+    } else if (subName === 'supplies') {
+        const spList = suppliesState.filter(sp => sp.supplierName === s.name);
+        let rows = spList.map(sp => `
+            <tr>
+                <td class="p-2.5 font-bold font-data-mono">${sp.supplyId}</td>
+                <td class="p-2.5 font-bold">${sp.productName}</td>
+                <td class="p-2.5 font-data-mono font-bold">${sp.qtyKg.toLocaleString()} KG</td>
+                <td class="p-2.5 font-data-mono text-tertiary-container">${sp.totalVal.toLocaleString()} EGP</td>
+                <td class="p-2.5 font-data-mono text-xs">${sp.date}</td>
+            </tr>
+        `).join('');
+        body.innerHTML = `
+            <div class="border rounded-xl overflow-hidden text-xs">
+                <table class="w-full text-right">
+                    <thead class="bg-surface-container font-bold"><tr><th class="p-2">التوريد</th><th class="p-2">الصنف</th><th class="p-2">الكمية</th><th class="p-2">الإجمالي</th><th class="p-2">التاريخ</th></tr></thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="5" class="p-4 text-center">لا توجد توريدات مسجلة</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else {
+        body.innerHTML = `<p class="text-xs text-on-surface-variant">يتم محاكاة الحسابات والوثائق واللوطات بداخل النموذج التفاعلي لـ ERP.</p>`;
+    }
+}
+
+function openAddSupplyForSupplier() {
+    if (activeDrawerSupplier) {
+        openAddSupplyForSupplierName(activeDrawerSupplier.name);
+    }
+}
+
+// TOAST HELPERS
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// DOM LOADED
+document.addEventListener("DOMContentLoaded", () => {
+    initSuppliersPrototype();
+});
+</script>
+
+</body>
+</html>

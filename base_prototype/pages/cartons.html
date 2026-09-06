@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>المستلزمات والكراتين</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+<!-- Top NavBar -->
+<!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    <div class="flex justify-between items-center bg-surface p-4 rounded-lg border border-outline-variant shadow-sm">
+      <div class="flex items-center gap-3 w-1/3">
+        <span class="material-symbols-outlined text-outline">search</span>
+        <input type="text" placeholder="بحث باسم الكرتونة أو الكود..." class="w-full bg-background border border-outline-variant rounded px-3 py-1.5 text-sm focus:outline-none focus:border-primary"/>
+      </div>
+      <div class="flex gap-2">
+        <a href="supplies-arrival-add.html" class="bg-secondary text-white px-3 py-1.5 rounded text-sm font-semibold hover:opacity-90 flex items-center gap-1">
+          <span class="material-symbols-outlined text-lg">add_shopping_cart</span> شراء مستلزمات
+        </a>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="bg-surface rounded-lg border border-outline-variant shadow-sm overflow-hidden overflow-x-auto">
+      <table class="w-full text-right text-sm">
+        <thead class="bg-surface-variant text-xs text-on-surface-variant font-bold border-b border-outline-variant">
+          <tr>
+            <th class="p-4">كود الكرتونة</th>
+            <th class="p-4">اسم الكرتونة / المستلزم</th>
+            <th class="p-4">سعة/وزن الكرتونة</th>
+            <th class="p-4">الطباعة والشعار</th>
+            <th class="p-4">الرصيد بالمخزن</th>
+            <th class="p-4">تكلفة الشراء (ج.م)</th>
+            <th class="p-4">الحالة</th>
+            <th class="p-4 text-center">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant text-xs font-body-md">
+          <tr class="hover:bg-surface-variant/50 bg-white">
+            <td class="p-4 font-mono font-semibold text-primary">CTN-SAMA-10</td>
+            <td class="p-4 font-bold text-primary">كرتونة سما 10 كجم</td>
+            <td class="p-4 font-semibold text-on-surface">10 كجم</td>
+            <td class="p-4 text-on-surface-variant">شعار شركة سما (مطبوع خماسي)</td>
+            <td class="p-4 font-mono font-bold text-secondary">500 كرتونة</td>
+            <td class="p-4 font-mono font-semibold">15.00 ج.م</td>
+            <td class="p-4"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">نشط</span></td>
+            <td class="p-4 text-center">
+              <button class="p-1 hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+            </td>
+          </tr>
+          <tr class="hover:bg-surface-variant/50 bg-surface-container-lowest">
+            <td class="p-4 font-mono font-semibold text-primary">CTN-SAMA-05</td>
+            <td class="p-4 font-bold text-primary">كرتونة سما 5 كجم</td>
+            <td class="p-4 font-semibold text-on-surface">5 كجم</td>
+            <td class="p-4 text-on-surface-variant">شعار شركة سما (مطبوع خماسي)</td>
+            <td class="p-4 font-mono font-bold text-secondary">350 كرتونة</td>
+            <td class="p-4 font-mono font-semibold">12.00 ج.م</td>
+            <td class="p-4"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">نشط</span></td>
+            <td class="p-4 text-center">
+              <button class="p-1 hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+            </td>
+          </tr>
+          <tr class="hover:bg-surface-variant/50 bg-white">
+            <td class="p-4 font-mono font-semibold text-primary">CTN-PLAIN-10</td>
+            <td class="p-4 font-bold text-primary">كرتونة سادة 10 كجم</td>
+            <td class="p-4 font-semibold text-on-surface">10 كجم</td>
+            <td class="p-4 text-on-surface-variant">سادة (بدون طباعة / شريط لاصق)</td>
+            <td class="p-4 font-mono font-bold text-secondary">800 كرتونة</td>
+            <td class="p-4 font-mono font-semibold">10.00 ج.م</td>
+            <td class="p-4"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">نشط</span></td>
+            <td class="p-4 text-center">
+              <button class="p-1 hover:text-primary"><span class="material-symbols-outlined text-lg">edit</span></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+</body>
+</html>

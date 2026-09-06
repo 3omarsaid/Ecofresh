@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إدارة الموظفين - نظام تجميد للتصدير</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #c4c6cd; border-radius: 4px; }
+        .tab-active { border-bottom: 3px solid #041627; color: #041627; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+
+<!-- SideNavBar Navigation -->
+<nav class="fixed right-0 top-0 h-screen w-[280px] z-50 flex flex-col bg-primary text-on-primary shadow-xl border-l border-outline-variant/10">
+    <div class="h-toolbar-height flex flex-col justify-center px-6 border-b border-outline-variant/20 py-4 bg-primary shrink-0">
+        <h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">نظام تجميد للتصدير</h1>
+        <p class="font-label-sm text-label-sm text-primary-fixed-dim">Glacier Ledger ERP</p>
+    </div>
+    <div class="flex-1 overflow-y-auto py-3 px-3">
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>لوحة القيادة التنفيذية</span>
+                </a>
+            </li>
+            <li>
+                <a href="supplies.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>إدارة المستلزمات (Supplies)</span>
+                </a>
+            </li>
+            <li>
+                <a href="employees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold bg-secondary-container text-on-secondary-container border-r-4 border-surface-variant transition-all">
+                    <span class="material-symbols-outlined">badge</span>
+                    <span>إدارة الموظفين (Employees)</span>
+                </a>
+            </li>
+            <li>
+                <a href="processing-operations.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">autorenew</span>
+                    <span>عمليات التدوير (Processing)</span>
+                </a>
+            </li>
+            <li>
+                <a href="create-shipment.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>إنشاء شحنة تصدير</span>
+                </a>
+            </li>
+            <li>
+                <a href="client-orders.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>طلبات العملاء والاتفاقيات</span>
+                </a>
+            </li>
+            <li>
+                <a href="new-operation.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">conveyor_belt</span>
+                    <span>عملية تشغيل جديدة</span>
+                </a>
+            </li>
+            <li>
+                <a href="raw-materials.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>مخزون المواد الخام</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>الموردون</span>
+                </a>
+            </li>
+            <li>
+                <a href="treasury-payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات</span>
+                </a>
+            </li>
+            <li>
+                <a href="stations-management.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">factory</span>
+                    <span>إدارة المحطات</span>
+                </a>
+            </li>
+            <li>
+                <a href="exports-contractors.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>إدارة المقاولين والصادرات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="p-4 border-t border-outline-variant/20 shrink-0 bg-primary-container/30">
+        <div class="flex items-center gap-3 text-xs text-primary-fixed-dim">
+            <span class="material-symbols-outlined text-green-400 text-base">check_circle</span>
+            <span>نظام موحد - الموظفون المباشرون</span>
+        </div>
+    </div>
+</nav>
+
+<!-- TopNavBar -->
+<header class="bg-surface fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding border-b border-outline-variant">
+    <div class="flex items-center gap-4">
+        <h2 class="font-title-sm text-title-sm font-black text-primary">نظام تجميد للتصدير - إدارة الموظفين والمستحقات (Employees ERP)</h2>
+        <span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-xs font-bold font-data-mono">PROTOTYPE ONLY</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative hidden lg:block">
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input id="topSearchInput" class="bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-4 pr-10 text-body-md font-body-md focus:outline-none focus:border-primary w-64 text-on-surface" placeholder="بحث باسم الموظف أو الكود..." type="text" onkeyup="filterEmployeesTable()"/>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" title="التنبيهات">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" onclick="resetEmployeePrototypeData()" title="إعادة ضبط بيانات الموظفين التجريبية">
+                <span class="material-symbols-outlined">restart_alt</span>
+            </button>
+        </div>
+        <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant shrink-0">
+            <img alt="صورة المستخدم" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByztzte-7HG582Cqe_OCtfzP-23PrUqNwLlLKTTX96RHPgxCDROx15p3gKfgy7bRsiZyRSy2CJKPAAoU4Ap_Jra0RLti2ZthCxcTyK472-hCGMhTug7bvSfpiuQQJJmpTgix3-ONAd5-2TDY04W1GHPZQla8t5urxJCFKTNJOzmSgZpWcD4ynve2FL4nv6CqOvLC5wEm8-Nnc1qpYBThQnSXMJfYQuQATCq16IC8ALWBY2xm5FkfaO"/>
+        </div>
+    </div>
+</header>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Main Content Canvas -->
+<main class="mr-[280px] pt-toolbar-height min-h-screen p-container-padding">
+    <div class="space-y-gutter max-w-[1440px] mx-auto">
+
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h1 class="font-display-lg text-display-lg text-primary flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">badge</span>
+                    <span>إدارة الموظفين (Employees Management)</span>
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-1">إدارة بيانات الموظفين الدائمين ومتابعة المستحقات المالية والسلف والخصومات وصرف الرواتب</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openAddEmployeeModal()" class="bg-primary hover:bg-primary-container text-on-primary font-title-sm text-title-sm px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>+ إضافة موظف جديد</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Clarification Banner: Employees vs Contractors -->
+        <div class="bg-surface-container-low border border-outline-variant p-4 rounded-xl flex items-center gap-3 text-xs text-on-surface mb-6">
+            <span class="material-symbols-outlined text-primary text-xl">info</span>
+            <div>
+                <strong>تنويه نظام ERP:</strong> الموظفون المدرجون هنا هم الكادر الداخلي للمؤسسة (رواتب شهرية، سلف، بدلات). بالنسبة للمقاولين والعمالة الخارجية المرتبطة بالتشغيل يرجى التوجه لـ <a href="exports-contractors.html" class="text-primary font-bold underline">إدارة المقاولين</a>.
+            </div>
+        </div>
+
+        <!-- KPI Summary Cards (6 Metrics) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+            <!-- KPI 1 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي الموظفين</span>
+                    <span class="material-symbols-outlined text-primary text-xl">group</span>
+                </div>
+                <div id="kpiTotalEmp" class="text-2xl font-bold text-on-surface font-data-mono">48</div>
+                <span class="text-[11px] text-on-surface-variant">موظف مسجل</span>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">الموظفون النشطون</span>
+                    <span class="material-symbols-outlined text-green-600 text-xl">check_circle</span>
+                </div>
+                <div id="kpiActiveEmp" class="text-2xl font-bold text-green-700 font-data-mono">42</div>
+                <span class="text-[11px] text-on-surface-variant">على رأس العمل</span>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">غير النشطين/إجازة</span>
+                    <span class="material-symbols-outlined text-on-surface-variant text-xl">pause_circle</span>
+                </div>
+                <div id="kpiInactiveEmp" class="text-2xl font-bold text-on-surface-variant font-data-mono">6</div>
+                <span class="text-[11px] text-on-surface-variant">إجازة أو موقوف</span>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">الرواتب الشهرية</span>
+                    <span class="material-symbols-outlined text-primary text-xl">payments</span>
+                </div>
+                <div id="kpiMonthlySalaries" class="text-lg font-bold text-primary font-data-mono">285,000</div>
+                <span class="text-[11px] text-on-surface-variant">جنيه مصري / شهر</span>
+            </div>
+            <!-- KPI 5 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي المستحقات</span>
+                    <span class="material-symbols-outlined text-tertiary-container text-xl">account_balance_wallet</span>
+                </div>
+                <div id="kpiTotalPayable" class="text-lg font-bold text-tertiary-container font-data-mono">320,500</div>
+                <span class="text-[11px] text-on-surface-variant">صافي مستحق حالي</span>
+            </div>
+            <!-- KPI 6 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي المدفوع</span>
+                    <span class="material-symbols-outlined text-green-700 text-xl">price_check</span>
+                </div>
+                <div id="kpiTotalPaid" class="text-lg font-bold text-green-700 font-data-mono">275,000</div>
+                <span class="text-[11px] text-on-surface-variant">تم صرفه هذا الشهر</span>
+            </div>
+        </div>
+
+        <!-- Filter & Search Control Panel -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input id="empSearchInput" type="text" onkeyup="filterEmployeesTable()" placeholder="بحث بالاسم، الكود، أو الهاتف..." class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 text-sm focus:outline-none focus:border-primary"/>
+                </div>
+                <div>
+                    <select id="filterStation" onchange="filterEmployeesTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل المحطات الإدارية</option>
+                        <option value="محطة النخيل">محطة النخيل</option>
+                        <option value="محطة السلام">محطة السلام</option>
+                        <option value="محطة المدينة">محطة المدينة</option>
+                        <option value="الإدارة العامة">الإدارة العامة</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="filterDepartment" onchange="filterEmployeesTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل الأقسام</option>
+                        <option value="الإنتاج">الإنتاج</option>
+                        <option value="المخازن">المخازن</option>
+                        <option value="المالية">المالية</option>
+                        <option value="الجودة">الجودة</option>
+                        <option value="الإدارة">الإدارة</option>
+                        <option value="اللوجستيات">اللوجستيات</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="filterStatus" onchange="filterEmployeesTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل الحالات</option>
+                        <option value="نشط">نشط</option>
+                        <option value="إجازة">إجازة</option>
+                        <option value="موقوف">موقوف</option>
+                        <option value="غير نشط">غير نشط</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="filterEmployeesTable()" class="px-4 py-2 border border-outline-variant rounded-lg hover:bg-surface-variant text-sm font-medium flex items-center gap-1">
+                    <span class="material-symbols-outlined text-base">refresh</span>
+                    <span>تحديث القائمة</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Employees ERP Data Table -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse whitespace-nowrap">
+                    <thead class="bg-surface-container border-b border-outline-variant font-label-sm text-on-surface-variant">
+                        <tr>
+                            <th class="py-3.5 px-4 font-bold">الموظف</th>
+                            <th class="py-3.5 px-4 font-bold">الكود</th>
+                            <th class="py-3.5 px-4 font-bold">الوظيفة</th>
+                            <th class="py-3.5 px-4 font-bold">القسم</th>
+                            <th class="py-3.5 px-4 font-bold">المحطة / التبعية</th>
+                            <th class="py-3.5 px-4 font-bold">تاريخ التعيين</th>
+                            <th class="py-3.5 px-4 font-bold">الراتب الأساسي</th>
+                            <th class="py-3.5 px-4 font-bold">صافي المستحق</th>
+                            <th class="py-3.5 px-4 font-bold">المدفوع</th>
+                            <th class="py-3.5 px-4 font-bold text-center">الحالة</th>
+                            <th class="py-3.5 px-4 font-bold text-left">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTableBody" class="divide-y divide-outline-variant/60 font-body-md">
+                        <!-- Dynamic Employees Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- ADD / EDIT EMPLOYEE MODAL -->
+<div id="employeeModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="p-5 border-b border-outline-variant bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div>
+                <h2 id="modalTitle" class="text-xl font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-tertiary-fixed">person_add</span>
+                    <span>إضافة موظف جديد (Add New Employee)</span>
+                </h2>
+                <p class="text-xs text-primary-fixed-dim mt-0.5">تسجيل البيانات الشخصية والوظيفية والمالية للموظف الداخلي</p>
+            </div>
+            <button onclick="closeEmployeeModal()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-6">
+            <input type="hidden" id="editEmpId" value=""/>
+
+            <!-- Section 1: Personal Information -->
+            <div>
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">person</span>
+                    <span>1. البيانات الشخصية والاتصال</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">الاسم بالكامل *</label>
+                        <input id="empFullName" type="text" placeholder="مثال: أحمد علي محمود" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">كود الموظف (ID) *</label>
+                        <input id="empCode" type="text" placeholder="مثال: EMP-005" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">رقم الهاتف *</label>
+                        <input id="empPhone" type="text" placeholder="01012345678" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">البريد الإلكتروني</label>
+                        <input id="empEmail" type="email" placeholder="ahmed@frozex-erp.com" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">الرقم القومي (Demo)</label>
+                        <input id="empNationalId" type="text" placeholder="29501011234567" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">العنوان السكني</label>
+                        <input id="empAddress" type="text" placeholder="الإسكندرية - سموحة" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Job Information -->
+            <div>
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">work</span>
+                    <span>2. البيانات الوظيفية والتبعية</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">الوظيفة *</label>
+                        <select id="empPosition" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="مهندس إنتاج">مهندس إنتاج</option>
+                            <option value="أمين مخزن">أمين مخزن</option>
+                            <option value="محاسب">محاسب</option>
+                            <option value="مهندسة جودة">مهندسة جودة</option>
+                            <option value="مشرف محطة">مشرف محطة</option>
+                            <option value="إداري">إداري</option>
+                            <option value="مسؤول مشتريات">مسؤول مشتريات</option>
+                            <option value="مسؤول تصدير">مسؤول تصدير</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">القسم *</label>
+                        <select id="empDepartment" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="الإنتاج">الإنتاج</option>
+                            <option value="المخازن">المخازن</option>
+                            <option value="المالية">المالية</option>
+                            <option value="الجودة">الجودة</option>
+                            <option value="الإدارة">الإدارة</option>
+                            <option value="اللوجستيات">اللوجستيات</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">المحطة (اختياري / الإدارة العامة) *</label>
+                        <select id="empStation" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="محطة النخيل">محطة النخيل</option>
+                            <option value="محطة السلام">محطة السلام</option>
+                            <option value="محطة المدينة">محطة المدينة</option>
+                            <option value="الإدارة العامة">الإدارة العامة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">تاريخ التعيين *</label>
+                        <input id="empJoiningDate" type="date" value="2024-01-15" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">نوع التوظيف *</label>
+                        <select id="empEmploymentType" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="دوام كامل">دوام كامل</option>
+                            <option value="دوام جزئي">دوام جزئي</option>
+                            <option value="تشغيل">تشغيل</option>
+                            <option value="إداري">إداري</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface">حالة العمل *</label>
+                        <select id="empStatus" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="نشط">نشط</option>
+                            <option value="إجازة">إجازة</option>
+                            <option value="موقوف">موقوف</option>
+                            <option value="غير نشط">غير نشط</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Financial & Salary Information -->
+            <div>
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 mb-4 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">payments</span>
+                        <span>3. البيانات المالية والراتب (Salary Breakdown)</span>
+                    </span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-data-mono">
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface font-body-md">الراتب الأساسي (EGP) *</label>
+                        <input id="empBasicSalary" type="number" value="15000" oninput="calculateModalNetSalary()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface font-body-md">البدلات (Allowances)</label>
+                        <input id="empAllowances" type="number" value="2000" oninput="calculateModalNetSalary()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface font-body-md">الإضافي (Overtime)</label>
+                        <input id="empOvertime" type="number" value="1000" oninput="calculateModalNetSalary()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface font-body-md">الخصومات (Deductions)</label>
+                        <input id="empDeductions" type="number" value="500" oninput="calculateModalNetSalary()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary"/>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1 text-on-surface font-body-md">السلف الخصمية (Advances)</label>
+                        <input id="empAdvances" type="number" value="1000" oninput="calculateModalNetSalary()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary"/>
+                    </div>
+                    <div class="bg-primary text-on-primary p-2.5 rounded-lg flex flex-col justify-center">
+                        <span class="text-[11px] text-primary-fixed-dim font-body-md">صافي المستحق التلقائي:</span>
+                        <strong id="empNetSalaryDisplay" class="text-lg font-bold text-tertiary-fixed">16,500 EGP</strong>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 border-t border-outline-variant bg-surface-container flex justify-between items-center shrink-0">
+            <button type="button" onclick="closeEmployeeModal()" class="px-5 py-2 rounded-xl border border-outline-variant hover:bg-surface-variant font-bold text-sm">
+                إلغاء
+            </button>
+            <button type="button" onclick="saveEmployeeData()" class="px-6 py-2.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container font-bold text-sm shadow-md flex items-center gap-2">
+                <span class="material-symbols-outlined">save</span>
+                <span>حفظ الموظف</span>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- RECORD PAYMENT MODAL -->
+<div id="paymentModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined">payments</span>
+                <span>تسجيل دفعة للموظف (Record Employee Payment)</span>
+            </h3>
+            <button onclick="closePaymentModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 space-y-4 text-xs">
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">الموظف المستلم</label>
+                <input id="payEmpName" type="text" readonly class="w-full bg-surface-container border border-outline-variant rounded-lg p-2.5 text-sm font-bold"/>
+                <input type="hidden" id="payEmpId"/>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">نوع الدفعة *</label>
+                    <select id="payType" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="راتب">راتب شهر</option>
+                        <option value="سلفة">سلفة مالية</option>
+                        <option value="مكافأة">مكافأة تشجيعية</option>
+                        <option value="بدل">بدل انتقال/سفر</option>
+                        <option value="أخرى">مصاريف أخرى</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface font-body-md">المبلغ (EGP) *</label>
+                    <input id="payAmount" type="number" value="15000" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-data-mono focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">التاريخ *</label>
+                    <input id="payDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الخزينة المصروف منها *</label>
+                    <select id="payTreasury" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="الخزينة الرئيسية">الخزينة الرئيسية</option>
+                        <option value="بنك مصر - EGP">بنك مصر - EGP</option>
+                        <option value="خزينة محطة النخيل">خزينة محطة النخيل</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">المرجع / رقم الإذن</label>
+                <input id="payRef" type="text" placeholder="REC-2026-099" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">ملاحظات البيان</label>
+                <input id="payNotes" type="text" placeholder="صرف مستحقات شهر أغسطس..." class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closePaymentModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmEmployeePayment()" class="px-5 py-2 bg-green-700 text-white rounded-xl text-xs font-bold shadow-md hover:bg-green-800">تأكيد الصرف</button>
+        </div>
+    </div>
+</div>
+
+<!-- EMPLOYEE DETAILS DRAWER -->
+<div id="employeeDetailsDrawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end hidden">
+    <div class="bg-surface-container-lowest w-full max-w-4xl h-full flex flex-col shadow-2xl overflow-hidden border-r border-outline-variant">
+        
+        <!-- Drawer Header -->
+        <div class="p-5 bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg border border-primary-fixed-dim shrink-0">
+                    <span id="drawerEmpInitials">أع</span>
+                </div>
+                <div>
+                    <h3 id="drawerEmpName" class="text-xl font-bold">أحمد علي محمود</h3>
+                    <p id="drawerEmpSubtitle" class="text-xs text-primary-fixed-dim">EMP-001 • مهندس إنتاج • محطة النخيل</p>
+                </div>
+            </div>
+            <button onclick="closeEmployeeDrawer()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Drawer Content Tabs (7 Tabs) -->
+        <div class="bg-surface-container border-b border-outline-variant px-6 flex gap-3 text-xs font-bold shrink-0 overflow-x-auto">
+            <button onclick="switchEmpDrawerTab('overview')" id="eTab-overview" class="py-3 tab-active">نظرة عامة</button>
+            <button onclick="switchEmpDrawerTab('financial')" id="eTab-financial" class="py-3 text-on-surface-variant">البيانات المالية</button>
+            <button onclick="switchEmpDrawerTab('payments')" id="eTab-payments" class="py-3 text-on-surface-variant">المدفوعات</button>
+            <button onclick="switchEmpDrawerTab('advances')" id="eTab-advances" class="py-3 text-on-surface-variant">السلف</button>
+            <button onclick="switchEmpDrawerTab('deductions')" id="eTab-deductions" class="py-3 text-on-surface-variant">الخصومات</button>
+            <button onclick="switchEmpDrawerTab('statement')" id="eTab-statement" class="py-3 text-on-surface-variant">كشف الحساب</button>
+            <button onclick="switchEmpDrawerTab('documents')" id="eTab-documents" class="py-3 text-on-surface-variant">المستندات</button>
+        </div>
+
+        <!-- Drawer Body -->
+        <div id="empDrawerBody" class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-outline-variant bg-surface-container flex justify-between items-center shrink-0">
+            <div id="drawerEmpStatusBadge"></div>
+            <div id="drawerEmpActions" class="flex gap-2">
+                <!-- Action buttons -->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- JAVASCRIPT MOCK DATA & PROTOTYPE LOGIC -->
+<script>
+const DEFAULT_EMPLOYEES = [
+    {
+        id: "EMP-001",
+        code: "EMP-001",
+        name: "أحمد علي محمود",
+        phone: "01012345678",
+        email: "ahmed.ali@frozex-erp.com",
+        nationalId: "29501011234567",
+        address: "الإسكندرية - سموحة",
+        position: "مهندس إنتاج",
+        department: "الإنتاج",
+        station: "محطة النخيل",
+        joiningDate: "2024-01-15",
+        employmentType: "دوام كامل",
+        status: "نشط",
+        basicSalary: 18000,
+        allowances: 2000,
+        overtime: 1000,
+        deductions: 500,
+        advances: 1000,
+        totalPaid: 15000,
+        paymentsLog: [
+            { date: "2026-08-01", type: "راتب", amount: 15000, treasury: "الخزينة الرئيسية", ref: "PAY-801", notes: "راتب شهر يوليو" }
+        ],
+        advancesLog: [
+            { date: "2026-07-10", amount: 3000, paid: 1000, remaining: 2000, status: "مسددة جزئياً", notes: "سلفة طارئة" }
+        ],
+        deductionsLog: [
+            { date: "2026-07-25", type: "خصم إداري", amount: 500, reason: "تأخير 3 أيام", notes: "خصم معتمد" }
+        ],
+        statementLog: [
+            { date: "2026-08-01", desc: "استحقاق راتب شهر يوليو 2026", ref: "SAL-801", debit: 19500, credit: 0, balance: 19500 },
+            { date: "2026-08-01", desc: "صرف راتب نقدي", ref: "PAY-801", debit: 0, credit: 15000, balance: 4500 }
+        ],
+        documentsLog: [
+            { name: "عقد العمل الموثق.pdf", type: "عقد عمل", date: "2024-01-15" },
+            { name: "صورة بطاقة الرقم القومي.jpg", type: "هوية", date: "2024-01-15" }
+        ]
+    },
+    {
+        id: "EMP-002",
+        code: "EMP-002",
+        name: "محمد حسن إبراهيم",
+        phone: "01198765432",
+        email: "m.hassan@frozex-erp.com",
+        nationalId: "29205051234568",
+        address: "بورسعيد - حي الشرق",
+        position: "أمين مخزن",
+        department: "المخازن",
+        station: "محطة السلام",
+        joiningDate: "2023-05-10",
+        employmentType: "دوام كامل",
+        status: "نشط",
+        basicSalary: 12000,
+        allowances: 1500,
+        overtime: 500,
+        deductions: 0,
+        advances: 0,
+        totalPaid: 14000,
+        paymentsLog: [
+            { date: "2026-08-01", type: "راتب", amount: 14000, treasury: "بنك مصر - EGP", ref: "PAY-802", notes: "راتب شهر يوليو" }
+        ],
+        advancesLog: [],
+        deductionsLog: [],
+        statementLog: [
+            { date: "2026-08-01", desc: "استحقاق راتب شهر يوليو 2026", ref: "SAL-802", debit: 14000, credit: 0, balance: 14000 },
+            { date: "2026-08-01", desc: "تحويل بنكي راتب", ref: "PAY-802", debit: 0, credit: 14000, balance: 0 }
+        ],
+        documentsLog: [
+            { name: "عقد العمل.pdf", type: "عقد عمل", date: "2023-05-10" }
+        ]
+    },
+    {
+        id: "EMP-003",
+        code: "EMP-003",
+        name: "محمود السيد مصطفى",
+        phone: "01234567890",
+        email: "mahmoud.finance@frozex-erp.com",
+        nationalId: "28803031234569",
+        address: "القاهرة - التجمع الخامس",
+        position: "محاسب",
+        department: "المالية",
+        station: "الإدارة العامة",
+        joiningDate: "2022-11-01",
+        employmentType: "دوام كامل",
+        status: "نشط",
+        basicSalary: 15000,
+        allowances: 2500,
+        overtime: 1000,
+        deductions: 0,
+        advances: 2000,
+        totalPaid: 16500,
+        paymentsLog: [
+            { date: "2026-08-01", type: "راتب", amount: 16500, treasury: "الخزينة الرئيسية", ref: "PAY-803", notes: "راتب شهر يوليو كامل" }
+        ],
+        advancesLog: [
+            { date: "2026-06-15", amount: 2000, paid: 2000, remaining: 0, status: "مسددة", notes: "سلفة أعياد" }
+        ],
+        deductionsLog: [],
+        statementLog: [
+            { date: "2026-08-01", desc: "استحقاق راتب شهر يوليو 2026", ref: "SAL-803", debit: 16500, credit: 0, balance: 16500 },
+            { date: "2026-08-01", desc: "صرف راتب نقدي", ref: "PAY-803", debit: 0, credit: 16500, balance: 0 }
+        ],
+        documentsLog: [
+            { name: "عقد العمل الموثق.pdf", type: "عقد عمل", date: "2022-11-01" },
+            { name: "شهادة البكالوريوس.pdf", type: "مؤهل", date: "2022-11-01" }
+        ]
+    },
+    {
+        id: "EMP-004",
+        code: "EMP-004",
+        name: "سارة أحمد فتحي",
+        phone: "01055554444",
+        email: "sara.quality@frozex-erp.com",
+        nationalId: "29808081234570",
+        address: "العاشر من رمضان",
+        position: "مهندسة جودة",
+        department: "الجودة",
+        station: "محطة المدينة",
+        joiningDate: "2024-03-01",
+        employmentType: "دوام كامل",
+        status: "نشط",
+        basicSalary: 16000,
+        allowances: 2000,
+        overtime: 0,
+        deductions: 0,
+        advances: 0,
+        totalPaid: 18000,
+        paymentsLog: [
+            { date: "2026-08-01", type: "راتب", amount: 18000, treasury: "الخزينة الرئيسية", ref: "PAY-804", notes: "راتب شهر يوليو" }
+        ],
+        advancesLog: [],
+        deductionsLog: [],
+        statementLog: [
+            { date: "2026-08-01", desc: "استحقاق راتب شهر يوليو 2026", ref: "SAL-804", debit: 18000, credit: 0, balance: 18000 },
+            { date: "2026-08-01", desc: "صرف راتب نقدي", ref: "PAY-804", debit: 0, credit: 18000, balance: 0 }
+        ],
+        documentsLog: [
+            { name: "عقد عمل.pdf", type: "عقد عمل", date: "2024-03-01" }
+        ]
+    },
+    {
+        id: "EMP-005",
+        code: "EMP-005",
+        name: "خالد عبد الرحمن",
+        phone: "01099998888",
+        email: "khaled@frozex-erp.com",
+        nationalId: "29012121234571",
+        address: "الإسكندرية - المنتزه",
+        position: "مشرف محطة",
+        department: "الإنتاج",
+        station: "محطة النخيل",
+        joiningDate: "2023-02-15",
+        employmentType: "دوام كامل",
+        status: "إجازة",
+        basicSalary: 14000,
+        allowances: 1000,
+        overtime: 0,
+        deductions: 0,
+        advances: 1000,
+        totalPaid: 14000,
+        paymentsLog: [],
+        advancesLog: [],
+        deductionsLog: [],
+        statementLog: [],
+        documentsLog: []
+    }
+];
+
+let employeesState = [];
+
+function initEmployeesPrototype() {
+    const saved = localStorage.getItem("stitch_frozex_employees_state");
+    if (saved) {
+        try {
+            employeesState = JSON.parse(saved);
+        } catch(e) {
+            loadDefaultEmployees();
+        }
+    } else {
+        loadDefaultEmployees();
+    }
+    renderEmployeesTable();
+    updateEmployeeKpis();
+}
+
+function loadDefaultEmployees() {
+    employeesState = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES));
+    saveEmployeesState();
+}
+
+function saveEmployeesState() {
+    localStorage.setItem("stitch_frozex_employees_state", JSON.stringify(employeesState));
+}
+
+function resetEmployeePrototypeData() {
+    if (confirm("هل تريد إعادة ضبط بيانات الموظفين والمستحقات للوضع الافتراضي؟")) {
+        loadDefaultEmployees();
+        renderEmployeesTable();
+        updateEmployeeKpis();
+        showToast("تم إعادة ضبط بيانات الموظفين التجريبية بنجاح", "info");
+    }
+}
+
+// RENDER EMPLOYEES TABLE
+function renderEmployeesTable() {
+    const tbody = document.getElementById("employeesTableBody");
+    tbody.innerHTML = "";
+
+    const searchText = (document.getElementById("empSearchInput")?.value || document.getElementById("topSearchInput")?.value || "").toLowerCase();
+    const filterStation = document.getElementById("filterStation")?.value || "";
+    const filterDepartment = document.getElementById("filterDepartment")?.value || "";
+    const filterStatus = document.getElementById("filterStatus")?.value || "";
+
+    const filtered = employeesState.filter(emp => {
+        const matchesText = emp.name.toLowerCase().includes(searchText) ||
+                            emp.code.toLowerCase().includes(searchText) ||
+                            emp.phone.includes(searchText);
+        const matchesStation = !filterStation || emp.station === filterStation;
+        const matchesDept = !filterDepartment || emp.department === filterDepartment;
+        const matchesStatus = !filterStatus || emp.status === filterStatus;
+
+        return matchesText && matchesStation && matchesDept && matchesStatus;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-on-surface-variant font-medium">لا يوجد موظفون مطابقون للبحث</td></tr>`;
+        return;
+    }
+
+    filtered.forEach(emp => {
+        const netPayable = (emp.basicSalary + emp.allowances + emp.overtime) - (emp.deductions + emp.advances);
+
+        let statusStyle = "bg-green-100 text-green-800 font-bold";
+        if (emp.status === "إجازة") statusStyle = "bg-amber-100 text-amber-800 font-bold";
+        else if (emp.status === "موقوف") statusStyle = "bg-red-100 text-red-800 font-bold";
+        else if (emp.status === "غير نشط") statusStyle = "bg-gray-100 text-gray-700 font-bold";
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-surface-container-low transition-colors cursor-pointer";
+        tr.onclick = (e) => {
+            if (!e.target.closest("button") && !e.target.closest("select")) {
+                openEmployeeDrawer(emp.id);
+            }
+        };
+
+        tr.innerHTML = `
+            <td class="py-3.5 px-4 font-bold text-on-surface">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">
+                        ${emp.name.substring(0, 2)}
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm text-primary">${emp.name}</div>
+                        <div class="text-[11px] text-on-surface-variant font-data-mono">${emp.phone}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="py-3.5 px-4 font-bold font-data-mono text-xs">${emp.code}</td>
+            <td class="py-3.5 px-4 font-medium">${emp.position}</td>
+            <td class="py-3.5 px-4 text-xs">${emp.department}</td>
+            <td class="py-3.5 px-4 text-xs font-semibold">${emp.station}</td>
+            <td class="py-3.5 px-4 text-xs font-data-mono">${emp.joiningDate}</td>
+            <td class="py-3.5 px-4 font-data-mono">${emp.basicSalary.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-tertiary-container">${netPayable.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-green-700">${emp.totalPaid.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 text-center">
+                <span class="inline-block px-2.5 py-1 rounded-full text-xs ${statusStyle}">${emp.status}</span>
+            </td>
+            <td class="py-3.5 px-4 text-left">
+                <div class="flex items-center gap-1 justify-end">
+                    <button onclick="openEmployeeDrawer('${emp.id}')" class="p-1.5 rounded hover:bg-surface-variant text-primary" title="عرض الملف الكامل">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                    <button onclick="openRecordPaymentModal('${emp.id}')" class="p-1.5 rounded hover:bg-green-100 text-green-700" title="تسجيل دفعة/راتب">
+                        <span class="material-symbols-outlined text-lg">payments</span>
+                    </button>
+                    <button onclick="editEmployeeModal('${emp.id}')" class="p-1.5 rounded hover:bg-surface-variant text-on-surface-variant" title="تعديل الموظف">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function filterEmployeesTable() {
+    renderEmployeesTable();
+}
+
+function updateEmployeeKpis() {
+    const total = employeesState.length;
+    const active = employeesState.filter(e => e.status === "نشط").length;
+    const inactive = total - active;
+
+    const monthlySalaries = employeesState.reduce((acc, curr) => acc + (curr.basicSalary || 0), 0);
+    const totalPayable = employeesState.reduce((acc, curr) => {
+        const net = (curr.basicSalary + curr.allowances + curr.overtime) - (curr.deductions + curr.advances);
+        return acc + net;
+    }, 0);
+    const totalPaid = employeesState.reduce((acc, curr) => acc + (curr.totalPaid || 0), 0);
+
+    document.getElementById("kpiTotalEmp").innerText = total;
+    document.getElementById("kpiActiveEmp").innerText = active;
+    document.getElementById("kpiInactiveEmp").innerText = inactive;
+    document.getElementById("kpiMonthlySalaries").innerText = monthlySalaries.toLocaleString();
+    document.getElementById("kpiTotalPayable").innerText = totalPayable.toLocaleString();
+    document.getElementById("kpiTotalPaid").innerText = totalPaid.toLocaleString();
+}
+
+// ADD & EDIT EMPLOYEE MODAL LOGIC
+function openAddEmployeeModal() {
+    document.getElementById("editEmpId").value = "";
+    document.getElementById("modalTitle").innerHTML = `<span class="material-symbols-outlined text-tertiary-fixed">person_add</span><span>إضافة موظف جديد (Add New Employee)</span>`;
+    
+    document.getElementById("empFullName").value = "";
+    document.getElementById("empCode").value = "EMP-00" + (employeesState.length + 1);
+    document.getElementById("empPhone").value = "";
+    document.getElementById("empEmail").value = "";
+    document.getElementById("empNationalId").value = "";
+    document.getElementById("empAddress").value = "";
+
+    document.getElementById("empBasicSalary").value = 15000;
+    document.getElementById("empAllowances").value = 2000;
+    document.getElementById("empOvertime").value = 1000;
+    document.getElementById("empDeductions").value = 500;
+    document.getElementById("empAdvances").value = 1000;
+    calculateModalNetSalary();
+
+    document.getElementById("employeeModal").classList.remove("hidden");
+}
+
+function editEmployeeModal(empId) {
+    const emp = employeesState.find(e => e.id === empId);
+    if (!emp) return;
+
+    document.getElementById("editEmpId").value = emp.id;
+    document.getElementById("modalTitle").innerHTML = `<span class="material-symbols-outlined text-tertiary-fixed">edit</span><span>تعديل بيانات الموظف ${emp.name}</span>`;
+
+    document.getElementById("empFullName").value = emp.name;
+    document.getElementById("empCode").value = emp.code;
+    document.getElementById("empPhone").value = emp.phone;
+    document.getElementById("empEmail").value = emp.email || "";
+    document.getElementById("empNationalId").value = emp.nationalId || "";
+    document.getElementById("empAddress").value = emp.address || "";
+
+    document.getElementById("empPosition").value = emp.position;
+    document.getElementById("empDepartment").value = emp.department;
+    document.getElementById("empStation").value = emp.station;
+    document.getElementById("empJoiningDate").value = emp.joiningDate;
+    document.getElementById("empEmploymentType").value = emp.employmentType || "دوام كامل";
+    document.getElementById("empStatus").value = emp.status;
+
+    document.getElementById("empBasicSalary").value = emp.basicSalary;
+    document.getElementById("empAllowances").value = emp.allowances;
+    document.getElementById("empOvertime").value = emp.overtime;
+    document.getElementById("empDeductions").value = emp.deductions;
+    document.getElementById("empAdvances").value = emp.advances;
+    calculateModalNetSalary();
+
+    document.getElementById("employeeModal").classList.remove("hidden");
+}
+
+function closeEmployeeModal() {
+    document.getElementById("employeeModal").classList.add("hidden");
+}
+
+function calculateModalNetSalary() {
+    const basic = parseFloat(document.getElementById("empBasicSalary").value) || 0;
+    const allow = parseFloat(document.getElementById("empAllowances").value) || 0;
+    const over = parseFloat(document.getElementById("empOvertime").value) || 0;
+    const ded = parseFloat(document.getElementById("empDeductions").value) || 0;
+    const adv = parseFloat(document.getElementById("empAdvances").value) || 0;
+
+    const net = (basic + allow + over) - (ded + adv);
+    document.getElementById("empNetSalaryDisplay").innerText = net.toLocaleString() + " EGP";
+}
+
+function saveEmployeeData() {
+    const name = document.getElementById("empFullName").value.trim();
+    const code = document.getElementById("empCode").value.trim();
+    const phone = document.getElementById("empPhone").value.trim();
+    const basicSalary = parseFloat(document.getElementById("empBasicSalary").value) || 0;
+
+    if (!name) {
+        showToast("من فضلك أدخل اسم الموظف بالكامل", "error");
+        return;
+    }
+    if (basicSalary < 0) {
+        showToast("الراتب يجب أن يكون رقمًا صحيحاً موجباً", "error");
+        return;
+    }
+
+    const editId = document.getElementById("editEmpId").value;
+    if (editId) {
+        // Edit existing
+        const emp = employeesState.find(e => e.id === editId);
+        if (emp) {
+            emp.name = name;
+            emp.code = code;
+            emp.phone = phone;
+            emp.email = document.getElementById("empEmail").value;
+            emp.nationalId = document.getElementById("empNationalId").value;
+            emp.address = document.getElementById("empAddress").value;
+            emp.position = document.getElementById("empPosition").value;
+            emp.department = document.getElementById("empDepartment").value;
+            emp.station = document.getElementById("empStation").value;
+            emp.joiningDate = document.getElementById("empJoiningDate").value;
+            emp.employmentType = document.getElementById("empEmploymentType").value;
+            emp.status = document.getElementById("empStatus").value;
+
+            emp.basicSalary = basicSalary;
+            emp.allowances = parseFloat(document.getElementById("empAllowances").value) || 0;
+            emp.overtime = parseFloat(document.getElementById("empOvertime").value) || 0;
+            emp.deductions = parseFloat(document.getElementById("empDeductions").value) || 0;
+            emp.advances = parseFloat(document.getElementById("empAdvances").value) || 0;
+        }
+        showToast(`تم تعديل بيانات الموظف ${name} بنجاح`, "success");
+    } else {
+        // Create new
+        const newEmp = {
+            id: code || ("EMP-00" + (employeesState.length + 1)),
+            code: code || ("EMP-00" + (employeesState.length + 1)),
+            name: name,
+            phone: phone || "01000000000",
+            email: document.getElementById("empEmail").value,
+            nationalId: document.getElementById("empNationalId").value,
+            address: document.getElementById("empAddress").value,
+            position: document.getElementById("empPosition").value,
+            department: document.getElementById("empDepartment").value,
+            station: document.getElementById("empStation").value,
+            joiningDate: document.getElementById("empJoiningDate").value,
+            employmentType: document.getElementById("empEmploymentType").value,
+            status: document.getElementById("empStatus").value,
+            basicSalary: basicSalary,
+            allowances: parseFloat(document.getElementById("empAllowances").value) || 0,
+            overtime: parseFloat(document.getElementById("empOvertime").value) || 0,
+            deductions: parseFloat(document.getElementById("empDeductions").value) || 0,
+            advances: parseFloat(document.getElementById("empAdvances").value) || 0,
+            totalPaid: 0,
+            paymentsLog: [],
+            advancesLog: [],
+            deductionsLog: [],
+            statementLog: [],
+            documentsLog: []
+        };
+        employeesState.unshift(newEmp);
+        showToast(`تم إضافة الموظف الجديد ${name} بنجاح`, "success");
+    }
+
+    saveEmployeesState();
+    renderEmployeesTable();
+    updateEmployeeKpis();
+    closeEmployeeModal();
+}
+
+// RECORD PAYMENT MODAL LOGIC
+function openRecordPaymentModal(empId) {
+    const emp = employeesState.find(e => e.id === empId);
+    if (!emp) return;
+
+    const netPayable = (emp.basicSalary + emp.allowances + emp.overtime) - (emp.deductions + emp.advances);
+
+    document.getElementById("payEmpId").value = emp.id;
+    document.getElementById("payEmpName").value = `${emp.name} (${emp.code}) - المستحق الحالي: ${netPayable.toLocaleString()} EGP`;
+    document.getElementById("payAmount").value = netPayable > 0 ? netPayable : emp.basicSalary;
+
+    document.getElementById("paymentModal").classList.remove("hidden");
+}
+
+function closePaymentModal() {
+    document.getElementById("paymentModal").classList.add("hidden");
+}
+
+function confirmEmployeePayment() {
+    const empId = document.getElementById("payEmpId").value;
+    const emp = employeesState.find(e => e.id === empId);
+    if (!emp) return;
+
+    const payType = document.getElementById("payType").value;
+    const amount = parseFloat(document.getElementById("payAmount").value) || 0;
+    const date = document.getElementById("payDate").value;
+    const treasury = document.getElementById("payTreasury").value;
+    const ref = document.getElementById("payRef").value || ("PAY-" + Math.floor(100 + Math.random() * 900));
+    const notes = document.getElementById("payNotes").value || `صرف ${payType}`;
+
+    if (amount <= 0) {
+        showToast("المبلغ يجب أن يكون أكبر من 0", "error");
+        return;
+    }
+
+    emp.totalPaid += amount;
+    emp.paymentsLog.unshift({ date: date, type: payType, amount: amount, treasury: treasury, ref: ref, notes: notes });
+
+    // Update Employee Statement
+    const prevBalance = emp.statementLog.length > 0 ? emp.statementLog[0].balance : 0;
+    emp.statementLog.unshift({
+        date: date,
+        desc: `صرف ${payType} (${treasury}) - ${notes}`,
+        ref: ref,
+        debit: 0,
+        credit: amount,
+        balance: prevBalance - amount
+    });
+
+    saveEmployeesState();
+    renderEmployeesTable();
+    updateEmployeeKpis();
+    closePaymentModal();
+    showToast(`تم تسجيل دفعة بقيمة ${amount.toLocaleString()} EGP للموظف ${emp.name} بنجاح!`, "success");
+}
+
+// EMPLOYEE DRAWER LOGIC (7 TABS)
+let activeDrawerEmployee = null;
+
+function openEmployeeDrawer(empId) {
+    activeDrawerEmployee = employeesState.find(e => e.id === empId);
+    if (!activeDrawerEmployee) return;
+
+    const emp = activeDrawerEmployee;
+    document.getElementById("drawerEmpInitials").innerText = emp.name.substring(0, 2);
+    document.getElementById("drawerEmpName").innerText = emp.name;
+    document.getElementById("drawerEmpSubtitle").innerText = `${emp.code} • ${emp.position} • ${emp.station} (${emp.department})`;
+
+    const badgeDiv = document.getElementById("drawerEmpStatusBadge");
+    let statusStyle = "bg-green-100 text-green-800 font-bold";
+    if (emp.status === "إجازة") statusStyle = "bg-amber-100 text-amber-800 font-bold";
+    else if (emp.status === "موقوف") statusStyle = "bg-red-100 text-red-800 font-bold";
+    badgeDiv.innerHTML = `<span class="px-3 py-1 rounded-full text-xs ${statusStyle}">الحالة: ${emp.status}</span>`;
+
+    const actionsDiv = document.getElementById("drawerEmpActions");
+    actionsDiv.innerHTML = `
+        <button onclick="openRecordPaymentModal('${emp.id}'); closeEmployeeDrawer();" class="px-4 py-2 bg-green-700 text-white font-bold text-xs rounded-xl hover:bg-green-800">
+            تسجيل دفعة/راتب
+        </button>
+        <button onclick="editEmployeeModal('${emp.id}'); closeEmployeeDrawer();" class="px-4 py-2 border rounded-xl font-bold text-xs hover:bg-surface-variant">
+            تعديل
+        </button>
+    `;
+
+    switchEmpDrawerTab('overview');
+    document.getElementById("employeeDetailsDrawer").classList.remove("hidden");
+}
+
+function closeEmployeeDrawer() {
+    document.getElementById("employeeDetailsDrawer").classList.add("hidden");
+}
+
+function switchEmpDrawerTab(tabName) {
+    const tabs = ['overview', 'financial', 'payments', 'advances', 'deductions', 'statement', 'documents'];
+    tabs.forEach(t => {
+        const btn = document.getElementById(`eTab-${t}`);
+        if (t === tabName) btn.className = "py-3 tab-active";
+        else btn.className = "py-3 text-on-surface-variant";
+    });
+
+    const body = document.getElementById("empDrawerBody");
+    const emp = activeDrawerEmployee;
+    if (!emp) return;
+
+    if (tabName === 'overview') {
+        body.innerHTML = `
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">رقم الهاتف:</span>
+                    <strong class="text-sm font-data-mono">${emp.phone}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">البريد الإلكتروني:</span>
+                    <strong class="text-sm font-data-mono">${emp.email || '-'}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">الرقم القومي:</span>
+                    <strong class="text-sm font-data-mono">${emp.nationalId || '-'}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">العنوان السكني:</span>
+                    <strong class="text-sm">${emp.address || '-'}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">تاريخ التعيين:</span>
+                    <strong class="text-sm font-data-mono">${emp.joiningDate}</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-xs text-on-surface-variant block">نوع التوظيف:</span>
+                    <strong class="text-sm">${emp.employmentType || 'دوام كامل'}</strong>
+                </div>
+            </div>
+        `;
+    } else if (tabName === 'financial') {
+        const netPayable = (emp.basicSalary + emp.allowances + emp.overtime) - (emp.deductions + emp.advances);
+        body.innerHTML = `
+            <div class="bg-surface p-4 rounded-xl border space-y-3 font-data-mono text-xs">
+                <div class="flex justify-between"><span>الراتب الأساسي:</span><strong>${emp.basicSalary.toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between"><span>إجمالي البدلات:</span><strong class="text-green-700">+${emp.allowances.toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between"><span>الإضافي والعمل الإضافي:</span><strong class="text-green-700">+${emp.overtime.toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between"><span>الخصومات الإدارية:</span><strong class="text-error">-${emp.deductions.toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between border-b pb-2"><span>خصم السلف:</span><strong class="text-error">-${emp.advances.toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between text-sm font-bold text-primary pt-1"><span>صافي الراتب المستحق (Net Payable):</span><strong class="text-tertiary-container text-base">${netPayable.toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between text-xs text-on-surface-variant pt-1"><span>إجمالي ما تم صرفه لهذا الموظف:</span><strong class="text-green-700">${emp.totalPaid.toLocaleString()} EGP</strong></div>
+            </div>
+        `;
+    } else if (tabName === 'payments') {
+        let rows = (emp.paymentsLog || []).map(p => `
+            <tr>
+                <td class="p-2.5 font-data-mono">${p.date}</td>
+                <td class="p-2.5 font-bold">${p.type}</td>
+                <td class="p-2.5 font-data-mono font-bold text-green-700">${p.amount.toLocaleString()} EGP</td>
+                <td class="p-2.5">${p.treasury}</td>
+                <td class="p-2.5 font-data-mono text-xs">${p.ref}</td>
+            </tr>
+        `).join('');
+
+        body.innerHTML = `
+            <div class="flex justify-between items-center mb-3">
+                <h4 class="font-bold text-xs text-primary">سجل مدفوعات الموظف:</h4>
+                <button onclick="openRecordPaymentModal('${emp.id}'); closeEmployeeDrawer();" class="px-3 py-1 bg-green-700 text-white rounded-lg text-xs font-bold">+ تسجيل دفعة جديد</button>
+            </div>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold">
+                        <tr><th class="p-2">التاريخ</th><th class="p-2">النوع</th><th class="p-2">المبلغ</th><th class="p-2">الخزينة</th><th class="p-2">المرجع</th></tr>
+                    </thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="5" class="p-4 text-center">لا توجد مدفوعات مسجلة</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (tabName === 'advances') {
+        let rows = (emp.advancesLog || []).map(a => `
+            <tr>
+                <td class="p-2.5 font-data-mono">${a.date}</td>
+                <td class="p-2.5 font-data-mono font-bold">${a.amount.toLocaleString()} EGP</td>
+                <td class="p-2.5 font-data-mono text-green-700">${a.paid.toLocaleString()} EGP</td>
+                <td class="p-2.5 font-data-mono text-error">${a.remaining.toLocaleString()} EGP</td>
+                <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[11px] bg-amber-100 text-amber-800 font-bold">${a.status}</span></td>
+            </tr>
+        `).join('');
+
+        body.innerHTML = `
+            <div class="flex justify-between items-center mb-3">
+                <h4 class="font-bold text-xs text-primary">سجل سلف الموظف:</h4>
+                <button onclick="addNewAdvanceForEmp('${emp.id}')" class="px-3 py-1 bg-surface border border-outline-variant hover:bg-surface-variant rounded-lg text-xs font-bold">+ تسجيل سلفة طارئة</button>
+            </div>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold">
+                        <tr><th class="p-2">تاريخ السلفة</th><th class="p-2">المبلغ الكلي</th><th class="p-2">المسدد</th><th class="p-2">المتبقي</th><th class="p-2">الحالة</th></tr>
+                    </thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="5" class="p-4 text-center">لا توجد سلف نشطة لهذا الموظف</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (tabName === 'deductions') {
+        let rows = (emp.deductionsLog || []).map(d => `
+            <tr>
+                <td class="p-2.5 font-data-mono">${d.date}</td>
+                <td class="p-2.5 font-bold">${d.type}</td>
+                <td class="p-2.5 font-data-mono font-bold text-error">-${d.amount.toLocaleString()} EGP</td>
+                <td class="p-2.5">${d.reason}</td>
+            </tr>
+        `).join('');
+
+        body.innerHTML = `
+            <div class="flex justify-between items-center mb-3">
+                <h4 class="font-bold text-xs text-primary">سجل الخصومات والجزاءات الإدارية:</h4>
+                <button onclick="addNewDeductionForEmp('${emp.id}')" class="px-3 py-1 bg-surface border border-outline-variant hover:bg-surface-variant rounded-lg text-xs font-bold">+ تسجيل خصم جديد</button>
+            </div>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold">
+                        <tr><th class="p-2">التاريخ</th><th class="p-2">النوع</th><th class="p-2">المبلغ الخصمي</th><th class="p-2">السبب / الملاحظة</th></tr>
+                    </thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="4" class="p-4 text-center">لا توجد خصومات مسجلة</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (tabName === 'statement') {
+        let rows = (emp.statementLog || []).map(st => `
+            <tr>
+                <td class="p-2.5 font-data-mono">${st.date}</td>
+                <td class="p-2.5 font-medium">${st.desc}</td>
+                <td class="p-2.5 font-data-mono text-xs">${st.ref}</td>
+                <td class="p-2.5 font-data-mono text-green-700 font-bold">${st.debit > 0 ? st.debit.toLocaleString()+' EGP' : '-'}</td>
+                <td class="p-2.5 font-data-mono text-error font-bold">${st.credit > 0 ? st.credit.toLocaleString()+' EGP' : '-'}</td>
+                <td class="p-2.5 font-data-mono font-bold text-primary">${st.balance.toLocaleString()} EGP</td>
+            </tr>
+        `).join('');
+
+        body.innerHTML = `
+            <h4 class="font-bold text-xs text-primary mb-2">كشف حساب الموظف المالي التفصيلي (Employee Ledger):</h4>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold">
+                        <tr><th class="p-2">التاريخ</th><th class="p-2">البيان والتفاصيل</th><th class="p-2">المرجع</th><th class="p-2">مدين (استحقاق)</th><th class="p-2">دائن (صرف)</th><th class="p-2">الرصيد المتبقي</th></tr>
+                    </thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="6" class="p-4 text-center">لا يوجد كشف حساب مسجل حالياً</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (tabName === 'documents') {
+        let rows = (emp.documentsLog || []).map(doc => `
+            <tr>
+                <td class="p-2.5 font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">description</span>
+                    <span>${doc.name}</span>
+                </td>
+                <td class="p-2.5">${doc.type}</td>
+                <td class="p-2.5 font-data-mono text-xs">${doc.date}</td>
+                <td class="p-2.5 text-left">
+                    <button class="text-primary hover:underline text-xs font-bold">معاينة</button>
+                </td>
+            </tr>
+        `).join('');
+
+        body.innerHTML = `
+            <div class="flex justify-between items-center mb-3">
+                <h4 class="font-bold text-xs text-primary">مستندات التعيين والهوية:</h4>
+                <button onclick="addSimulatedDoc('${emp.id}')" class="px-3 py-1 bg-surface border border-outline-variant hover:bg-surface-variant rounded-lg text-xs font-bold">+ إضافة مستند جديد</button>
+            </div>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold">
+                        <tr><th class="p-2">اسم المستند</th><th class="p-2">النوع</th><th class="p-2">تاريخ الإرفاق</th><th class="p-2 text-left">الإجراء</th></tr>
+                    </thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="4" class="p-4 text-center">لم يتم إرفاق مستندات بعد</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    }
+}
+
+function addNewAdvanceForEmp(empId) {
+    const emp = employeesState.find(e => e.id === empId);
+    if (!emp) return;
+    const amountStr = prompt(`أدخل مبلغ السلفة الجديدة للموظف ${emp.name}:`, "1000");
+    const amount = parseFloat(amountStr) || 0;
+    if (amount > 0) {
+        emp.advances += amount;
+        emp.advancesLog.unshift({ date: new Date().toISOString().split('T')[0], amount: amount, paid: 0, remaining: amount, status: "مفتوحة", notes: "سلفة طارئة" });
+        saveEmployeesState();
+        switchEmpDrawerTab('advances');
+        updateEmployeeKpis();
+        renderEmployeesTable();
+        showToast(`تم تسجيل سلفة بقيمة ${amount.toLocaleString()} EGP للموظف ${emp.name}`, "success");
+    }
+}
+
+function addNewDeductionForEmp(empId) {
+    const emp = employeesState.find(e => e.id === empId);
+    if (!emp) return;
+    const amountStr = prompt(`أدخل مبلغ الخصم الإداري للموظف ${emp.name}:`, "500");
+    const amount = parseFloat(amountStr) || 0;
+    if (amount > 0) {
+        const reason = prompt("أدخل سبب الخصم الإداري:", "تأخير / جزاء إداري") || "خصم إداري";
+        emp.deductions += amount;
+        emp.deductionsLog.unshift({ date: new Date().toISOString().split('T')[0], type: "جزاء إداري", amount: amount, reason: reason });
+        saveEmployeesState();
+        switchEmpDrawerTab('deductions');
+        updateEmployeeKpis();
+        renderEmployeesTable();
+        showToast(`تم تسجيل خصم بقيمة ${amount.toLocaleString()} EGP للموظف ${emp.name}`, "success");
+    }
+}
+
+function addSimulatedDoc(empId) {
+    const emp = employeesState.find(e => e.id === empId);
+    if (!emp) return;
+    const docName = prompt("أدخل اسم المستند أو الشهادة:", "شهادة خبرة سابقة.pdf");
+    if (docName) {
+        emp.documentsLog.unshift({ name: docName, type: "مستند تعيين", date: new Date().toISOString().split('T')[0] });
+        saveEmployeesState();
+        switchEmpDrawerTab('documents');
+        showToast(`تم إرفاق المستند ${docName} بنجاح`, "success");
+    }
+}
+
+// TOAST HELPERS
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
+    }, 50);
+
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// DOM LOADED
+document.addEventListener("DOMContentLoaded", () => {
+    initEmployeesPrototype();
+});
+</script>
+
+</body>
+</html>

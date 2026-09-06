@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>الشحنات والتشغيل - متابعة الإنتاج والتصدير اليومي</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- PAGE HEADER BANNER -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">conveyor_belt</span>
+            الشحنات والتشغيل
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">مركز المراقبة والإنتاج اليومي</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">متابعة الشحنات وحالة التشغيل والإنتاج من سحب الخام حتى خروج الشحنة.</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="processing-operations.html" class="bg-surface-variant hover:bg-outline-variant text-on-surface px-3.5 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/60 flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px] text-primary">autorenew</span>
+          + عملية تدوير / تشغيل
+        </a>
+        <a href="shipment-create.html" class="bg-primary text-white hover:bg-primary-container px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          + إنشاء شحنة تصدير
+        </a>
+        <button onclick="window.showToast('تم تصدير تقرير تشغيل الشحنات بنجاح!', 'success')" class="bg-surface-variant hover:bg-outline-variant text-on-surface px-3.5 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/60 flex items-center gap-1">
+          <span class="material-symbols-outlined text-[18px]">download</span>
+          تصدير التقرير
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="shipments-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="shipments-toast-msg">تمت العمليات التشغيلية بنجاح</span>
+    </div>
+
+    <!-- OPERATIONAL KPI SUMMARY CARDS (5 COMPACT CARDS) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      
+      <!-- Card 1: الشحنات النشطة -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1.5">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">الشحنات النشطة</span>
+          <span class="material-symbols-outlined text-[20px] text-primary bg-primary/5 p-1.5 rounded-lg border border-primary/20">local_shipping</span>
+        </div>
+        <div class="text-2xl font-bold text-primary font-mono">5 <span class="text-xs font-normal text-on-surface-variant">شحنات</span></div>
+        <span class="text-[10px] text-emerald-700 font-medium block">بالمحطات والخطوط الكلية</span>
+      </div>
+
+      <!-- Card 2: تحت التشغيل -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1.5">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">تحت التشغيل</span>
+          <span class="material-symbols-outlined text-[20px] text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-200">precision_manufacturing</span>
+        </div>
+        <div class="text-2xl font-bold text-amber-800 font-mono">3 <span class="text-xs font-normal">خطوط إنتاج</span></div>
+        <span class="text-[10px] text-amber-700 font-medium block">تجهيز ومعالجة وتعبئة</span>
+      </div>
+
+      <!-- Card 3: جاهزة للشحن -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1.5">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">جاهزة للشحن</span>
+          <span class="material-symbols-outlined text-[20px] text-secondary bg-blue-50 p-1.5 rounded-lg border border-blue-200">inventory_2</span>
+        </div>
+        <div class="text-2xl font-bold text-secondary font-mono">2 <span class="text-xs font-normal">بالمحطات</span></div>
+        <span class="text-[10px] text-secondary font-medium block">في مخازن التبريد والتجميد</span>
+      </div>
+
+      <!-- Card 4: تم شحنها -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1.5">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">تم شحنها</span>
+          <span class="material-symbols-outlined text-[20px] text-emerald-700 bg-emerald-50 p-1.5 rounded-lg border border-emerald-200">task_alt</span>
+        </div>
+        <div class="text-2xl font-bold text-emerald-800 font-mono">14 <span class="text-xs font-normal">شحنة صادرة</span></div>
+        <span class="text-[10px] text-emerald-700 font-medium block">مكتملة ومسلمة للتصدير</span>
+      </div>
+
+      <!-- Card 5: إجمالي الهالك الحالي & Secondary Sales Indicator -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1.5">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">إجمالي الهالك الحالي</span>
+          <span class="material-symbols-outlined text-[20px] text-rose-700 bg-rose-50 p-1.5 rounded-lg border border-rose-200">delete_sweep</span>
+        </div>
+        <div class="text-xl font-bold text-rose-700 font-mono">1,250 <span class="text-xs font-normal">KG</span></div>
+        <div class="text-[10px] text-on-surface-variant font-medium flex justify-between">
+          <span>معدل الهالك: <strong>6.8%</strong></span>
+          <span class="font-mono text-emerald-700">مبيعات: 2.45M</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MAIN OPERATIONS TABLE SECTION -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+      
+      <!-- COMPACT HORIZONTAL QUICK FILTER BAR -->
+      <div class="flex items-center gap-3 flex-wrap bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 text-xs">
+        <div class="flex items-center gap-1.5 shrink-0 font-bold text-primary">
+          <span class="material-symbols-outlined text-[18px]">filter_alt</span>
+          تصفية التشغيل:
+        </div>
+
+        <!-- Status Filter -->
+        <select id="filter-shipment-status" onchange="filterShipmentsTable()" class="bg-surface border border-outline-variant rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">جميع الحالات</option>
+          <option value="DRAFT">مسودة / تحت الإنشاء</option>
+          <option value="IN_PROGRESS" selected>تحت التشغيل</option>
+          <option value="READY">جاهزة للشحن</option>
+          <option value="SHIPPED">تم الشحن</option>
+          <option value="CANCELLED">ملغاة</option>
+        </select>
+
+        <!-- Station Filter -->
+        <select id="filter-shipment-station" onchange="filterShipmentsTable()" class="bg-surface border border-outline-variant rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">جميع المحطات</option>
+          <option value="محطة النور">محطة النور</option>
+          <option value="محطة السلام">محطة السلام</option>
+          <option value="محطة الصفا">محطة الصفا</option>
+        </select>
+
+        <!-- Customer Filter -->
+        <select id="filter-shipment-customer" onchange="filterShipmentsTable()" class="bg-surface border border-outline-variant rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">جميع العملاء</option>
+          <option value="شركة سما">شركة سما للتجارة</option>
+          <option value="مؤسسة النور">مؤسسة النور للاستيراد</option>
+          <option value="الفيروز">الفيروز للأغذية</option>
+        </select>
+
+        <!-- Product Filter -->
+        <select id="filter-shipment-product" onchange="filterShipmentsTable()" class="bg-surface border border-outline-variant rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">جميع المنتجات</option>
+          <option value="فراولة">فراولة مجمدة</option>
+          <option value="مانجو">مانجو مجمدة</option>
+          <option value="فاصوليا">فاصوليا خضراء</option>
+        </select>
+
+        <!-- Search Input -->
+        <div class="flex-1 min-w-[200px] relative">
+          <input type="text" id="search-shipment-input" onkeyup="filterShipmentsTable()" placeholder="بحث برقم الشحنة أو اسم العميل..." class="w-full bg-surface border border-outline-variant rounded-lg px-3 py-1 pr-8 text-xs font-bold focus:outline-none focus:border-primary"/>
+          <span class="material-symbols-outlined text-[16px] text-outline absolute right-2 top-1/2 -translate-y-1/2">search</span>
+        </div>
+      </div>
+
+      <!-- MAIN OPERATIONAL TABLE (NO EXCESS FINANCIAL COLUMNS) -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+            <tr>
+              <th class="p-3">رقم الشحنة</th>
+              <th class="p-3">العميل المستلم</th>
+              <th class="p-3">المنتج والتعبئة</th>
+              <th class="p-3">محطة المعالجة</th>
+              <th class="p-3 font-mono">الخام المسحوب</th>
+              <th class="p-3 font-mono">الصافي المعبأ</th>
+              <th class="p-3 font-mono">الهالك (%)</th>
+              <th class="p-3 text-center">الحالة التشغيلية</th>
+              <th class="p-3 font-mono">آخر تحديث</th>
+              <th class="p-3 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="shipments-tbody" class="divide-y divide-outline-variant/40">
+            
+            <!-- Shipment Row 1: SHP-2026-001 -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='shipment-details.html?id=SHP-2026-001'">
+              <td class="p-3 font-mono font-bold text-primary text-sm">
+                <a href="shipment-details.html?id=SHP-2026-001" class="hover:underline">SHP-2026-001</a>
+              </td>
+              <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">شركة سما للتجارة والتصدير</a></td>
+              <td class="p-3">
+                <span class="font-bold text-on-surface block">فراولة مجمدة</span>
+                <span class="text-[10px] text-on-surface-variant block font-medium">مستلزم: كرتونة سما 10 كجم</span>
+              </td>
+              <td class="p-3 font-bold text-on-surface">محطة النور</td>
+              <td class="p-3 font-mono font-bold text-primary">4,000 KG</td>
+              <td class="p-3 font-mono font-bold text-emerald-800 text-sm">3,700 KG</td>
+              <td class="p-3 font-mono font-bold text-rose-600">
+                300 KG <span class="text-[10px] bg-rose-50 border border-rose-200 px-1 py-0.5 rounded font-normal">7.50%</span>
+              </td>
+              <td class="p-3 text-center">
+                <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">⚙️ تحت التشغيل</span>
+              </td>
+              <td class="p-3 font-mono text-on-surface-variant">14/08/2026 14:30</td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1.5">
+                  <a href="shipment-details.html?id=SHP-2026-001" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-xs font-bold shadow-sm transition-all">
+                    عرض التفاصيل
+                  </a>
+                  <button onclick="window.showToast('تحديث حالة الإنتاج إلى جاهزة للشحن', 'info')" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-xs font-bold transition-all border border-outline-variant/60">
+                    متابعة
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Shipment Row 2: SHP-2026-002 -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='shipment-details.html?id=SHP-2026-002'">
+              <td class="p-3 font-mono font-bold text-primary text-sm">
+                <a href="shipment-details.html?id=SHP-2026-002" class="hover:underline">SHP-2026-002</a>
+              </td>
+              <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">شركة سما للتجارة والتصدير</a></td>
+              <td class="p-3">
+                <span class="font-bold text-on-surface block">فراولة مجمدة</span>
+                <span class="text-[10px] text-on-surface-variant block font-medium">مستلزم: كرتونة سما 5 كجم</span>
+              </td>
+              <td class="p-3 font-bold text-on-surface">محطة النور</td>
+              <td class="p-3 font-mono font-bold text-primary">2,200 KG</td>
+              <td class="p-3 font-mono font-bold text-emerald-800 text-sm">2,000 KG</td>
+              <td class="p-3 font-mono font-bold text-rose-600">
+                200 KG <span class="text-[10px] bg-rose-50 border border-rose-200 px-1 py-0.5 rounded font-normal">9.09%</span>
+              </td>
+              <td class="p-3 text-center">
+                <span class="bg-blue-100 text-blue-900 border border-blue-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">📦 جاهزة للشحن</span>
+              </td>
+              <td class="p-3 font-mono text-on-surface-variant">12/08/2026 11:15</td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1.5">
+                  <a href="shipment-details.html?id=SHP-2026-002" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-xs font-bold shadow-sm transition-all">
+                    عرض التفاصيل
+                  </a>
+                  <button onclick="window.showToast('تسجيل تصدير وخروج الشحنة', 'success')" class="bg-secondary text-white hover:bg-secondary-container px-2.5 py-1 rounded text-xs font-bold transition-all shadow-sm">
+                    شحن
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Shipment Row 3: SHP-2026-003 -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='shipment-details.html?id=SHP-2026-003'">
+              <td class="p-3 font-mono font-bold text-primary text-sm">
+                <a href="shipment-details.html?id=SHP-2026-003" class="hover:underline">SHP-2026-003</a>
+              </td>
+              <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">مؤسسة النور للاستيراد</a></td>
+              <td class="p-3">
+                <span class="font-bold text-on-surface block">مانجو مجمدة</span>
+                <span class="text-[10px] text-on-surface-variant block font-medium">مستلزم: كرتونة تصدير 10 كجم</span>
+              </td>
+              <td class="p-3 font-bold text-on-surface">محطة السلام</td>
+              <td class="p-3 font-mono font-bold text-primary">4,500 KG</td>
+              <td class="p-3 font-mono font-bold text-emerald-800 text-sm">4,200 KG</td>
+              <td class="p-3 font-mono font-bold text-rose-600">
+                300 KG <span class="text-[10px] bg-rose-50 border border-rose-200 px-1 py-0.5 rounded font-normal">6.67%</span>
+              </td>
+              <td class="p-3 text-center">
+                <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">⚙️ تحت التشغيل</span>
+              </td>
+              <td class="p-3 font-mono text-on-surface-variant">10/08/2026 09:45</td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1.5">
+                  <a href="shipment-details.html?id=SHP-2026-003" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-xs font-bold shadow-sm transition-all">
+                    عرض التفاصيل
+                  </a>
+                  <button onclick="window.showToast('متابعة خط معالجة المانجو بالمحطة', 'info')" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-xs font-bold transition-all border border-outline-variant/60">
+                    متابعة
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Shipment Row 4: SHP-2026-004 (SHIPPED) -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='shipment-details.html?id=SHP-2026-004'">
+              <td class="p-3 font-mono font-bold text-primary text-sm">
+                <a href="shipment-details.html?id=SHP-2026-004" class="hover:underline">SHP-2026-004</a>
+              </td>
+              <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">الفيروز للأغذية المحفوظة</a></td>
+              <td class="p-3">
+                <span class="font-bold text-on-surface block">فاصوليا خضراء</span>
+                <span class="text-[10px] text-on-surface-variant block font-medium">مستلزم: كيس 5 كجم شفاف</span>
+              </td>
+              <td class="p-3 font-bold text-on-surface">محطة الصفا</td>
+              <td class="p-3 font-mono font-bold text-primary">5,300 KG</td>
+              <td class="p-3 font-mono font-bold text-emerald-800 text-sm">5,000 KG</td>
+              <td class="p-3 font-mono font-bold text-rose-600">
+                300 KG <span class="text-[10px] bg-rose-50 border border-rose-200 px-1 py-0.5 rounded font-normal">5.66%</span>
+              </td>
+              <td class="p-3 text-center">
+                <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">🚢 تم الشحن</span>
+              </td>
+              <td class="p-3 font-mono text-on-surface-variant">08/08/2026 16:20</td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <a href="shipment-details.html?id=SHP-2026-004" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-xs font-bold shadow-sm transition-all inline-flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">visibility</span>
+                  التفاصيل
+                </a>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+<script>
+function filterShipmentsTable() {
+  const statusFilter = document.getElementById('filter-shipment-status').value;
+  const stationFilter = document.getElementById('filter-shipment-station').value;
+  const customerFilter = document.getElementById('filter-shipment-customer').value;
+  const productFilter = document.getElementById('filter-shipment-product').value;
+  const query = document.getElementById('search-shipment-input').value.toLowerCase();
+
+  const rows = document.querySelectorAll('#shipments-tbody tr');
+
+  rows.forEach(r => {
+    const text = r.innerText.toLowerCase();
+    
+    let matchStatus = (statusFilter === 'ALL');
+    if (statusFilter === 'IN_PROGRESS') matchStatus = text.includes('تحت التشغيل');
+    else if (statusFilter === 'READY') matchStatus = text.includes('جاهزة للشحن');
+    else if (statusFilter === 'SHIPPED') matchStatus = text.includes('تم الشحن');
+
+    let matchStation = (stationFilter === 'ALL') || text.includes(stationFilter.toLowerCase());
+    let matchCustomer = (customerFilter === 'ALL') || text.includes(customerFilter.toLowerCase());
+    let matchProduct = (productFilter === 'ALL') || text.includes(productFilter.toLowerCase());
+    let matchQuery = text.includes(query);
+
+    if (matchStatus && matchStation && matchCustomer && matchProduct && matchQuery) {
+      r.classList.remove('hidden');
+    } else {
+      r.classList.add('hidden');
+    }
+  });
+}
+</script>
+</body>
+</html>

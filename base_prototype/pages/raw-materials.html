@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مخزن المواد الخام وأرصدة الموردين (Raw Inventory)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+<style>
+  .tab-active { border-bottom: 3px solid #012d1d; color: #012d1d; font-weight: 700; }
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+
+    <div class="space-y-6 max-w-[1440px] mx-auto pb-16">
+
+        <!-- 1. HEADER SECTION -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="font-bold text-xl text-display-lg text-primary flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">grass</span>
+                    <span>مخزن المواد الخام وتتبع التخصيص (Raw Materials Inventory)</span>
+                </h1>
+                <p class="text-sm text-body-md text-on-surface-variant mt-1">إدارة أرصدة المحاصيل والسلع الخام بالمخازن والمحطات، تتبع ملكية كل مورد، وسحب الخام للتشغيل والإنتاج</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="exportRawCSV()" class="bg-surface border border-outline-variant hover:bg-surface-variant text-on-surface font-bold text-lg text-title-sm px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-xs transition-all" title="تصدير بيانات الخامات إلى CSV">
+                    <span class="material-symbols-outlined text-green-700">csv</span>
+                    <span>تصدير CSV</span>
+                </button>
+                <button onclick="openAdjustRawModal()" class="bg-amber-100 border border-amber-300 hover:bg-amber-200 text-amber-900 font-bold text-lg text-title-sm px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-xs transition-all">
+                    <span class="material-symbols-outlined">tune</span>
+                    <span>تسوية / فرز وهالك</span>
+                </button>
+                <button onclick="openWithdrawRawModal()" class="bg-primary hover:bg-primary-container text-on-primary font-bold text-lg text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">outbound</span>
+                    <span>- سحب مواد خام للتشغيل</span>
+                </button>
+                <button onclick="openReceiveRawModal()" class="bg-primary/10 hover:bg-primary text-primary hover:text-white font-bold text-lg text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">download</span>
+                    <span>+ استلام توريد خام</span>
+                </button>
+                <button onclick="openAddRawItemModal()" class="bg-surface border border-outline-variant hover:bg-surface-variant text-on-surface font-bold text-lg text-title-sm px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-xs transition-all">
+                    <span class="material-symbols-outlined">add_box</span>
+                    <span>إضافة صنف خام</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Business Context Banner: Raw Ownership Workflow -->
+        <div class="bg-surface border border-outline-variant p-4 rounded-2xl flex items-center justify-between gap-4 text-xs text-on-surface">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-xl">account_tree</span>
+                <div>
+                    <strong>دورة حيازة المواد الخام بالـ ERP:</strong>
+                    <span>تستلم الشحنة من المورد ➔ تُسجل بالمخزن حصة مخصصة باسم المورد ➔ عند بدء عمليات التدوير (Processing) يُسحب الخام مع الخصم الدقيق من حصة المورد المحاك.</span>
+                </div>
+            </div>
+            <a href="processing-operations.html" class="bg-primary text-on-primary px-3.5 py-1.5 rounded-lg font-bold flex items-center gap-1 shrink-0">
+                <span>عمليات التدوير والإنتاج</span>
+                <span class="material-symbols-outlined text-sm">arrow_left</span>
+            </a>
+        </div>
+
+        <!-- 2. KPI CARDS (5 METRICS) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- KPI 1 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي المخزون الخام</span>
+                    <span class="material-symbols-outlined text-primary text-xl">inventory_2</span>
+                </div>
+                <div id="kpiTotalRawKg" class="text-2xl font-bold text-on-surface font-['IBM_Plex_Sans']">245,000</div>
+                <span class="text-[11px] text-on-surface-variant">كيلو جرام بالمخازن والمحطات</span>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">قيمة مخزون الخام</span>
+                    <span class="material-symbols-outlined text-green-600 text-xl">payments</span>
+                </div>
+                <div id="kpiTotalRawValEgp" class="text-lg font-bold text-green-700 font-['IBM_Plex_Sans']">6,850,000</div>
+                <span class="text-[11px] text-on-surface-variant text-sm">جنيه مصري إجمالي التكلفة</span>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">أصناف الخامات المسجلة</span>
+                    <span class="material-symbols-outlined text-primary text-xl">category</span>
+                </div>
+                <div id="kpiRawItemsCount" class="text-2xl font-bold text-primary font-['IBM_Plex_Sans']">8</div>
+                <span class="text-[11px] text-on-surface-variant text-sm">صنف محصول وثمار</span>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">الموردون الحائزون</span>
+                    <span class="material-symbols-outlined text-primary text-xl">group</span>
+                </div>
+                <div id="kpiActiveSuppliersCount" class="text-2xl font-bold text-primary font-['IBM_Plex_Sans']">12</div>
+                <span class="text-[11px] text-on-surface-variant text-sm">مورد لديهم حصص متاحة</span>
+            </div>
+            <!-- KPI 5 -->
+            <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">المسحوب للتشغيل هذا الشهر</span>
+                    <span class="material-symbols-outlined text-amber-600 text-xl">outbound</span>
+                </div>
+                <div id="kpiMonthlyWithdrawnKg" class="text-lg font-bold text-amber-700 font-['IBM_Plex_Sans']">112,000</div>
+                <span class="text-[11px] text-on-surface-variant text-sm">كيلو جرام تم تحويله للإنتاج</span>
+            </div>
+        </div>
+
+        <!-- 3. FILTERS & SEARCH TOOLBAR -->
+        <div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                <input id="rawSearchInput" type="text" onkeyup="filterRawMaterialsTable()" placeholder="بحث باسم الخام، الكود، المورد..." class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 text-xs text-sm focus:outline-none focus:border-primary"/>
+            </div>
+
+            <!-- Filters dropdowns -->
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto text-xs">
+                <!-- Category Filter -->
+                <div>
+                    <select id="filterCategory" onchange="filterRawMaterialsTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 focus:outline-none focus:border-primary">
+                        <option value="">كل التصنيفات</option>
+                        <option value="فواكه مجمدة">فواكه</option>
+                        <option value="خضار مجمد">خضروات</option>
+                        <option value="محاصيل فرز">محاصيل فرز</option>
+                    </select>
+                </div>
+
+                <!-- Station Filter -->
+                <div>
+                    <select id="filterStation" onchange="filterRawMaterialsTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 focus:outline-none focus:border-primary">
+                        <option value="">كل المحطات والمخازن</option>
+                        <option value="المخزن الرئيسي">المخزن الرئيسي</option>
+                        <option value="محطة النخيل للتجهيز">محطة النخيل للتجهيز</option>
+                        <option value="محطة السلام للتعبئة">محطة السلام للتعبئة</option>
+                        <option value="محطة المدينة للتجميد">محطة المدينة للتجميد</option>
+                    </select>
+                </div>
+
+                <!-- Supplier Filter -->
+                <div>
+                    <select id="filterSupplier" onchange="filterRawMaterialsTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 focus:outline-none focus:border-primary">
+                        <option value="">كل الموردين الحائزين</option>
+                        <option value="مزارع النيل">مزارع النيل</option>
+                        <option value="الشركة الزراعية">الشركة الزراعية</option>
+                        <option value="محصول الوادي">محصول الوادي</option>
+                        <option value="خير البلد للتوريدات">خير البلد للتوريدات</option>
+                    </select>
+                </div>
+
+                <!-- Sort By -->
+                <div class="flex items-center gap-1.5 border-r pr-3 border-outline-variant">
+                    <span class="text-on-surface-variant font-bold">ترتيب:</span>
+                    <select id="sortBy" onchange="filterRawMaterialsTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 font-bold text-primary focus:outline-none focus:border-primary">
+                        <option value="name">اسم المادة الخام</option>
+                        <option value="stock">إجمالي الرصيد (KG)</option>
+                        <option value="value">قيمة المخزون</option>
+                    </select>
+                </div>
+
+                <button onclick="clearAllRawFilters()" class="px-3 py-2 text-on-surface-variant hover:text-primary font-bold border border-outline-variant rounded-lg hover:bg-surface-variant">مسح الفلاتر</button>
+            </div>
+        </div>
+
+        <!-- 4. RAW MATERIALS MASTER TABLE -->
+        <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse whitespace-nowrap">
+                    <thead class="bg-surface-variant border-b border-outline-variant text-xs text-on-surface-variant">
+                        <tr>
+                            <th class="py-3.5 px-4 font-bold">المادة الخام</th>
+                            <th class="py-3.5 px-4 font-bold">الكود</th>
+                            <th class="py-3.5 px-4 font-bold">التصنيف</th>
+                            <th class="py-3.5 px-4 font-bold">الرصيد الإجمالي (كجم)</th>
+                            <th class="py-3.5 px-4 font-bold">متوسط التكلفة</th>
+                            <th class="py-3.5 px-4 font-bold">إجمالي القيمة</th>
+                            <th class="py-3.5 px-4 font-bold">توزيع الملكية (الموردين)</th>
+                            <th class="py-3.5 px-4 font-bold">المحطة الرئيسية</th>
+                            <th class="py-3.5 px-4 font-bold text-center">الحالة</th>
+                            <th class="py-3.5 px-4 font-bold text-left">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rawMasterTbody" class="divide-y divide-outline-variant/60 text-sm">
+                        <!-- Dynamic Raw Items Rows Rendered Here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+
+<!-- ADD RAW MATERIAL ITEM MODAL -->
+<div id="addRawItemModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">add_box</span>
+                <span>إضافة صنف مادة خام جديدة (Add Raw Item)</span>
+            </h3>
+            <button onclick="closeAddRawItemModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اسم الخام *</label>
+                    <input id="newRawName" type="text" placeholder="مثال: رمان فريش صنف سكري" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">كود الخام *</label>
+                    <input id="newRawCode" type="text" value="RAW-PMG-009" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">التصنيف *</label>
+                    <select id="newRawCategory" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="فواكه مجمدة">فواكه مجمدة</option>
+                        <option value="خضار مجمد">خضار مجمد</option>
+                        <option value="محاصيل فرز">محاصيل فرز</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">وحدة القياس *</label>
+                    <select id="newRawUnit" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="KG">كيلو جرام (KG)</option>
+                        <option value="TON">طن (TON)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المحطة الرئيسية *</label>
+                    <select id="newRawStation" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="المخزن الرئيسي">المخزن الرئيسي</option>
+                        <option value="محطة النخيل للتجهيز">محطة النخيل للتجهيز</option>
+                        <option value="محطة السلام للتعبئة">محطة السلام للتعبئة</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">الحد الأدنى للأمان (KG) *</label>
+                    <input id="newRawMinStock" type="number" value="10000" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">متوسط التكلفة (EGP/KG) *</label>
+                    <input id="newRawDefaultCost" type="number" value="28" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-variant border-t flex justify-between items-center">
+            <button onclick="closeAddRawItemModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveAddRawItem()" class="px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">حفظ صنف الخام</button>
+        </div>
+    </div>
+</div>
+
+<!-- RECEIVE RAW SHIPMENT MODAL (استلام توريد خام من مورد) -->
+<div id="receiveRawModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-primary/10 text-primary flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <span class="material-symbols-outlined">download</span>
+                    <span>تسجيل إذن استلام توريد مادة خام (Receive Raw Material)</span>
+                </h3>
+                <p class="text-xs text-primary/80 mt-0.5">زيادة رصيد الخام وتخصيص الحصة باسم المورد مع توليد المستحق المالي</p>
+            </div>
+            <button onclick="closeReceiveRawModal()" class="text-primary hover:opacity-80"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اختر المادة الخام *</label>
+                    <select id="recRawId" onchange="onReceiveRawItemChanged()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المورد الشاحن / الحائز *</label>
+                    <select id="recRawSupplier" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary">
+                        <option value="مزارع النيل">مزارع النيل</option>
+                        <option value="الشركة الزراعية">الشركة الزراعية</option>
+                        <option value="محصول الوادي">محصول الوادي</option>
+                        <option value="خير البلد للتوريدات">خير البلد للتوريدات</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">الكمية الموردة (KG) *</label>
+                    <input id="recRawQty" type="number" value="10000" oninput="calculateReceiveRawTotalVal()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">سعر الكيلو (EGP/KG) *</label>
+                    <input id="recRawUnitPrice" type="number" value="28" oninput="calculateReceiveRawTotalVal()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div class="bg-surface p-2.5 rounded-xl border flex flex-col justify-center">
+                    <span class="text-[10px] text-on-surface-variant block text-sm">إجمالي المشتريات:</span>
+                    <strong id="recRawTotalDisplay" class="text-sm font-bold font-['IBM_Plex_Sans'] text-primary">280,000 EGP</strong>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المخزن / المحطة المستلمة *</label>
+                    <select id="recRawDestination" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="محطة النخيل للتجهيز">محطة النخيل للتجهيز</option>
+                        <option value="محطة السلام للتعبئة">محطة السلام للتعبئة</option>
+                        <option value="المخزن الرئيسي">المخزن الرئيسي</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رقم إذن الاستلام / الفاتورة *</label>
+                    <input id="recRawInvoiceNo" type="text" value="REC-RAW-2026-908" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ الاستلام *</label>
+                    <input id="recRawDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">ملاحظات الفحص والجودة</label>
+                <input id="recRawNotes" type="text" placeholder="نسبة السكريات ومطابقة مواصفات الفرز ممتاز..." class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-variant border-t flex justify-between items-center">
+            <button onclick="closeReceiveRawModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveReceiveRaw()" class="px-6 py-2.5 bg-primary/10 text-primary font-bold text-xs rounded-xl shadow-md hover:bg-primary hover:text-white transition-all">تأكيد الاستلام وتخصيص الملكية</button>
+        </div>
+    </div>
+</div>
+
+<!-- WITHDRAW RAW MATERIAL FOR PROCESSING MODAL (سحب للتشغيل مع تخصيص الموردين) -->
+<div id="withdrawRawModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">outbound</span>
+                    <span>سحب مواد خام للتشغيل وتخصيص الموردين (Withdraw Raw Stock)</span>
+                </h3>
+                <p class="text-xs text-outline mt-0.5">سحب خام لخط التدوير والإنتاج وتحديد خصم الكمية من حصص الموردين</p>
+            </div>
+            <button onclick="closeWithdrawRawModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اختر المادة الخام المراد سحبها *</label>
+                    <select id="wthRawId" onchange="onWithdrawRawItemChanged()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">إجمالي الكمية المراد سحبها (KG) *</label>
+                    <input id="wthTotalQty" type="number" value="5000" oninput="updateWithdrawAllocations()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">عملية التدوير المرتبطة (Operation Ref) *</label>
+                    <input id="wthOpRef" type="text" value="PR-2026-0089" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">محطة التشغيل (الوجهة) *</label>
+                    <select id="wthStation" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary">
+                        <option value="محطة النخيل للتجهيز">محطة النخيل للتجهيز</option>
+                        <option value="محطة السلام للتعبئة">محطة السلام للتعبئة</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ السحب *</label>
+                    <input id="wthDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+
+            <!-- SUPPLIER OWNERSHIP ALLOCATION WIDGET -->
+            <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-3">
+                <div class="flex justify-between items-center">
+                    <h4 class="font-bold text-primary text-xs flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-base">account_tree</span>
+                        <span>تخصيص الخصم من أرصدة الموردين (Supplier Ownership Breakdown)</span>
+                    </h4>
+                    <span id="wthAllocSummary" class="text-xs font-bold font-['IBM_Plex_Sans'] text-primary">مخصص: 5,000 / 5,000 KG</span>
+                </div>
+                <div id="wthSuppliersContainer" class="space-y-2">
+                    <!-- Dynamic Supplier Allocation Rows -->
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-variant border-t flex justify-between items-center">
+            <button onclick="closeWithdrawRawModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveWithdrawRaw()" class="px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">تأكيد السحب وتخصيص الموردين</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT RAW ITEM MODAL -->
+<div id="editRawItemModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">edit</span>
+                <span>تعديل بيانات صنف الخام (Edit Raw Item)</span>
+            </h3>
+            <button onclick="closeEditRawItemModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <input type="hidden" id="editRawId"/>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اسم الخام *</label>
+                    <input id="editRawName" type="text" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">كود الخام *</label>
+                    <input id="editRawCode" type="text" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">التصنيف *</label>
+                    <select id="editRawCategory" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="فواكه مجمدة">فواكه مجمدة</option>
+                        <option value="خضار مجمد">خضار مجمد</option>
+                        <option value="محاصيل فرز">محاصيل فرز</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">وحدة القياس *</label>
+                    <select id="editRawUnit" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="KG">كيلو جرام (KG)</option>
+                        <option value="TON">طن (TON)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المحطة الرئيسية *</label>
+                    <select id="editRawStation" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="المخزن الرئيسي">المخزن الرئيسي</option>
+                        <option value="محطة النخيل للتجهيز">محطة النخيل للتجهيز</option>
+                        <option value="محطة السلام للتعبئة">محطة السلام للتعبئة</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">الحد الأدنى للأمان (KG) *</label>
+                    <input id="editRawMinStock" type="number" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">متوسط التكلفة (EGP/KG) *</label>
+                    <input id="editRawAvgCost" type="number" step="0.01" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-variant border-t flex justify-between items-center">
+            <button onclick="closeEditRawItemModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveEditRawItem()" class="px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">حفظ التعديلات</button>
+        </div>
+    </div>
+</div>
+
+<!-- STOCK ADJUSTMENT / SPOILAGE MODAL (إذن تسوية مخزنية / هالك) -->
+<div id="adjustRawModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-amber-800 text-white flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <span class="material-symbols-outlined">tune</span>
+                    <span>تسجيل إذن تسوية / فرز وهالك خام (Raw Stock Adjustment)</span>
+                </h3>
+                <p class="text-xs text-amber-100 mt-0.5">استبعاد التالف وهالك الفرز أو تسوية الجرد الفعلي للمحصول</p>
+            </div>
+            <button onclick="closeAdjustRawModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اختر المادة الخام *</label>
+                    <select id="adjRawId" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">نوع التسوية *</label>
+                    <select id="adjRawType" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary">
+                        <option value="هالك فرز">خصم هالك / استبعاد فرز (-)</option>
+                        <option value="تسوية سلبية">تسوية جردية بالسالب (-)</option>
+                        <option value="تسوية إيجابية">تسوية جردية بالموجب (+)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface text-sm">الكمية (KG) *</label>
+                    <input id="adjRawQty" type="number" value="500" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الموقع المعني *</label>
+                    <select id="adjRawLocation" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="محطة النخيل للتجهيز">محطة النخيل للتجهيز</option>
+                        <option value="محطة السلام للتعبئة">محطة السلام للتعبئة</option>
+                        <option value="المخزن الرئيسي">المخزن الرئيسي</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">سبب التسوية *</label>
+                    <select id="adjRawReason" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="هالك فرز وتجهيز">هالك فرز وتجهيز</option>
+                        <option value="ثمار غير مطابقة">ثمار غير مطابقة</option>
+                        <option value="فرق جرد فلي">فرق جرد فعلي</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رقم الإذن المرجعي *</label>
+                    <input id="adjRawReference" type="text" value="ADJ-RAW-2026-04" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-['IBM_Plex_Sans'] focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ التسوية *</label>
+                    <input id="adjRawDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-variant border-t flex justify-between items-center">
+            <button onclick="closeAdjustRawModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveAdjustRaw()" class="px-6 py-2.5 bg-amber-800 text-white font-bold text-xs rounded-xl shadow-md hover:bg-amber-900 transition-all">تأكيد إذن التسوية</button>
+        </div>
+    </div>
+</div>
+
+<!-- 5. RAW ITEM DETAILS DRAWER WORKSPACE -->
+<div id="rawItemDetailsDrawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end hidden">
+    <div class="bg-surface w-full max-w-4xl h-full flex flex-col shadow-2xl overflow-hidden border-r border-outline-variant">
+        <!-- Drawer Header -->
+        <div class="p-5 bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg border border-primary-fixed-dim">
+                    <span id="drawerRawInitials">ف</span>
+                </div>
+                <div>
+                    <h3 id="drawerRawName" class="text-xl font-bold">فراولة فريش صنف A</h3>
+                    <p id="drawerRawSubtitle" class="text-xs text-outline">RAW-STW-001 • تصنيف: فواكه مجمدة • المحطة الرئيسية: محطة النخيل</p>
+                </div>
+            </div>
+            <button onclick="closeRawDrawer()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Drawer Body -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-6 text-xs">
+            
+            <!-- BASIC INFORMATION SECTION -->
+            <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-3">
+                <h4 class="font-bold text-primary text-sm border-b pb-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">info</span>
+                    <span>1. البيانات الأساسية وتكلفة الخام</span>
+                </h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 font-['IBM_Plex_Sans']">
+                    <div>
+                        <span class="text-on-surface-variant block text-sm">الوحدة:</span>
+                        <strong id="dRawUnit" class="text-sm font-bold text-on-surface">KG</strong>
+                    </div>
+                    <div>
+                        <span class="text-on-surface-variant block text-sm">الحد الأدنى للأمان:</span>
+                        <strong id="dRawMinStock" class="text-sm font-bold text-amber-800">10,000 KG</strong>
+                    </div>
+                    <div>
+                        <span class="text-on-surface-variant block text-sm">متوسط تكلفة الكيلو:</span>
+                        <strong id="dRawAvgCost" class="text-sm font-bold text-primary">28.50 EGP</strong>
+                    </div>
+                    <div>
+                        <span class="text-on-surface-variant block text-sm">إجمالي قيمة المخزون:</span>
+                        <strong id="dRawStockVal" class="text-sm font-bold text-primary">555,750 EGP</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUPPLIER OWNERSHIP BREAKDOWN SECTION -->
+            <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-3">
+                <h4 class="font-bold text-primary text-sm border-b pb-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">account_tree</span>
+                    <span>2. توزيع حيازة الملكية حسب المورد (Supplier Ownership)</span>
+                </h4>
+                <div id="dRawSupplierOwnershipContent" class="space-y-2">
+                    <!-- Dynamic Supplier Ownership Cards -->
+                </div>
+            </div>
+
+            <!-- STOCK MOVEMENT HISTORY SECTION -->
+            <div class="space-y-3">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <h4 class="font-bold text-primary text-sm flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">history</span>
+                        <span>3. سجل حركة الخام والتخصيص (Stock Movement Log)</span>
+                    </h4>
+                    <div class="flex items-center gap-1 bg-surface-variant p-1 rounded-lg text-[11px] font-bold">
+                        <button onclick="filterDrawerRawMovements('all')" id="btnRawMovFilterAll" class="px-2.5 py-1 rounded bg-primary text-white transition-all">الكل</button>
+                        <button onclick="filterDrawerRawMovements('توريد')" id="btnRawMovFilterRec" class="px-2.5 py-1 rounded text-on-surface-variant hover:bg-surface-variant transition-all">توريد</button>
+                        <button onclick="filterDrawerRawMovements('سحب')" id="btnRawMovFilterWth" class="px-2.5 py-1 rounded text-on-surface-variant hover:bg-surface-variant transition-all">سحب تشغيل</button>
+                        <button onclick="filterDrawerRawMovements('تسوية')" id="btnRawMovFilterAdj" class="px-2.5 py-1 rounded text-on-surface-variant hover:bg-surface-variant transition-all">تسوية / هالك</button>
+                    </div>
+                </div>
+                <div class="border rounded-xl overflow-hidden bg-surface">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-surface-variant font-bold text-on-surface-variant">
+                            <tr>
+                                <th class="p-2.5">التاريخ</th>
+                                <th class="p-2.5">نوع الحركة</th>
+                                <th class="p-2.5">الكمية (KG)</th>
+                                <th class="p-2.5">سعر الكيلو</th>
+                                <th class="p-2.5">الموقع / المحطة</th>
+                                <th class="p-2.5">الجهة / المرجع</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dRawMovementsTbody" class="divide-y divide-outline-variant/60 font-['IBM_Plex_Sans']">
+                            <!-- Dynamic Movement Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-outline-variant bg-surface-variant flex flex-wrap justify-between items-center gap-3 shrink-0">
+            <div id="drawerRawStatusBadge"></div>
+            <div class="flex items-center gap-2">
+                <button onclick="deleteActiveRawItem()" class="px-3 py-2 bg-red-100 text-red-800 font-bold text-xs rounded-xl hover:bg-red-200 transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                    <span>حذف الصنف</span>
+                </button>
+                <button onclick="openEditRawItemModal(activeDrawerRaw.id)" class="px-3.5 py-2 bg-surface border border-outline-variant text-on-surface font-bold text-xs rounded-xl hover:bg-surface-variant transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                    <span>تعديل البيانات</span>
+                </button>
+                <button onclick="openWithdrawRawModal(); closeRawDrawer();" class="px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-xl shadow hover:bg-primary-container transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">outbound</span>
+                    <span>سحب للتشغيل</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT MOCK STATE & LOGIC -->
+
+<script>
+const DEFAULT_RAW_MATERIALS = [
+    {
+        id: "RAW-001",
+        code: "RAW-STW-001",
+        name: "فراولة فريش صنف A",
+        category: "فواكه مجمدة",
+        unit: "KG",
+        totalStockKg: 19500,
+        minStockKg: 10000,
+        avgCost: 28.50,
+        primaryStation: "محطة النخيل للتجهيز",
+        status: "متوفر",
+        suppliers: [
+            { name: "مزارع النيل", qty: 10000 },
+            { name: "الشركة الزراعية", qty: 7000 },
+            { name: "محصول الوادي", qty: 2500 }
+        ],
+        movements: [
+            { date: "2026-08-23", type: "توريد خام", qty: 10000, unitCost: 28.50, location: "محطة النخيل", ref: "REC-RAW-901 (مزارع النيل)" },
+            { date: "2026-08-22", type: "سحب تشغيل", qty: 5000, unitCost: 28.50, location: "محطة النخيل", ref: "PR-2026-0080" }
+        ]
+    },
+    {
+        id: "RAW-002",
+        code: "RAW-MNG-042",
+        name: "مانجو كيت فريش للفرز",
+        category: "فواكه مجمدة",
+        unit: "KG",
+        totalStockKg: 38200,
+        minStockKg: 15000,
+        avgCost: 35.00,
+        primaryStation: "محطة السلام للتعبئة",
+        status: "متوفر",
+        suppliers: [
+            { name: "الشركة الزراعية", qty: 20000 },
+            { name: "خير البلد للتوريدات", qty: 18200 }
+        ],
+        movements: [
+            { date: "2026-08-21", type: "توريد خام", qty: 20000, unitCost: 35.00, location: "محطة السلام", ref: "REC-RAW-850" }
+        ]
+    },
+    {
+        id: "RAW-003",
+        code: "RAW-PMG-011",
+        name: "رمان فريش صنف سكري",
+        category: "فواكه مجمدة",
+        unit: "KG",
+        totalStockKg: 12000,
+        minStockKg: 10000,
+        avgCost: 22.00,
+        primaryStation: "محطة المدينة للتجميد",
+        status: "متوفر",
+        suppliers: [
+            { name: "محصول الوادي", qty: 12000 }
+        ],
+        movements: [
+            { date: "2026-08-20", type: "توريد خام", qty: 12000, unitCost: 22.00, location: "محطة المدينة", ref: "REC-RAW-810" }
+        ]
+    },
+    {
+        id: "RAW-004",
+        code: "RAW-OK-005",
+        name: "بامية فريش ممتازة",
+        category: "خضار مجمد",
+        unit: "KG",
+        totalStockKg: 4500,
+        minStockKg: 8000,
+        avgCost: 25.00,
+        primaryStation: "محطة النخيل للتجهيز",
+        status: "منخفض",
+        suppliers: [
+            { name: "مزارع النيل", qty: 4500 }
+        ],
+        movements: [
+            { date: "2026-08-19", type: "سحب تشغيل", qty: 3000, unitCost: 25.00, location: "محطة النخيل", ref: "PR-2026-0066" }
+        ]
+    },
+    {
+        id: "RAW-005",
+        code: "RAW-PEA-008",
+        name: "بسلة فريش حبة كاملة",
+        category: "خضار مجمد",
+        unit: "KG",
+        totalStockKg: 0,
+        minStockKg: 10000,
+        avgCost: 24.00,
+        primaryStation: "المخزن الرئيسي",
+        status: "نافد",
+        suppliers: [],
+        movements: [
+            { date: "2026-08-18", type: "سحب تشغيل", qty: 8000, unitCost: 24.00, location: "المخزن الرئيسي", ref: "PR-2026-0050" }
+        ]
+    }
+];
+
+let rawMaterialsState = [];
+
+function initRawMaterialsPrototype() {
+    const saved = localStorage.getItem("stitch_frozex_raw_materials_master");
+    if (saved) { try { rawMaterialsState = JSON.parse(saved); } catch(e) { loadDefaultRawData(); } } else { loadDefaultRawData(); }
+    renderRawMaterialsMasterTable();
+    updateRawMaterialsKpis();
+}
+
+function loadDefaultRawData() {
+    rawMaterialsState = JSON.parse(JSON.stringify(DEFAULT_RAW_MATERIALS));
+    saveRawMaterialsState();
+}
+
+function saveRawMaterialsState() {
+    localStorage.setItem("stitch_frozex_raw_materials_master", JSON.stringify(rawMaterialsState));
+}
+
+function resetRawPrototypeData() {
+    if (confirm("إعادة ضبط بيانات مخزون المواد الخام للوضع الافتراضي؟")) {
+        loadDefaultRawData();
+        renderRawMaterialsMasterTable();
+        updateRawMaterialsKpis();
+        showToast("تم إعادة ضبط بيانات المواد الخام بنجاح", "info");
+    }
+}
+
+function updateRawMaterialsKpis() {
+    let totalKg = 0;
+    let totalVal = 0;
+    let activeSuppliersSet = new Set();
+    let monthlyWithdrawn = 112000; // Benchmark aggregated from processing ops
+
+    rawMaterialsState.forEach(r => {
+        totalKg += r.totalStockKg;
+        totalVal += (r.totalStockKg * r.avgCost);
+        if (r.suppliers) {
+            r.suppliers.forEach(s => {
+                if (s.qty > 0) activeSuppliersSet.add(s.name);
+            });
+        }
+        if (r.totalStockKg === 0) r.status = "نافد";
+        else if (r.totalStockKg <= r.minStockKg) r.status = "منخفض";
+        else r.status = "متوفر";
+    });
+
+    document.getElementById("kpiTotalRawKg").innerText = totalKg.toLocaleString();
+    document.getElementById("kpiTotalRawValEgp").innerText = Math.round(totalVal).toLocaleString();
+    document.getElementById("kpiRawItemsCount").innerText = rawMaterialsState.length;
+    document.getElementById("kpiActiveSuppliersCount").innerText = activeSuppliersSet.size || 4;
+    document.getElementById("kpiMonthlyWithdrawnKg").innerText = monthlyWithdrawn.toLocaleString();
+}
+
+function renderRawMaterialsMasterTable() {
+    const tbody = document.getElementById("rawMasterTbody");
+    tbody.innerHTML = "";
+
+    const searchText = (document.getElementById("rawSearchInput")?.value || document.getElementById("topSearchInput")?.value || "").toLowerCase();
+    const filterCat = document.getElementById("filterCategory")?.value || "";
+    const filterSt = document.getElementById("filterStation")?.value || "";
+    const filterSup = document.getElementById("filterSupplier")?.value || "";
+    const sortBy = document.getElementById("sortBy")?.value || "name";
+
+    let filtered = rawMaterialsState.filter(r => {
+        const matchesCat = !filterCat || r.category === filterCat;
+        const matchesSt = !filterSt || r.primaryStation.includes(filterSt);
+        const matchesSup = !filterSup || (r.suppliers && r.suppliers.some(s => s.name.includes(filterSup) && s.qty > 0));
+        const matchesText = r.name.toLowerCase().includes(searchText) || r.code.toLowerCase().includes(searchText) || r.category.toLowerCase().includes(searchText);
+        return matchesCat && matchesSt && matchesSup && matchesText;
+    });
+
+    filtered.sort((a, b) => {
+        if (sortBy === 'stock') return b.totalStockKg - a.totalStockKg;
+        if (sortBy === 'value') return (b.totalStockKg * b.avgCost) - (a.totalStockKg * a.avgCost);
+        return a.name.localeCompare(b.name, 'ar');
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="10" class="p-8 text-center text-on-surface-variant font-medium">
+                    لا توجد مواد خام مطابقة لمعايير البحث والفلترة
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    filtered.forEach(r => {
+        const itemVal = r.totalStockKg * r.avgCost;
+        let badgeStyle = "bg-green-100 text-green-800 font-bold";
+        if (r.status === 'منخفض') badgeStyle = "bg-amber-100 text-amber-800 font-bold";
+        if (r.status === 'نافد') badgeStyle = "bg-red-100 text-red-800 font-bold";
+
+        // Generate supplier breakdown pill previews
+        let supplierPills = `<span class="text-xs text-on-surface-variant font-bold">لا يوجد حصص</span>`;
+        if (r.suppliers && r.suppliers.length > 0) {
+            supplierPills = r.suppliers.map(s => `
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface border border-outline-variant/60 text-[11px] font-bold">
+                    <span>${s.name}:</span>
+                    <span class="font-['IBM_Plex_Sans'] text-primary">${s.qty.toLocaleString()} KG</span>
+                </span>
+            `).join(' ');
+        }
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-surface transition-colors cursor-pointer";
+        tr.onclick = () => openRawDrawer(r.id);
+
+        tr.innerHTML = `
+            <td class="py-3.5 px-4 font-bold text-on-surface">
+                <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-primary text-base">grass</span>
+                    <div>
+                        <div class="font-bold text-sm text-primary">${r.name}</div>
+                        <div class="text-[11px] text-on-surface-variant font-['IBM_Plex_Sans']">${r.code}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="py-3.5 px-4 font-bold font-['IBM_Plex_Sans'] text-xs">${r.code}</td>
+            <td class="py-3.5 px-4 text-xs font-semibold"><span class="bg-surface-variant px-2 py-0.5 rounded font-bold">${r.category}</span></td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] font-bold text-sm ${r.totalStockKg <= r.minStockKg ? 'text-amber-800' : 'text-primary'}">${r.totalStockKg.toLocaleString()} ${r.unit}</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans']">${r.avgCost.toFixed(2)} EGP</td>
+            <td class="py-3.5 px-4 font-['IBM_Plex_Sans'] font-bold text-primary">${Math.round(itemVal).toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4">
+                <div class="flex flex-wrap gap-1 max-w-xs">${supplierPills}</div>
+            </td>
+            <td class="py-3.5 px-4 text-xs font-bold text-on-surface-variant">${r.primaryStation}</td>
+            <td class="py-3.5 px-4 text-center">
+                <span class="inline-block px-2.5 py-1 rounded-full text-xs ${badgeStyle}">${r.status}</span>
+            </td>
+            <td class="py-3.5 px-4 text-left">
+                <div class="flex items-center gap-1 justify-end">
+                    <button onclick="event.stopPropagation(); openRawDrawer('${r.id}')" class="p-1.5 rounded hover:bg-surface-variant text-primary" title="عرض التفاصيل وأرصدة الموردين">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                    <button onclick="event.stopPropagation(); openWithdrawRawForId('${r.id}')" class="p-1.5 rounded hover:bg-primary-container/30 text-primary" title="سحب للتشغيل">
+                        <span class="material-symbols-outlined text-lg">outbound</span>
+                    </button>
+                    <button onclick="event.stopPropagation(); openEditRawItemModal('${r.id}')" class="p-1.5 rounded hover:bg-surface-variant text-primary" title="تعديل صنف الخام">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button onclick="event.stopPropagation(); deleteRawItemById('${r.id}')" class="p-1.5 rounded hover:bg-red-100 text-red-700" title="حذف">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function filterRawMaterialsTable() { renderRawMaterialsMasterTable(); }
+
+function clearAllRawFilters() {
+    if (document.getElementById("rawSearchInput")) document.getElementById("rawSearchInput").value = "";
+    if (document.getElementById("topSearchInput")) document.getElementById("topSearchInput").value = "";
+    if (document.getElementById("filterCategory")) document.getElementById("filterCategory").value = "";
+    if (document.getElementById("filterStation")) document.getElementById("filterStation").value = "";
+    if (document.getElementById("filterSupplier")) document.getElementById("filterSupplier").value = "";
+    if (document.getElementById("sortBy")) document.getElementById("sortBy").value = "name";
+    renderRawMaterialsMasterTable();
+}
+
+// MODALS LOGIC
+function openAddRawItemModal() { document.getElementById("addRawItemModal").classList.remove("hidden"); }
+function closeAddRawItemModal() { document.getElementById("addRawItemModal").classList.add("hidden"); }
+function confirmSaveAddRawItem() {
+    const name = document.getElementById("newRawName").value.trim();
+    const code = document.getElementById("newRawCode").value.trim();
+
+    if (!name) { showToast("أدخل اسم المادة الخام", "error"); return; }
+
+    rawMaterialsState.unshift({
+        id: code || ("RAW-00" + (rawMaterialsState.length + 1)),
+        code: code || ("RAW-00" + (rawMaterialsState.length + 1)),
+        name: name,
+        category: document.getElementById("newRawCategory").value,
+        unit: document.getElementById("newRawUnit").value,
+        totalStockKg: 0,
+        minStockKg: parseFloat(document.getElementById("newRawMinStock").value) || 10000,
+        avgCost: parseFloat(document.getElementById("newRawDefaultCost").value) || 25,
+        primaryStation: document.getElementById("newRawStation").value,
+        status: "نافد",
+        suppliers: [],
+        movements: []
+    });
+
+    saveRawMaterialsState();
+    renderRawMaterialsMasterTable();
+    updateRawMaterialsKpis();
+    closeAddRawItemModal();
+    showToast(`تم حفظ صنف الخام الجديد ${name} بنجاح!`, "success");
+}
+
+function openReceiveRawModal() {
+    populateRawDropdowns();
+    document.getElementById("receiveRawModal").classList.remove("hidden");
+    calculateReceiveRawTotalVal();
+}
+function closeReceiveRawModal() { document.getElementById("receiveRawModal").classList.add("hidden"); }
+
+function populateRawDropdowns() {
+    const recSelect = document.getElementById("recRawId");
+    const wthSelect = document.getElementById("wthRawId");
+    const adjSelect = document.getElementById("adjRawId");
+    if (recSelect) recSelect.innerHTML = "";
+    if (wthSelect) wthSelect.innerHTML = "";
+    if (adjSelect) adjSelect.innerHTML = "";
+
+    rawMaterialsState.forEach(r => {
+        if (recSelect) {
+            const opt = document.createElement("option");
+            opt.value = r.id;
+            opt.innerText = `${r.name} (${r.code})`;
+            recSelect.appendChild(opt);
+        }
+        if (wthSelect) {
+            const opt = document.createElement("option");
+            opt.value = r.id;
+            opt.innerText = `${r.name} (متاح: ${r.totalStockKg.toLocaleString()} KG)`;
+            wthSelect.appendChild(opt);
+        }
+        if (adjSelect) {
+            const opt = document.createElement("option");
+            opt.value = r.id;
+            opt.innerText = `${r.name} (${r.code} - رصيد: ${r.totalStockKg.toLocaleString()} KG)`;
+            adjSelect.appendChild(opt);
+        }
+    });
+}
+
+function onReceiveRawItemChanged() {
+    const rId = document.getElementById("recRawId").value;
+    const item = rawMaterialsState.find(r => r.id === rId);
+    if (item) {
+        document.getElementById("recRawUnitPrice").value = item.avgCost;
+    }
+    calculateReceiveRawTotalVal();
+}
+
+function calculateReceiveRawTotalVal() {
+    const q = parseFloat(document.getElementById("recRawQty").value) || 0;
+    const p = parseFloat(document.getElementById("recRawUnitPrice").value) || 0;
+    document.getElementById("recRawTotalDisplay").innerText = (q * p).toLocaleString() + " EGP";
+}
+
+function confirmSaveReceiveRaw() {
+    const rId = document.getElementById("recRawId").value;
+    const supName = document.getElementById("recRawSupplier").value;
+    const qty = parseFloat(document.getElementById("recRawQty").value) || 0;
+    const price = parseFloat(document.getElementById("recRawUnitPrice").value) || 0;
+    const dest = document.getElementById("recRawDestination").value;
+    const ref = document.getElementById("recRawInvoiceNo").value || "REC-RAW-990";
+    const date = document.getElementById("recRawDate").value;
+
+    if (qty <= 0) { showToast("أدخل كمية توريد خام أكبر من صفر", "error"); return; }
+
+    const item = rawMaterialsState.find(r => r.id === rId);
+    if (item) {
+        // Recalculate Stock & Avg Cost
+        const oldVal = item.totalStockKg * item.avgCost;
+        const newVal = qty * price;
+        item.totalStockKg += qty;
+        item.avgCost = item.totalStockKg > 0 ? (oldVal + newVal) / item.totalStockKg : price;
+
+        // Allocate to Supplier Ownership
+        if (!item.suppliers) item.suppliers = [];
+        let sObj = item.suppliers.find(s => s.name === supName);
+        if (sObj) sObj.qty += qty;
+        else item.suppliers.push({ name: supName, qty: qty });
+
+        // Record Movement
+        item.movements.unshift({
+            date: date,
+            type: "توريد خام",
+            qty: qty,
+            unitCost: price,
+            location: dest,
+            ref: `${ref} (${supName})`
+        });
+    }
+
+    saveRawMaterialsState();
+    renderRawMaterialsMasterTable();
+    updateRawMaterialsKpis();
+    closeReceiveRawModal();
+    showToast(`تم استلام وتسجيل توريد ${qty.toLocaleString()} كجم خام بنجاح وتخصيص الملكية لـ ${supName}!`, "success");
+}
+
+function openWithdrawRawModal() {
+    populateRawDropdowns();
+    document.getElementById("withdrawRawModal").classList.remove("hidden");
+    onWithdrawRawItemChanged();
+}
+function openWithdrawRawForId(rId) {
+    openWithdrawRawModal();
+    document.getElementById("wthRawId").value = rId;
+    onWithdrawRawItemChanged();
+}
+function closeWithdrawRawModal() { document.getElementById("withdrawRawModal").classList.add("hidden"); }
+
+function onWithdrawRawItemChanged() {
+    const rId = document.getElementById("wthRawId").value;
+    const item = rawMaterialsState.find(r => r.id === rId);
+    const container = document.getElementById("wthSuppliersContainer");
+    container.innerHTML = "";
+
+    if (item && item.suppliers && item.suppliers.length > 0) {
+        item.suppliers.forEach((s, idx) => {
+            const row = document.createElement("div");
+            row.className = "flex items-center gap-3 bg-surface p-2.5 rounded-xl border border-outline-variant/60";
+            row.innerHTML = `
+                <div class="flex-1 font-bold text-xs text-on-surface">
+                    <div>${s.name}</div>
+                    <div class="text-[11px] font-normal text-on-surface-variant font-['IBM_Plex_Sans']">الرصيد المتاح للمورد: ${s.qty.toLocaleString()} KG</div>
+                </div>
+                <div class="w-36">
+                    <input id="wthSupAlloc_${idx}" data-supname="${s.name}" data-avail="${s.qty}" type="number" value="${Math.min(s.qty, 2500)}" oninput="updateWithdrawAllocations()" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-xs font-bold font-['IBM_Plex_Sans'] text-primary focus:border-primary"/>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    } else {
+        container.innerHTML = `<div class="p-3 text-center text-on-surface-variant">لا توجد حصص مخصصة لموردين على هذا الخام</div>`;
+    }
+
+    updateWithdrawAllocations();
+}
+
+function updateWithdrawAllocations() {
+    const totalReq = parseFloat(document.getElementById("wthTotalQty").value) || 0;
+    const inputs = document.querySelectorAll("[id^='wthSupAlloc_']");
+    let totalAlloc = 0;
+
+    inputs.forEach(inp => {
+        totalAlloc += (parseFloat(inp.value) || 0);
+    });
+
+    const summaryEl = document.getElementById("wthAllocSummary");
+    if (summaryEl) {
+        summaryEl.innerText = `مخصص: ${totalAlloc.toLocaleString()} / ${totalReq.toLocaleString()} KG`;
+        summaryEl.className = totalAlloc === totalReq ? "text-xs font-bold font-['IBM_Plex_Sans'] text-green-700" : "text-xs font-bold font-['IBM_Plex_Sans'] text-amber-800";
+    }
+}
+
+function confirmSaveWithdrawRaw() {
+    const rId = document.getElementById("wthRawId").value;
+    const totalReq = parseFloat(document.getElementById("wthTotalQty").value) || 0;
+    const opRef = document.getElementById("wthOpRef").value || "PR-000";
+    const dest = document.getElementById("wthStation").value;
+    const date = document.getElementById("wthDate").value;
+
+    const item = rawMaterialsState.find(r => r.id === rId);
+    if (!item) return;
+
+    if (totalReq <= 0) { showToast("أدخل كمية سحب أكبر من صفر", "error"); return; }
+    if (totalReq > item.totalStockKg) {
+        showToast(`خطأ: الكمية المطلوبة للسحب (${totalReq}) تتجاوز إجمالي الرصيد المتاح (${item.totalStockKg} KG)!`, "error");
+        return;
+    }
+
+    // Process Supplier Allocations
+    const inputs = document.querySelectorAll("[id^='wthSupAlloc_']");
+    let totalAlloc = 0;
+    let allocDetails = [];
+
+    inputs.forEach(inp => {
+        const supName = inp.getAttribute("data-supname");
+        const avail = parseFloat(inp.getAttribute("data-avail")) || 0;
+        const amt = parseFloat(inp.value) || 0;
+
+        if (amt > avail) {
+            showToast(`خطأ: تخصيص المورد ${supName} (${amt}) يتجاوز رصيده المتاح (${avail})`, "error");
+            return;
+        }
+
+        if (amt > 0) {
+            totalAlloc += amt;
+            let sObj = item.suppliers.find(s => s.name === supName);
+            if (sObj) sObj.qty = Math.max(0, sObj.qty - amt);
+            allocDetails.push(`${supName}: ${amt}`);
+        }
+    });
+
+    item.totalStockKg -= totalAlloc;
+
+    item.movements.unshift({
+        date: date,
+        type: "سحب تشغيل",
+        qty: totalAlloc,
+        unitCost: item.avgCost,
+        location: dest,
+        ref: `${opRef} (${allocDetails.join(', ')})`
+    });
+
+    saveRawMaterialsState();
+    renderRawMaterialsMasterTable();
+    updateRawMaterialsKpis();
+    closeWithdrawRawModal();
+    showToast(`تم سحب ${totalAlloc.toLocaleString()} كجم خام وتسجيلها لخط التشغيل ${opRef} بنجاح!`, "success");
+}
+
+// EDIT RAW ITEM MODAL LOGIC
+function openEditRawItemModal(rId) {
+    const r = rawMaterialsState.find(item => item.id === rId);
+    if (!r) return;
+    document.getElementById("editRawId").value = r.id;
+    document.getElementById("editRawName").value = r.name;
+    document.getElementById("editRawCode").value = r.code;
+    document.getElementById("editRawCategory").value = r.category;
+    document.getElementById("editRawUnit").value = r.unit;
+    document.getElementById("editRawStation").value = r.primaryStation;
+    document.getElementById("editRawMinStock").value = r.minStockKg;
+    document.getElementById("editRawAvgCost").value = r.avgCost;
+
+    document.getElementById("editRawItemModal").classList.remove("hidden");
+}
+function closeEditRawItemModal() { document.getElementById("editRawItemModal").classList.add("hidden"); }
+
+function confirmSaveEditRawItem() {
+    const rId = document.getElementById("editRawId").value;
+    const name = document.getElementById("editRawName").value.trim();
+    const code = document.getElementById("editRawCode").value.trim();
+
+    if (!name) { showToast("أدخل اسم الخام", "error"); return; }
+
+    const item = rawMaterialsState.find(r => r.id === rId);
+    if (item) {
+        item.name = name;
+        item.code = code || item.code;
+        item.category = document.getElementById("editRawCategory").value;
+        item.unit = document.getElementById("editRawUnit").value;
+        item.primaryStation = document.getElementById("editRawStation").value;
+        item.minStockKg = parseFloat(document.getElementById("editRawMinStock").value) || item.minStockKg;
+        item.avgCost = parseFloat(document.getElementById("editRawAvgCost").value) || item.avgCost;
+    }
+
+    saveRawMaterialsState();
+    renderRawMaterialsMasterTable();
+    updateRawMaterialsKpis();
+    closeEditRawItemModal();
+    if (activeDrawerRaw && activeDrawerRaw.id === rId) openRawDrawer(rId);
+    showToast(`تم تحديث بيانات الخام ${name} بنجاح!`, "success");
+}
+
+// STOCK ADJUSTMENT MODAL LOGIC (إذن تسوية مخزنية / فرز وهالك)
+function openAdjustRawModal() {
+    populateRawDropdowns();
+    document.getElementById("adjustRawModal").classList.remove("hidden");
+}
+function closeAdjustRawModal() { document.getElementById("adjustRawModal").classList.add("hidden"); }
+
+function confirmSaveAdjustRaw() {
+    const rId = document.getElementById("adjRawId").value;
+    const adjType = document.getElementById("adjRawType").value;
+    const qty = parseFloat(document.getElementById("adjRawQty").value) || 0;
+    const loc = document.getElementById("adjRawLocation").value;
+    const reason = document.getElementById("adjRawReason").value;
+    const ref = document.getElementById("adjRawReference").value || "ADJ-RAW-01";
+    const date = document.getElementById("adjRawDate").value;
+
+    const item = rawMaterialsState.find(r => r.id === rId);
+    if (!item) return;
+
+    if (qty <= 0) { showToast("أدخل كمية تسوية أكبر من صفر", "error"); return; }
+
+    if (adjType.includes("هالك") || adjType === "تسوية سلبية") {
+        if (qty > item.totalStockKg) {
+            showToast(`خطأ: كمية الاستبعاد (${qty}) تتجاوز الرصيد الحالي (${item.totalStockKg} KG)!`, "error");
+            return;
+        }
+        item.totalStockKg -= qty;
+    } else {
+        item.totalStockKg += qty;
+    }
+
+    item.movements.unshift({
+        date: date,
+        type: adjType,
+        qty: qty,
+        unitCost: item.avgCost,
+        location: loc,
+        ref: `${ref} (${reason})`
+    });
+
+    saveRawMaterialsState();
+    renderRawMaterialsMasterTable();
+    updateRawMaterialsKpis();
+    closeAdjustRawModal();
+    showToast(`تم تسجيل إذن التسوية / الاستبعاد (${adjType}) بمقدار ${qty.toLocaleString()} KG بنجاح!`, "success");
+}
+
+// DELETE RAW ITEM
+function deleteRawItemById(rId) {
+    const r = rawMaterialsState.find(item => item.id === rId);
+    if (!r) return;
+    if (confirm(`هل أنت تأكد من رغبتك في حذف صنف الخام "${r.name}" (${r.code})؟`)) {
+        rawMaterialsState = rawMaterialsState.filter(item => item.id !== rId);
+        saveRawMaterialsState();
+        renderRawMaterialsMasterTable();
+        updateRawMaterialsKpis();
+        if (activeDrawerRaw && activeDrawerRaw.id === rId) closeRawDrawer();
+        showToast("تم حذف صنف المواد الخام بنجاح", "info");
+    }
+}
+function deleteActiveRawItem() {
+    if (activeDrawerRaw) deleteRawItemById(activeDrawerRaw.id);
+}
+
+// EXPORT TO CSV
+function exportRawCSV() {
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+    csvContent += "كود الخام,اسم المادة الخام,التصنيف,الوحدة,إجمالي الرصيد (KG),الحد الأدنى,متوسط التكلفة,إجمالي القيمة,المحطة الرئيسية,الحالة\n";
+
+    rawMaterialsState.forEach(r => {
+        const val = Math.round(r.totalStockKg * r.avgCost);
+        const row = [
+            `"${r.code}"`,
+            `"${r.name}"`,
+            `"${r.category}"`,
+            `"${r.unit}"`,
+            r.totalStockKg,
+            r.minStockKg,
+            r.avgCost.toFixed(2),
+            val,
+            `"${r.primaryStation}"`,
+            `"${r.status}"`
+        ];
+        csvContent += row.join(",") + "\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `raw_materials_inventory_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("تم تصدير ملف CSV للمواد الخام بنجاح!", "success");
+}
+
+// RAW ITEM DETAILS DRAWER WORKSPACE
+let activeDrawerRaw = null;
+let activeDrawerRawMovFilter = 'all';
+
+function openRawDrawer(rId) {
+    activeDrawerRaw = rawMaterialsState.find(r => r.id === rId);
+    if (!activeDrawerRaw) return;
+
+    const r = activeDrawerRaw;
+    document.getElementById("drawerRawInitials").innerText = r.name.substring(0, 2);
+    document.getElementById("drawerRawName").innerText = r.name;
+    document.getElementById("drawerRawSubtitle").innerText = `${r.code} • تصنيف: ${r.category} • المحطة الرئيسية: ${r.primaryStation}`;
+
+    document.getElementById("dRawUnit").innerText = r.unit;
+    document.getElementById("dRawMinStock").innerText = `${r.minStockKg.toLocaleString()} ${r.unit}`;
+    document.getElementById("dRawAvgCost").innerText = `${r.avgCost.toFixed(2)} EGP`;
+    document.getElementById("dRawStockVal").innerText = `${Math.round(r.totalStockKg * r.avgCost).toLocaleString()} EGP`;
+
+    let badgeStyle = "bg-green-100 text-green-800 font-bold";
+    if (r.status === 'منخفض') badgeStyle = "bg-amber-100 text-amber-800 font-bold";
+    if (r.status === 'نافد') badgeStyle = "bg-red-100 text-red-800 font-bold";
+    document.getElementById("drawerRawStatusBadge").innerHTML = `<span class="px-3 py-1 rounded-full text-xs ${badgeStyle}">الحالة: ${r.status}</span>`;
+
+    // Render Supplier Ownership Cards
+    const supContainer = document.getElementById("dRawSupplierOwnershipContent");
+    supContainer.innerHTML = "";
+    if (r.suppliers && r.suppliers.length > 0) {
+        r.suppliers.forEach(s => {
+            const pct = r.totalStockKg > 0 ? Math.round((s.qty / r.totalStockKg) * 100) : 0;
+            const card = document.createElement("div");
+            card.className = "bg-surface p-3 rounded-xl border border-outline-variant/60 flex flex-col gap-1.5";
+            card.innerHTML = `
+                <div class="flex justify-between items-center text-xs">
+                    <strong class="text-primary font-bold">${s.name}</strong>
+                    <span class="font-['IBM_Plex_Sans'] font-bold text-primary">${s.qty.toLocaleString()} KG (${pct}%)</span>
+                </div>
+                <div class="w-full bg-surface-variant h-2 rounded-full overflow-hidden">
+                    <div class="bg-primary h-full rounded-full" style="width: ${pct}%"></div>
+                </div>
+            `;
+            supContainer.appendChild(card);
+        });
+    } else {
+        supContainer.innerHTML = `<div class="p-3 text-center text-on-surface-variant">لا توجد حصص مخصصة لموردين حالياً</div>`;
+    }
+
+    renderDrawerRawMovementsTable();
+    document.getElementById("rawItemDetailsDrawer").classList.remove("hidden");
+}
+
+function filterDrawerRawMovements(type) {
+    activeDrawerRawMovFilter = type;
+    const btnIds = { 'all': 'btnRawMovFilterAll', 'توريد': 'btnRawMovFilterRec', 'سحب': 'btnRawMovFilterWth', 'تسوية': 'btnRawMovFilterAdj' };
+    Object.keys(btnIds).forEach(k => {
+        const btn = document.getElementById(btnIds[k]);
+        if (btn) {
+            if (k === type) {
+                btn.className = "px-2.5 py-1 rounded bg-primary text-white transition-all";
+            } else {
+                btn.className = "px-2.5 py-1 rounded text-on-surface-variant hover:bg-surface-variant transition-all";
+            }
+        }
+    });
+    renderDrawerRawMovementsTable();
+}
+
+function renderDrawerRawMovementsTable() {
+    if (!activeDrawerRaw) return;
+    const r = activeDrawerRaw;
+    const movTbody = document.getElementById("dRawMovementsTbody");
+    movTbody.innerHTML = "";
+
+    let movs = r.movements || [];
+    if (activeDrawerRawMovFilter !== 'all') {
+        movs = movs.filter(m => m.type.includes(activeDrawerRawMovFilter));
+    }
+
+    if (movs.length > 0) {
+        movs.forEach(m => {
+            const tr = document.createElement("tr");
+            let typeBadge = "bg-green-100 text-green-800";
+            if (m.type === 'سحب تشغيل') typeBadge = "bg-amber-100 text-amber-800";
+            if (m.type.includes('هالك') || m.type.includes('تسوية')) typeBadge = "bg-red-100 text-red-800";
+
+            tr.innerHTML = `
+                <td class="p-2.5 font-['IBM_Plex_Sans']">${m.date}</td>
+                <td class="p-2.5 font-bold"><span class="px-2 py-0.5 rounded text-[11px] ${typeBadge}">${m.type}</span></td>
+                <td class="p-2.5 font-bold">${m.type === 'توريد خام' ? '+' : '-'}${m.qty.toLocaleString()}</td>
+                <td class="p-2.5">${m.unitCost.toFixed(2)} EGP</td>
+                <td class="p-2.5 text-sm text-xs">${m.location}</td>
+                <td class="p-2.5 font-bold text-primary">${m.ref}</td>
+            `;
+            movTbody.appendChild(tr);
+        });
+    } else {
+        movTbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-on-surface-variant">لا توجد حركات مسجلة تنطبق على الفلتر المختارات</td></tr>`;
+    }
+}
+
+function closeRawDrawer() { document.getElementById("rawItemDetailsDrawer").classList.add("hidden"); }
+
+// TOAST HELPERS
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// DOM LOADED
+document.addEventListener("DOMContentLoaded", () => {
+    initRawMaterialsPrototype();
+});
+</script>
+
+</body>
+</html>
+
+  </main>
+</body>
+</html>

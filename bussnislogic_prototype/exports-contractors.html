@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إدارة الصادرات - المقاولون - نظام تجميد للتصدير</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+
+<!-- Dynamic SideNavBar -->
+<nav class="fixed right-0 top-0 h-screen w-[280px] z-50 flex flex-col bg-primary text-on-primary shadow-xl border-l border-outline-variant/10">
+    <div class="h-toolbar-height flex flex-col justify-center px-6 border-b border-outline-variant/20 py-4 bg-primary shrink-0">
+        <h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">نظام تجميد للتصدير</h1>
+        <p class="font-label-sm text-label-sm text-primary-fixed-dim">Glacier Ledger ERP</p>
+    </div>
+    <div class="flex-1 overflow-y-auto py-3 px-3">
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>لوحة القيادة التنفيذية</span>
+                </a>
+            </li>
+            <li>
+                <a href="supplies.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>إدارة المستلزمات (Supplies)</span>
+                </a>
+            </li>
+            <li>
+                <a href="create-shipment.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>إنشاء شحنة تصدير</span>
+                </a>
+            </li>
+            <li>
+                <a href="client-orders.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>طلبات العملاء والاتفاقيات</span>
+                </a>
+            </li>
+            <li>
+                <a href="new-operation.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">conveyor_belt</span>
+                    <span>عملية تشغيل جديدة</span>
+                </a>
+            </li>
+            <li>
+                <a href="raw-materials.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>مخزون المواد الخام</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>الموردون</span>
+                </a>
+            </li>
+            <li>
+                <a href="treasury-payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات</span>
+                </a>
+            </li>
+            <li>
+                <a href="stations-management.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">factory</span>
+                    <span>إدارة المحطات</span>
+                </a>
+            </li>
+            <li>
+                <a href="exports-contractors.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold bg-secondary-container text-on-secondary-container border-r-4 border-surface-variant transition-all">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>إدارة المقاولين والصادرات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="p-4 border-t border-outline-variant/20 shrink-0 bg-primary-container/30">
+        <div class="flex items-center gap-3 text-xs text-primary-fixed-dim">
+            <span class="material-symbols-outlined text-green-400 text-base">check_circle</span>
+            <span>جميع الصفحات متصلة (9 صفحات)</span>
+        </div>
+    </div>
+</nav>
+
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-title-sm text-title-sm font-black text-primary">المقاولون وشركات التصدير</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">search</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden ml-2">
+<img alt="صورة الملف الشخصي للمستخدم" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcxtuY4YbqmskFRwlbJh_iAgfZlc0Nn3W39kYZbMSn1WeJ7DggdQIcQCiL_hsonnlOTUCX10wvre2xyQq9giD95sx7S74vSHh7-tmIkQNLgVdg0yQsjmu7EBnqkC8ArCYU6B5p6X7UXxbuWHRb9bJGNCucVP1X3QN3yoUg6NQq9ITGr-0aCenXJFP7lbHP9GKI6S-EohCBuclGRUUsUDIsvOqNRC-rGZfiha0WVLkrUjuVIGaxsbER"/>
+</div>
+</div>
+</header>
+
+<!-- Main Content -->
+<main class="mr-[280px] pt-toolbar-height min-h-screen p-container-padding bg-surface">
+<div class="flex justify-between items-end mb-6">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">إدارة المقاولين والنولون</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">تتبع عقود التخليص الجمركي وشركات النقل البحري والبري</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-title-sm text-title-sm flex items-center gap-2">
+<span class="material-symbols-outlined">handshake</span>
+            إضافة مقاول جديد
+        </button>
+</div>
+</main>
+</body>
+</html>

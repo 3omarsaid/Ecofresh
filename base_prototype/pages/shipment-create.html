@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>تنفيذ واعتماد شحنة تصدير - Nilotic Frost ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+        extend: {
+            colors: {
+                "primary": "#012d1d",
+                "primary-container": "#1b4332",
+                "secondary": "#0054cd",
+                "background": "#f8f9fa",
+                "surface": "#ffffff",
+                "surface-variant": "#e1e3e4",
+                "on-surface": "#191c1d",
+                "on-surface-variant": "#414844",
+                "outline": "#717973",
+                "outline-variant": "#c1c8c2",
+                "error": "#ba1a1a"
+            }
+        }
+    }
+}
+</script>
+<script src="../js/state.js"></script>
+<script src="../js/navigation.js" defer></script>
+<style>
+  body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+  .font-data-mono { font-family: 'IBM Plex Sans', sans-serif; }
+  .badge-derived {
+    background-color: #e8f5e9;
+    color: #1b5e20;
+    border: 1px solid #c8e6c9;
+  }
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+  
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-4 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+
+    <div class="max-w-[1440px] mx-auto w-full space-y-6">
+
+        <!-- Top Header & Context Banner -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-surface border border-outline-variant p-4 md:p-5 rounded-2xl shadow-sm">
+            <div>
+                <div class="flex items-center gap-3 mb-1">
+                    <h1 class="text-base md:text-lg font-bold text-primary flex items-center gap-2">
+                        <span class="material-symbols-outlined text-2xl text-primary">local_shipping</span>
+                        <span>تجهيز واعتماد شحنة تصدير (Fulfillment & Batch Extraction)</span>
+                    </h1>
+                    <span id="shpStatusBadge" class="bg-amber-100 text-amber-900 border border-amber-300 font-bold px-3 py-0.5 rounded-full text-xs font-mono">مسودة تخصيص</span>
+                </div>
+                <p class="text-xs text-on-surface-variant">استدعاء بيانات طلبية العميل، سحب اللوطات التامة من مخزن الجاهز مع تتبع شجرة الموردين، وحساب الأرباح الفعلية</p>
+            </div>
+            
+            <div class="flex items-center flex-wrap gap-3 text-xs font-mono">
+                <!-- User Status -->
+                <div class="flex items-center gap-2 bg-surface-variant/50 border border-outline-variant px-3 py-1.5 rounded-xl">
+                  <span id="headerUserAvatar" class="text-base">👑</span>
+                  <div class="text-right">
+                    <span class="text-[10px] text-on-surface-variant block">المستخدم:</span>
+                    <strong id="headerUserName" class="text-primary font-bold">م. أحمد محمود</strong>
+                  </div>
+                  <span id="headerUserRoleBadge" class="bg-primary text-white px-2 py-0.5 rounded-md text-[10px] font-mono font-bold mr-1">Admin</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="saveShipmentDraft()" class="px-3.5 py-2 bg-surface border border-outline-variant hover:bg-surface-variant text-on-surface font-bold rounded-xl transition-all shadow-xs text-xs">
+                        حفظ كمسودة
+                    </button>
+                    <button id="btnApproveShipment" onclick="triggerApproveShipmentModal()" class="px-4 py-2 bg-primary text-white hover:bg-primary-container font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5 text-xs">
+                        <span class="material-symbols-outlined text-base">verified</span>
+                        <span>اعتماد استخراج الشحنة</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflow Visual Guide -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="bg-surface p-3.5 rounded-xl border border-primary/30 flex items-center gap-3 shadow-xs">
+                <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                <div>
+                    <strong class="text-xs text-primary block">طلبية العميل والتعاقد</strong>
+                    <span class="text-[11px] text-on-surface-variant">استدعاء السعر والكمية المعتمدة بالعقد</span>
+                </div>
+            </div>
+            <div class="bg-surface p-3.5 rounded-xl border border-outline-variant flex items-center gap-3 shadow-xs">
+                <div class="w-8 h-8 rounded-lg bg-surface-variant text-primary flex items-center justify-center font-bold text-sm shrink-0">2</div>
+                <div>
+                    <strong class="text-xs text-primary block">تخصيص لوطات الثلاجة</strong>
+                    <span class="text-[11px] text-on-surface-variant">سحب الباتشات مع كشف شجرة الموردين</span>
+                </div>
+            </div>
+            <div class="bg-surface p-3.5 rounded-xl border border-outline-variant flex items-center gap-3 shadow-xs">
+                <div class="w-8 h-8 rounded-lg bg-surface-variant text-primary flex items-center justify-center font-bold text-sm shrink-0">3</div>
+                <div>
+                    <strong class="text-xs text-primary block">التحقق المالي وصافي الربح</strong>
+                    <span class="text-[11px] text-on-surface-variant">احتساب هامش الربح والخصم الفعلي</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Workspace Grid (8 cols left / 4 cols right) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- LEFT COLUMN: FULFILLMENT WORKFLOW -->
+            <div class="lg:col-span-8 space-y-6">
+
+                <!-- STEP 1: SELECT CUSTOMER ORDER -->
+                <div class="bg-surface border border-outline-variant rounded-2xl p-5 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+                        <h3 class="font-bold text-sm text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-lg">receipt_long</span>
+                            <span>1. اختيار طلبية العميل المعتمدة (Customer Order)</span>
+                        </h3>
+                        <span class="text-[11px] px-2.5 py-0.5 rounded-full badge-derived font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">lock</span>
+                            بيانات التعاقد مسحوبة آلياً
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <label class="block font-bold mb-1.5 text-on-surface">العميل المستورد *</label>
+                            <select id="shpCustomer" onchange="onCustomerSelected()" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-xs font-bold text-primary focus:border-primary">
+                                <option value="شركة ABC للتجارة الدولية (ألمانيا)">شركة ABC للتجارة الدولية (ألمانيا)</option>
+                                <option value="شركة النور للتصدير (السعودية)">شركة النور للتصدير (السعودية)</option>
+                                <option value="Global Foods Demo (المملكة المتحدة)">Global Foods Demo (المملكة المتحدة)</option>
+                                <option value="Frozen Market Demo (الإمارات)">Frozen Market Demo (الإمارات)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1.5 text-on-surface">اختر رقم الطلبية المفتوحة *</label>
+                            <select id="shpOrderSelect" onchange="onOrderDropdownChanged()" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-xs font-bold font-mono text-primary focus:border-primary">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Commercial Snapshot Details -->
+                    <div id="orderSnapshotCard" class="bg-surface-variant/30 border border-outline-variant/80 rounded-xl p-4 space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-primary flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm text-green-700">verified</span>
+                                مستند الطلبية: <span id="snapOrderId" class="font-mono font-bold text-secondary mr-1">ORD-1025</span>
+                            </span>
+                            <span id="snapAgrId" class="text-[11px] text-on-surface-variant font-mono">عقد رقم: AGR-2026-001 (FOB Alexandria)</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2 border-t border-outline-variant/40 font-mono">
+                            <div class="bg-surface p-2.5 rounded-lg border border-outline-variant/40">
+                                <span class="text-[10px] text-on-surface-variant block font-sans">المنتج المتعاقد عليه:</span>
+                                <strong id="snapProductName" class="text-xs text-primary font-sans font-bold">فراولة مجمدة IQF</strong>
+                            </div>
+                            <div class="bg-surface p-2.5 rounded-lg border border-outline-variant/40">
+                                <span class="text-[10px] text-on-surface-variant block font-sans">إجمالي كمية الطلبية:</span>
+                                <strong id="snapOrderedQty" class="text-xs text-on-surface font-bold">10,000 KG</strong>
+                            </div>
+                            <div class="bg-surface p-2.5 rounded-lg border border-outline-variant/40">
+                                <span class="text-[10px] text-on-surface-variant block font-sans">المتبقي للشحن:</span>
+                                <strong id="snapRemainingQty" class="text-xs text-amber-800 font-bold">6,000 KG</strong>
+                            </div>
+                            <div class="bg-surface p-2.5 rounded-lg border border-green-300 bg-green-50/50">
+                                <span class="text-[10px] text-green-900 block font-sans">سعر البيع بالعقد:</span>
+                                <strong id="snapSellingPrice" class="text-xs text-green-800 font-bold">65.00 EGP/KG</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quantity to ship in this shipment -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-2">
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">الكمية المراد شحنها (KG) *</label>
+                            <input id="shpRequestedQty" type="number" value="4800" oninput="onShipmentQtyInputChanged()" class="w-full bg-surface border border-outline-variant rounded-xl p-2 text-sm font-bold font-mono text-primary focus:border-primary"/>
+                            <span class="text-[10px] text-on-surface-variant mt-0.5 block">ضمن رصيد الطلبية المتبقي</span>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">تاريخ الشحن والتحميل *</label>
+                            <input id="shpLoadingDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-xl p-2 text-xs focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">رقم الحاوية / المرجع</label>
+                            <input id="shpContainerRef" type="text" value="MSKU-882019-4" placeholder="رقم الحاوية أو الشاحنة..." class="w-full bg-surface border border-outline-variant rounded-xl p-2 text-xs font-mono focus:border-primary"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: FINISHED GOODS READY WAREHOUSE ALLOCATION WITH TRACEABILITY -->
+                <div class="bg-surface border border-outline-variant rounded-2xl p-5 shadow-sm space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-outline-variant/60 pb-3">
+                        <div>
+                            <h3 class="font-bold text-sm text-primary flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-lg">inventory</span>
+                                <span>2. تخصيص اللوطات من مخزن المنتج الجاهز (Live Finished Goods Stock)</span>
+                            </h3>
+                            <p class="text-[11px] text-on-surface-variant mt-0.5">سحب الباتشات الناتجة عن عمليات التشغيل الفعلية مع بيان شجرة الموردين</p>
+                        </div>
+                        <button onclick="autoAllocateBatches()" class="px-3 py-1.5 bg-primary/10 hover:bg-primary text-primary hover:text-white font-bold rounded-lg text-xs transition-all flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">auto_fix_high</span>
+                            <span>تخصيص تلقائي ذكي (FIFO)</span>
+                        </button>
+                    </div>
+
+                    <!-- Available Batches Table -->
+                    <div class="border border-outline-variant rounded-xl overflow-hidden">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-surface-variant/60 font-bold text-on-surface-variant">
+                                <tr>
+                                    <th class="p-3">رقم الـ Batch</th>
+                                    <th class="p-3">عملية التشغيل</th>
+                                    <th class="p-3">المحطة</th>
+                                    <th class="p-3 font-mono">الرصيد المتاح</th>
+                                    <th class="p-3 font-mono">تكلفة الإنتاج/KG</th>
+                                    <th class="p-3 font-mono w-36">المخصص للشحن</th>
+                                    <th class="p-3 font-mono">إجمالي التكلفة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchAllocationTbody" class="divide-y divide-outline-variant/40 font-mono">
+                                <!-- Dynamic Batch rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Selected Batch Supplier Origin Breakdown Box -->
+                    <div id="supplierTraceabilityBox" class="p-3.5 bg-surface-variant/30 rounded-xl border border-outline-variant/60 space-y-1.5">
+                        <span class="font-bold text-primary flex items-center gap-1 text-xs">
+                            <span class="material-symbols-outlined text-sm text-secondary">account_tree</span>
+                            شجرة أصل الموردين للكميات المخصصة (Raw Supplier Traceability):
+                        </span>
+                        <div id="supplierTraceList" class="text-xs text-on-surface flex flex-wrap gap-2 pt-1 font-mono">
+                            <!-- Dynamic supplier badges -->
+                        </div>
+                    </div>
+
+                    <!-- Batch Allocation Live Summary Box -->
+                    <div id="batchValBox" class="p-3.5 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold bg-green-50 border-green-300 text-green-900 font-mono">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-green-700 text-lg">check_circle</span>
+                            <span>مطلوب الشحنة: <strong id="bValReqKg" class="text-sm">4,800</strong> KG | المخصص من الثلاجة: <strong id="bValAllocKg" class="text-sm">4,800</strong> KG</span>
+                        </div>
+                        <div id="bValStatusMsg" class="font-bold text-green-800 font-sans">✓ تم تخصيص كامل كمية الشحنة بنجاح</div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: ATTACHMENTS & LOGISTICS -->
+                <div class="bg-surface border border-outline-variant rounded-2xl p-5 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+                        <h3 class="font-bold text-sm text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-lg">attachment</span>
+                            <span>3. وثائق الشحن والمصاريف اللوجستية (Shipment Documents & Logistics)</span>
+                        </h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="p-3.5 bg-surface-variant/30 border border-outline-variant/60 rounded-xl space-y-2">
+                            <div class="flex justify-between items-center font-bold">
+                                <span class="text-primary flex items-center gap-1 font-sans">
+                                    <span class="material-symbols-outlined text-sm">local_shipping</span>
+                                    نولون ونقل وتعتيق الشحنة
+                                </span>
+                                <span id="dispLogisticsCostTotal" class="font-mono text-primary font-bold">38,000 EGP</span>
+                            </div>
+                            <p class="text-[11px] text-on-surface-variant font-sans">نقل مبرد مباشر للميناء + عمال تعتيق وتحميل الحاوية</p>
+                        </div>
+
+                        <!-- Attachments Upload UI -->
+                        <div class="p-3.5 bg-surface-variant/30 border border-outline-variant/60 rounded-xl space-y-2">
+                            <label class="font-bold text-primary block text-xs font-sans">مرفقات الشحنة (بوليصة B/L، شهادات، صور الختم):</label>
+                            <input id="shipmentFileInput" type="file" multiple accept="image/*,.pdf" onchange="handleShipmentFileUpload(event)" class="text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primary file:text-white hover:file:bg-primary-container"/>
+                            <div id="shipmentAttachmentsPreview" class="flex flex-wrap gap-1.5 text-[10px] font-mono pt-1">
+                              <!-- Staged shipment attachments -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: STICKY INSTANT FINANCIAL SUMMARY & VERIFICATION -->
+            <div class="lg:col-span-4 sticky top-[80px] space-y-6">
+                
+                <div class="bg-primary text-white rounded-2xl p-6 shadow-xl border border-primary-container space-y-5">
+                    
+                    <div class="border-b border-white/20 pb-3 flex justify-between items-center">
+                        <h3 class="font-bold text-sm flex items-center gap-2 text-white">
+                            <span class="material-symbols-outlined text-base text-emerald-400">calculate</span>
+                            <span>التحقق المالي وصافي الربحية</span>
+                        </h3>
+                        <span class="text-[10px] bg-emerald-900 text-emerald-300 border border-emerald-500 px-2 py-0.5 rounded font-bold">حساب فوري</span>
+                    </div>
+
+                    <!-- Revenue & Cost Comparison Breakdown -->
+                    <div class="space-y-2.5 text-xs font-mono">
+                        <div class="flex justify-between text-white/80">
+                            <span class="font-sans">إجمالي المبيعات الإرادية:</span>
+                            <strong id="cardTotalSales" class="text-sm font-bold text-emerald-300">312,000 EGP</strong>
+                        </div>
+                        <div class="flex justify-between text-white/70">
+                            <span class="font-sans">تكلفة تصنيع اللوطات المخصصة:</span>
+                            <strong id="cardProdCost" class="text-white font-bold">151,500 EGP</strong>
+                        </div>
+                        <div class="flex justify-between text-white/70">
+                            <span class="font-sans">النولون والخدمات اللوجستية:</span>
+                            <strong id="cardHandlingCost" class="text-white font-bold">38,000 EGP</strong>
+                        </div>
+                        <div class="pt-2 border-t border-white/20 flex justify-between text-xs font-bold text-white">
+                            <span class="font-sans">إجمالي تكلفة الشحنة:</span>
+                            <strong id="cardTotalShipmentCost" class="text-sm text-red-300">189,500 EGP</strong>
+                        </div>
+                    </div>
+
+                    <!-- Net Profit & Margin Highlight Box -->
+                    <div class="bg-white/10 p-4 rounded-xl space-y-2 border border-white/15">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-[11px] text-emerald-300 block font-sans">صافي ربح الشحنة (Net Profit):</span>
+                                <strong id="cardNetProfit" class="text-2xl font-bold text-emerald-300 font-mono">122,500 EGP</strong>
+                            </div>
+                            <div class="text-left">
+                                <span class="text-[10px] text-white/70 block font-sans">هامش الربح:</span>
+                                <strong id="cardProfitMargin" class="text-base font-bold text-emerald-300 font-mono">39.26%</strong>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-t border-white/10 flex justify-between text-xs font-mono">
+                            <span class="text-white/80 font-sans">ربح الكيلو الصافي:</span>
+                            <strong id="cardProfitPerKg" class="text-emerald-300 font-bold">25.52 EGP/KG</strong>
+                        </div>
+                    </div>
+
+                    <!-- Fulfill & Confirm Actions -->
+                    <div class="space-y-2 pt-2">
+                        <button onclick="triggerApproveShipmentModal()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-primary font-bold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            <span>اعتماد واستخراج الشحنة</span>
+                        </button>
+                        <button onclick="saveShipmentDraft()" class="w-full py-2.5 border border-white/30 text-white/90 hover:bg-white/10 font-bold text-xs rounded-xl transition-all">
+                            حفظ كمسودة
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<!-- APPROVAL CONFIRMATION MODAL -->
+<div id="approveModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden space-y-4 p-6">
+        <div class="flex items-center gap-3 text-primary border-b border-outline-variant pb-3">
+            <span class="material-symbols-outlined text-3xl text-emerald-700">verified</span>
+            <div>
+                <h3 class="text-base font-bold">تأكيد اعتماد وتصدير الشحنة</h3>
+                <p class="text-xs text-on-surface-variant">سيتم خصم اللوطات المخصصة فورياً من مخزن الجاهز وتوثيق الشحنة في سجل التصدير</p>
+            </div>
+        </div>
+
+        <div class="space-y-2 text-xs font-mono bg-surface-variant/40 p-4 rounded-xl border border-outline-variant/60">
+            <div class="flex justify-between"><span class="font-sans">العميل:</span><strong id="mCustName" class="font-sans text-primary">شركة ABC للتجارة الدولية</strong></div>
+            <div class="flex justify-between"><span class="font-sans">كمية الشحنة:</span><strong id="mQty" class="text-primary">4,800 KG</strong></div>
+            <div class="flex justify-between"><span class="font-sans">إجمالي المبيعات:</span><strong id="mSales" class="text-emerald-800">312,000 EGP</strong></div>
+            <div class="flex justify-between"><span class="font-sans">صافي الربح التقديري:</span><strong id="mProfit" class="text-emerald-800">122,500 EGP</strong></div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+            <button onclick="closeApproveModal()" class="px-4 py-2 border rounded-xl text-xs font-bold hover:bg-surface-variant">إلغاء</button>
+            <button onclick="confirmApproveShipmentAction()" class="px-5 py-2 bg-primary hover:bg-primary-container text-white rounded-xl text-xs font-bold shadow-md">
+                تأكيد واعتماد نهائي وخصم المخزن
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<script>
+const MOCK_CUSTOMER_ORDERS = [
+    {
+        orderId: "ORD-1025",
+        customer: "شركة ABC للتجارة الدولية (ألمانيا)",
+        agrId: "AGR-2026-001",
+        productName: "فراولة مجمدة IQF",
+        totalOrderedKg: 10000,
+        alreadyShippedKg: 4000,
+        remainingKg: 6000,
+        sellingPrice: 65.0,
+        status: "مفتوحة"
+    },
+    {
+        orderId: "ORD-1040",
+        customer: "شركة ABC للتجارة الدولية (ألمانيا)",
+        agrId: "AGR-2026-001",
+        productName: "مانجو مكعبات مجمدة",
+        totalOrderedKg: 5000,
+        alreadyShippedKg: 0,
+        remainingKg: 5000,
+        sellingPrice: 75.5,
+        status: "مفتوحة"
+    },
+    {
+        orderId: "ORD-1052",
+        customer: "Global Foods Demo (المملكة المتحدة)",
+        agrId: "AGR-2026-002",
+        productName: "فراولة مجمدة IQF",
+        totalOrderedKg: 15000,
+        alreadyShippedKg: 5000,
+        remainingKg: 10000,
+        sellingPrice: 66.0,
+        status: "مفتوحة"
+    },
+    {
+        orderId: "ORD-1060",
+        customer: "شركة النور للتصدير (السعودية)",
+        agrId: "AGR-2026-003",
+        productName: "بامية مجمدة ممتاز",
+        totalOrderedKg: 8000,
+        alreadyShippedKg: 2000,
+        remainingKg: 6000,
+        sellingPrice: 55.0,
+        status: "مفتوحة"
+    }
+];
+
+let selectedOrder = null;
+const logisticsCostFixed = 38000;
+let stagedShipmentAttachments = [];
+
+function initShipmentPage() {
+    const user = ERPState.getCurrentUser();
+    document.getElementById("headerUserName").innerText = user.name;
+    document.getElementById("headerUserRoleBadge").innerText = user.role;
+    document.getElementById("headerUserAvatar").innerText = user.avatar || "👤";
+
+    // RBAC check
+    if (!ERPState.can("DISPATCH_SHIPMENT")) {
+        const btn = document.getElementById("btnApproveShipment");
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+        btn.title = "تتطلب صلاحية مشرف أو مدير لاعتماد الشحنة وخصم المخزن";
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramOrderId = urlParams.get('orderId');
+
+    if (paramOrderId) {
+        const found = MOCK_CUSTOMER_ORDERS.find(o => o.orderId === paramOrderId);
+        if (found) document.getElementById("shpCustomer").value = found.customer;
+    }
+    onCustomerSelected(paramOrderId);
+}
+
+function onCustomerSelected(preferOrderId = null) {
+    const cust = document.getElementById("shpCustomer").value;
+    const orderSelect = document.getElementById("shpOrderSelect");
+    orderSelect.innerHTML = "";
+
+    const availableOrders = MOCK_CUSTOMER_ORDERS.filter(o => o.customer === cust && o.status === "مفتوحة");
+
+    if (availableOrders.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.innerText = "لا توجد طلبيات مفتوحة لهذا العميل";
+        orderSelect.appendChild(opt);
+        selectedOrder = null;
+        renderOrderSnapshot();
+        return;
+    }
+
+    availableOrders.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.orderId;
+        opt.innerText = `${o.orderId} - ${o.productName} (متبقي: ${o.remainingKg.toLocaleString()} KG)`;
+        if (preferOrderId && o.orderId === preferOrderId) opt.selected = true;
+        orderSelect.appendChild(opt);
+    });
+
+    onOrderDropdownChanged();
+}
+
+function onOrderDropdownChanged() {
+    const ordId = document.getElementById("shpOrderSelect").value;
+    selectedOrder = MOCK_CUSTOMER_ORDERS.find(o => o.orderId === ordId) || null;
+    renderOrderSnapshot();
+    if (selectedOrder) {
+        document.getElementById("shpRequestedQty").value = Math.min(4800, selectedOrder.remainingKg);
+        renderBatchAllocationTable();
+        autoAllocateBatches();
+    }
+}
+
+function renderOrderSnapshot() {
+    if (!selectedOrder) {
+        document.getElementById("snapOrderId").innerText = "لا يوجد";
+        document.getElementById("snapAgrId").innerText = "-";
+        document.getElementById("snapProductName").innerText = "-";
+        document.getElementById("snapOrderedQty").innerText = "0 KG";
+        document.getElementById("snapRemainingQty").innerText = "0 KG";
+        document.getElementById("snapSellingPrice").innerText = "0.00 EGP";
+        return;
+    }
+
+    document.getElementById("snapOrderId").innerText = selectedOrder.orderId;
+    document.getElementById("snapAgrId").innerText = `عقد رقم: ${selectedOrder.agrId} (معتمد FOB)`;
+    document.getElementById("snapProductName").innerText = selectedOrder.productName;
+    document.getElementById("snapOrderedQty").innerText = selectedOrder.totalOrderedKg.toLocaleString() + " KG";
+    document.getElementById("snapRemainingQty").innerText = selectedOrder.remainingKg.toLocaleString() + " KG";
+    document.getElementById("snapSellingPrice").innerText = selectedOrder.sellingPrice.toFixed(2) + " EGP/KG";
+}
+
+// RENDER REAL FINISHED GOODS BATCHES FROM ERPSTATE
+function renderBatchAllocationTable() {
+    if (!selectedOrder) return;
+    const state = ERPState.load();
+    const tbody = document.getElementById("batchAllocationTbody");
+    tbody.innerHTML = "";
+
+    const availableBatches = (state.finishedGoodsBatches || []).filter(b => b.productName === selectedOrder.productName && (b.availableQty || 0) > 0);
+
+    if (availableBatches.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-on-surface-variant font-sans">لا توجد لوطات تامة متوفرة حالياً بالثلاجة لـ (${selectedOrder.productName}). يمكنك تسجيل عملية تشغيل أو إضافة صفقة بضاعة جاهزة واردة.</td></tr>`;
+        calculateBatchAllocationSummary();
+        return;
+    }
+
+    availableBatches.forEach(b => {
+        const isDirect = b.sourceType === 'DIRECT_PURCHASE' || (b.fgBatchId && b.fgBatchId.startsWith('FG-DIR'));
+        const sourceBadge = isDirect
+            ? `<span class="bg-sky-100 text-sky-800 border border-sky-300 px-2 py-0.5 rounded text-[11px] font-bold">🚢 صفقة: ${b.supplierName || 'مورد خارجي'}</span>`
+            : `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded text-[11px] font-bold">🏭 ${b.sourceOpId}</span>`;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-3 font-bold text-primary font-mono">${b.fgBatchId}</td>
+            <td class="p-3">${sourceBadge}</td>
+            <td class="p-3 text-xs font-sans">${b.station}</td>
+            <td class="p-3 font-bold text-green-700 font-mono">${b.availableQty.toLocaleString()} KG</td>
+            <td class="p-3 font-mono">${(b.costPerKg || 0).toFixed(2)} EGP</td>
+            <td class="p-3">
+                <input type="number" data-batch-id="${b.fgBatchId}" data-cost="${b.costPerKg || 0}" data-max="${b.availableQty}" value="0" min="0" max="${b.availableQty}" oninput="calculateBatchAllocationSummary()" class="shp-batch-input w-32 bg-surface border border-outline-variant rounded-lg p-1.5 text-xs font-bold font-mono text-primary focus:border-primary"/>
+            </td>
+            <td class="p-3 font-bold batch-cost-display text-primary font-mono">0 EGP</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    calculateBatchAllocationSummary();
+}
+
+function autoAllocateBatches() {
+    if (!selectedOrder) return;
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    const inputs = document.querySelectorAll(".shp-batch-input");
+    
+    let remainingNeeded = reqQty;
+    inputs.forEach(inp => {
+        const maxAvail = parseFloat(inp.getAttribute("data-max")) || 0;
+        const alloc = Math.min(remainingNeeded, maxAvail);
+        inp.value = alloc;
+        remainingNeeded -= alloc;
+    });
+
+    calculateBatchAllocationSummary();
+}
+
+function onShipmentQtyInputChanged() {
+    autoAllocateBatches();
+}
+
+function calculateBatchAllocationSummary() {
+    const state = ERPState.load();
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    const inputs = document.querySelectorAll(".shp-batch-input");
+    let totalAllocated = 0;
+    let totalProdCost = 0;
+    let hasExceededMax = false;
+
+    const activeSuppliers = {};
+
+    inputs.forEach(inp => {
+        const val = parseFloat(inp.value) || 0;
+        const cost = parseFloat(inp.getAttribute("data-cost")) || 0;
+        const max = parseFloat(inp.getAttribute("data-max")) || 0;
+        const batchId = inp.getAttribute("data-batch-id");
+        const tr = inp.closest("tr");
+        const disp = tr ? tr.querySelector(".batch-cost-display") : null;
+
+        if (val > max) {
+            hasExceededMax = true;
+            inp.classList.add("border-red-600", "bg-red-50");
+        } else {
+            inp.classList.remove("border-red-600", "bg-red-50");
+        }
+
+        const batchCost = val * cost;
+        if (disp) disp.innerText = Math.round(batchCost).toLocaleString() + " EGP";
+
+        if (val > 0) {
+            const fgObj = state.finishedGoodsBatches.find(b => b.fgBatchId === batchId);
+            if (fgObj) {
+                if (fgObj.suppliersSummary && fgObj.suppliersSummary.length > 0) {
+                    fgObj.suppliersSummary.forEach(s => {
+                        activeSuppliers[s.supplierName] = (activeSuppliers[s.supplierName] || 0) + (val * (s.sharePct / 100));
+                    });
+                } else if (fgObj.supplierName) {
+                    activeSuppliers[fgObj.supplierName] = (activeSuppliers[fgObj.supplierName] || 0) + val;
+                }
+            }
+        }
+
+        totalAllocated += val;
+        totalProdCost += batchCost;
+    });
+
+    // Render supplier traceability tags
+    const traceContainer = document.getElementById("supplierTraceList");
+    traceContainer.innerHTML = "";
+    if (totalAllocated > 0) {
+        Object.keys(activeSuppliers).forEach(sName => {
+            const sQty = activeSuppliers[sName];
+            const sPct = ((sQty / totalAllocated) * 100).toFixed(1);
+            const tag = document.createElement("span");
+            tag.className = "bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-lg font-sans font-bold flex items-center gap-1";
+            tag.innerHTML = `<span>🌱 ${sName}:</span> <strong class="font-mono text-secondary">${sPct}%</strong> <span class="text-xs text-on-surface-variant font-mono">(${Math.round(sQty).toLocaleString()} KG)</span>`;
+            traceContainer.appendChild(tag);
+        });
+    } else {
+        traceContainer.innerHTML = `<span class="text-on-surface-variant font-sans text-xs">قم بتخصيص كميات من اللوطات لعرض شجرة الموردين</span>`;
+    }
+
+    document.getElementById("bValReqKg").innerText = reqQty.toLocaleString();
+    document.getElementById("bValAllocKg").innerText = totalAllocated.toLocaleString();
+
+    const msg = document.getElementById("bValStatusMsg");
+    const box = document.getElementById("batchValBox");
+
+    if (hasExceededMax) {
+        msg.innerText = "خطأ: كمية مخصصة تتجاوز الرصيد المتاح بالـ Batch!";
+        box.className = "p-3.5 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold bg-red-50 border-red-300 text-red-900 font-mono";
+    } else if (totalAllocated !== reqQty) {
+        msg.innerText = `لم يتم استكمال التخصيص (${(reqQty - totalAllocated).toLocaleString()} KG فارق)`;
+        box.className = "p-3.5 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold bg-amber-50 border-amber-300 text-amber-900 font-mono";
+    } else {
+        msg.innerText = "✓ تم تخصيص كامل كمية الشحنة بنجاح من مخزن المنتج الجاهز";
+        box.className = "p-3.5 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold bg-green-50 border-green-300 text-green-900 font-mono";
+    }
+
+    calculateShipmentFinancials(totalProdCost);
+}
+
+function calculateShipmentFinancials(prodCost) {
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    const sellPrice = selectedOrder ? selectedOrder.sellingPrice : 65.0;
+
+    const salesRevenue = reqQty * sellPrice;
+    const totalShipmentCost = prodCost + logisticsCostFixed;
+    const netProfit = salesRevenue - totalShipmentCost;
+    const profitMargin = salesRevenue > 0 ? ((netProfit / salesRevenue) * 100).toFixed(2) : "0.00";
+    const profitPerKg = reqQty > 0 ? (netProfit / reqQty).toFixed(2) : "0.00";
+
+    document.getElementById("cardTotalSales").innerText = Math.round(salesRevenue).toLocaleString() + " EGP";
+    document.getElementById("cardProdCost").innerText = Math.round(prodCost).toLocaleString() + " EGP";
+    document.getElementById("cardHandlingCost").innerText = Math.round(logisticsCostFixed).toLocaleString() + " EGP";
+    document.getElementById("cardTotalShipmentCost").innerText = Math.round(totalShipmentCost).toLocaleString() + " EGP";
+
+    document.getElementById("cardNetProfit").innerText = Math.round(netProfit).toLocaleString() + " EGP";
+    document.getElementById("cardProfitMargin").innerText = profitMargin + "%";
+    document.getElementById("cardProfitPerKg").innerText = profitPerKg + " EGP/KG";
+}
+
+function handleShipmentFileUpload(e) {
+    const files = Array.from(e.target.files);
+    const user = ERPState.getCurrentUser();
+    
+    files.forEach(f => {
+      stagedShipmentAttachments.push({
+        id: "att-s-" + Math.floor(1000 + Math.random() * 9000),
+        category: "وثائق الشحن",
+        fileName: f.name,
+        mimeType: f.type || "application/pdf",
+        size: (f.size / (1024 * 1024)).toFixed(2) + " MB",
+        uploadedBy: user.name,
+        uploadedAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
+      });
+    });
+    renderShipmentAttachments();
+}
+
+function renderShipmentAttachments() {
+    const container = document.getElementById("shipmentAttachmentsPreview");
+    container.innerHTML = "";
+    stagedShipmentAttachments.forEach((att, idx) => {
+      const tag = document.createElement("span");
+      tag.className = "bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded flex items-center gap-1";
+      tag.innerHTML = `<span>📎 ${att.fileName}</span><button onclick="removeShipmentAttachment(${idx})" class="text-error font-bold">×</button>`;
+      container.appendChild(tag);
+    });
+}
+
+function removeShipmentAttachment(idx) {
+    stagedShipmentAttachments.splice(idx, 1);
+    renderShipmentAttachments();
+}
+
+function triggerApproveShipmentModal() {
+    if (!ERPState.can("DISPATCH_SHIPMENT")) {
+        showToast("عفواً، لا تملك صلاحية اعتماد وتصدير الشحنات", "error");
+        return;
+    }
+    if (!selectedOrder) {
+        showToast("يرجى اختيار طلبية عميل أولاً", "error");
+        return;
+    }
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    if (reqQty <= 0) {
+        showToast("يرجى إدخال كمية شحن صحيحة", "error");
+        return;
+    }
+
+    document.getElementById("mCustName").innerText = selectedOrder.customer;
+    document.getElementById("mQty").innerText = reqQty.toLocaleString() + " KG";
+    document.getElementById("mSales").innerText = document.getElementById("cardTotalSales").innerText;
+    document.getElementById("mProfit").innerText = document.getElementById("cardNetProfit").innerText;
+
+    document.getElementById("approveModal").classList.remove("hidden");
+}
+
+function closeApproveModal() {
+    document.getElementById("approveModal").classList.add("hidden");
+}
+
+// CONFIRM SHIPMENT & DEDUCT FINISHED GOODS INVENTORY
+function confirmApproveShipmentAction() {
+    const state = ERPState.load();
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    const containerRef = document.getElementById("shpContainerRef").value || "MSKU-AUTO";
+    const loadingDate = document.getElementById("shpLoadingDate").value || "2026-08-23";
+
+    const items = [];
+    const inputs = document.querySelectorAll(".shp-batch-input");
+
+    inputs.forEach(inp => {
+        const val = parseFloat(inp.value) || 0;
+        const batchId = inp.getAttribute("data-batch-id");
+        const cost = parseFloat(inp.getAttribute("data-cost")) || 0;
+
+        if (val > 0) {
+            items.push({
+                fgBatchId: batchId,
+                productName: selectedOrder.productName,
+                qty: val,
+                sellingPrice: selectedOrder.sellingPrice,
+                costPerKg: cost,
+                totalSales: val * selectedOrder.sellingPrice,
+                totalCost: val * cost
+            });
+
+            // DEDUCT FROM FINISHED GOODS BATCH
+            const fgObj = state.finishedGoodsBatches.find(b => b.fgBatchId === batchId);
+            if (fgObj) {
+                fgObj.availableQty = Math.max(0, fgObj.availableQty - val);
+            }
+        }
+    });
+
+    const shpId = "SHP-2026-00" + ((state.shipments ? state.shipments.length : 0) + 1);
+    const totalBatchCost = items.reduce((a, c) => a + c.totalCost, 0);
+    const totalSales = reqQty * selectedOrder.sellingPrice;
+    const totalCost = totalBatchCost + logisticsCostFixed;
+    const netProfit = totalSales - totalCost;
+    const profitMargin = totalSales > 0 ? parseFloat(((netProfit / totalSales) * 100).toFixed(2)) : 0;
+    const profitPerKg = reqQty > 0 ? parseFloat((netProfit / reqQty).toFixed(2)) : 0;
+
+    const newShipment = {
+        shipmentId: shpId,
+        date: loadingDate,
+        customer: selectedOrder.customer,
+        orderId: selectedOrder.orderId,
+        containerNo: containerRef,
+        status: "تم الشحن",
+        items: items,
+        totalQty: reqQty,
+        totalSalesRevenue: totalSales,
+        totalBatchCost: totalBatchCost,
+        handlingAndLogisticsCost: logisticsCostFixed,
+        totalShipmentCost: totalCost,
+        netProfit: netProfit,
+        profitMargin: profitMargin,
+        profitPerKg: profitPerKg,
+        attachments: stagedShipmentAttachments,
+        audit: []
+    };
+
+    ERPState.logShipmentAudit(newShipment, "DISPATCH", `اعتماد وتصدير الشحنة ${shpId} وتخصيص ${reqQty.toLocaleString()} كجم من اللوطات التامة.`);
+
+    if (!state.shipments) state.shipments = [];
+    state.shipments.unshift(newShipment);
+    ERPState.save(state);
+
+    document.getElementById("shpStatusBadge").innerText = "معتمدة ومكتملة";
+    document.getElementById("shpStatusBadge").className = "bg-green-100 text-green-900 border border-green-300 font-bold px-3 py-0.5 rounded-full text-xs font-mono";
+
+    closeApproveModal();
+    renderBatchAllocationTable();
+    showToast(`تم اعتماد واستخراج الشحنة ${shpId} وخصم اللوطات من الثلاجة بنجاح!`, "success");
+}
+
+function saveShipmentDraft() {
+    showToast("تم حفظ مسودة تخصيص الشحنة بنجاح", "info");
+}
+
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initShipmentPage();
+});
+</script>
+
+  </main>
+</body>
+</html>

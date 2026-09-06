@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>الملف التشغيلي الكامل للمحطة - محطة النور</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Navigation Breadcrumb -->
+    <div class="flex items-center justify-between">
+      <a href="stations.html" class="inline-flex items-center gap-1 text-xs text-secondary font-bold hover:underline">
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        العودة لـ المحطات والمخازن
+      </a>
+      <span class="text-xs text-outline font-mono">الملف التشغيلي الموحد للمحطة</span>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="station-detail-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="station-detail-toast-msg">تم التحديث بنجاح</span>
+    </div>
+
+    <!-- HEADER SECTION -->
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-outline-variant/60 pb-4">
+        
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 bg-primary-container/10 border border-primary/20 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined text-3xl">factory</span>
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-3 flex-wrap">
+              <h1 class="text-xl font-bold text-primary">محطة النور المعالجة والتجميد</h1>
+              <span class="font-mono text-xs font-bold bg-surface-variant text-primary px-2.5 py-0.5 rounded border border-outline-variant">ST-001</span>
+              <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">نشطة</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-on-surface-variant flex-wrap pt-0.5">
+              <span>المقاول المرتبط: <strong class="text-primary font-bold">مقاول محطة النور (أحمد السايس)</strong></span>
+              <span>• معدل تشغيل المحطة: <strong class="font-mono text-primary font-bold">2.50 ج.م / KG</strong></span>
+              <span>• معدل المقاول: <strong class="font-mono text-primary font-bold">1.50 ج.م / KG</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS BAR -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <a href="shipment-create.html?station=محطة النور" class="bg-primary text-white hover:bg-primary-container px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+            إنشاء شحنة
+          </a>
+          <a href="raw-arrival-add.html?station=محطة النور" class="bg-secondary text-white hover:bg-secondary-container px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">input</span>
+            وارد خام
+          </a>
+          <a href="supplies-arrival-add.html?station=محطة النور" class="bg-emerald-800 text-white hover:bg-emerald-900 px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+            وارد مستلزمات
+          </a>
+          <a href="stock-movements.html?station=محطة النور" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">history</span>
+            حركة مخزون
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY OVERVIEW CARDS (RAW WAREHOUSE & SUPPLIES WAREHOUSE) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- CARD 1: RAW MATERIAL WAREHOUSE (مخزن الخام) -->
+      <div class="bg-surface rounded-xl border border-emerald-300 p-5 shadow-sm space-y-4 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-full h-1 bg-emerald-600"></div>
+        
+        <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-800">
+              <span class="material-symbols-outlined text-[24px]">warehouse</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-primary text-base">مخزن الخام (محطة النور)</h3>
+              <span class="text-[10px] text-on-surface-variant">الرصيد المتاح والوارد والمنصرف لم المواد الخام</span>
+            </div>
+          </div>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1 rounded-full font-bold font-mono">
+            الرصيد: 8,500 KG
+          </span>
+        </div>
+
+        <!-- Raw Warehouse Metrics Grid -->
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/40 space-y-1">
+            <span class="text-outline font-medium text-[10px]">الرصيد الحالي المتاح</span>
+            <div class="font-bold text-emerald-800 font-mono text-base">8,500 KG</div>
+            <span class="text-[9px] text-emerald-700">رصيد آمن بالمعمل</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/40 space-y-1">
+            <span class="text-outline font-medium text-[10px]">إجمالي الوارد بالمعمل</span>
+            <div class="font-bold text-primary font-mono text-base">18,500 KG</div>
+            <span class="text-[9px] text-emerald-700">4 أذونات استلام مقبوضة</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/40 space-y-1">
+            <span class="text-outline font-medium text-[10px]">المسحوب للشحنات</span>
+            <div class="font-bold text-secondary font-mono text-base">9,700 KG</div>
+            <span class="text-[9px] text-secondary">معالجة وتجميد IQF</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/40 space-y-1">
+            <span class="text-outline font-medium text-[10px]">الهالك المرتبط بالتصنيع</span>
+            <div class="font-bold text-rose-600 font-mono text-base">300 KG (3.1%)</div>
+            <span class="text-[9px] text-rose-600">هالك فرز وتجهيز</span>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-on-surface-variant flex justify-between items-center pt-1 border-t border-outline-variant/40">
+          <span>آخر تحديث: <strong class="font-mono text-primary">08/08/2026 (سحب 4,000 KG)</strong></span>
+          <button onclick="switchTab('raw-tab')" class="text-xs text-primary font-bold hover:underline">عرض مخزون الخام التفصيلي ←</button>
+        </div>
+      </div>
+
+      <!-- CARD 2: SUPPLIES WAREHOUSE (مخزن المستلزمات) -->
+      <div class="bg-surface rounded-xl border border-blue-300 p-5 shadow-sm space-y-4 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-full h-1 bg-secondary"></div>
+        
+        <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-secondary">
+              <span class="material-symbols-outlined text-[24px]">inventory_2</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-primary text-base">مخزن المستلزمات (محطة النور)</h3>
+              <span class="text-[10px] text-on-surface-variant">مخزن موحد لجميع فئات مستلزمات التعبئة والتغليف</span>
+            </div>
+          </div>
+          <span class="text-xs bg-blue-100 text-blue-900 border border-blue-300 px-3 py-1 rounded-full font-bold font-mono">
+            7 أصناف مجهزة
+          </span>
+        </div>
+
+        <!-- Supplies Category Breakdown Grid -->
+        <div class="space-y-1.5">
+          <span class="text-[10px] text-outline font-bold block">تقسيم الرصيد حسب الفئات:</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <div onclick="switchTab('supplies-tab', 'كراتين')" class="bg-emerald-50 hover:bg-emerald-100 p-2.5 rounded-lg border border-emerald-200 cursor-pointer transition-colors text-center">
+              <span class="text-[10px] text-emerald-950 font-bold block">كراتين</span>
+              <span class="font-mono font-bold text-emerald-800 block text-xs mt-0.5">4,250</span>
+              <span class="text-[9px] text-outline block">2 أصناف</span>
+            </div>
+            <div onclick="switchTab('supplies-tab', 'أكياس')" class="bg-blue-50 hover:bg-blue-100 p-2.5 rounded-lg border border-blue-200 cursor-pointer transition-colors text-center">
+              <span class="text-[10px] text-blue-950 font-bold block">أكياس</span>
+              <span class="font-mono font-bold text-secondary block text-xs mt-0.5">1,200</span>
+              <span class="text-[9px] text-outline block">3 أصناف</span>
+            </div>
+            <div onclick="switchTab('supplies-tab', 'لزق')" class="bg-purple-50 hover:bg-purple-100 p-2.5 rounded-lg border border-purple-200 cursor-pointer transition-colors text-center">
+              <span class="text-[10px] text-purple-950 font-bold block">لزق</span>
+              <span class="font-mono font-bold text-purple-800 block text-xs mt-0.5">320</span>
+              <span class="text-[9px] text-outline block">1 صنف</span>
+            </div>
+            <div onclick="switchTab('supplies-tab', 'أخرى')" class="bg-gray-50 hover:bg-gray-100 p-2.5 rounded-lg border border-gray-200 cursor-pointer transition-colors text-center">
+              <span class="text-[10px] text-gray-900 font-bold block">أخرى</span>
+              <span class="font-mono font-bold text-gray-800 block text-xs mt-0.5">80</span>
+              <span class="text-[9px] text-outline block">1 صنف</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-on-surface-variant flex justify-between items-center pt-1 border-t border-outline-variant/40">
+          <span>إجمالي الأصناف: <strong class="font-mono text-primary">7 أصناف (18 حركة)</strong></span>
+          <button onclick="switchTab('supplies-tab')" class="text-xs text-secondary font-bold hover:underline">عرض مخزون المستلزمات التفصيلي ←</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TABS NAVIGATION & CONTENT -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden space-y-5 p-5">
+      
+      <!-- Tab Controls Bar -->
+      <div class="flex items-center gap-2 border-b border-outline-variant/60 pb-3 overflow-x-auto">
+        <button onclick="switchTab('raw-tab', null, this)" class="tab-btn active bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">warehouse</span>
+          مخزون الخام
+        </button>
+        <button onclick="switchTab('supplies-tab', null, this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+          مخزون المستلزمات
+        </button>
+        <button onclick="switchTab('movements-tab', null, this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">history</span>
+          حركات المخزون
+        </button>
+        <button onclick="switchTab('analytics-tab', null, this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">insights</span>
+          مؤشرات المحطة
+        </button>
+      </div>
+
+      <!-- TAB 1: RAW INVENTORY (مخزون الخام) -->
+      <div id="tab-content-raw-tab" class="tab-pane space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-emerald-700">warehouse</span>
+            سجل مخزون الخام الخاص بـ محطة النور فقط
+          </h3>
+          <a href="raw-arrival-add.html?station=محطة النور" class="bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-900 transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">add</span> تسجيل وارد خام
+          </a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">المنتج / الصنف</th>
+                <th class="p-3 font-mono">الكمية الحالية المتاحة</th>
+                <th class="p-3 font-mono">متوسط التكلفة (ج.م)</th>
+                <th class="p-3">آخر وارد مقبوض</th>
+                <th class="p-3 text-center">الحالة</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40">
+                <td class="p-3 font-bold text-primary">فراولة خام درجة أولى (IQF)</td>
+                <td class="p-3 font-mono font-bold text-emerald-700 text-sm">8,500 KG</td>
+                <td class="p-3 font-mono font-bold text-primary">35.00 ج.م / KG</td>
+                <td class="p-3 font-mono text-on-surface-variant">08/08/2026 (PUR-2026-005)</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded-full text-[10px] font-bold">رصيد آمن</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: SUPPLIES INVENTORY (مخزون المستلزمات الموحد) -->
+      <div id="tab-content-supplies-tab" class="tab-pane hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div class="space-y-0.5">
+            <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-secondary">inventory_2</span>
+              جدول مخزون جميع فئات المستلزمات بمحطة النور
+            </h3>
+            <p class="text-[10px] text-on-surface-variant">عرض موحد لجميع الأصناف المسجلة بمخزن مستلزمات المحطة</p>
+          </div>
+
+          <!-- Category Filter Chips -->
+          <div class="flex items-center gap-1.5 overflow-x-auto">
+            <button onclick="filterSuppliesTab('ALL', this)" class="supp-chip active bg-primary text-white px-3 py-1 rounded-lg text-xs font-bold shadow-sm shrink-0">الكل</button>
+            <button onclick="filterSuppliesTab('كراتين', this)" id="chip-كراتين" class="supp-chip bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-3 py-1 rounded-lg text-xs font-bold border border-outline-variant/40 shrink-0">كراتين</button>
+            <button onclick="filterSuppliesTab('أكياس', this)" id="chip-أكياس" class="supp-chip bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-3 py-1 rounded-lg text-xs font-bold border border-outline-variant/40 shrink-0">أكياس</button>
+            <button onclick="filterSuppliesTab('لزق', this)" id="chip-لزق" class="supp-chip bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-3 py-1 rounded-lg text-xs font-bold border border-outline-variant/40 shrink-0">لزق</button>
+            <button onclick="filterSuppliesTab('أخرى', this)" id="chip-أخرى" class="supp-chip bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-3 py-1 rounded-lg text-xs font-bold border border-outline-variant/40 shrink-0">أخرى</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">الفئة</th>
+                <th class="p-3">الصنف / المستلزم</th>
+                <th class="p-3">الوحدة</th>
+                <th class="p-3 font-mono">الرصيد المتاح بالمخزن</th>
+                <th class="p-3 font-mono">تكلفة الوحدة (ج.م)</th>
+                <th class="p-3">آخر حركة</th>
+              </tr>
+            </thead>
+            <tbody id="station-supplies-tbody" class="divide-y divide-outline-variant/40">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: STOCK MOVEMENTS (حركات المخزون) -->
+      <div id="tab-content-movements-tab" class="tab-pane hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs font-bold text-primary">تصفية نوع الحركة:</span>
+            <select id="movement-type-select" onchange="filterMovements()" class="bg-background border border-outline-variant rounded px-3 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+              <option value="ALL">جميع الحركات (خام ومستلزمات)</option>
+              <option value="وارد خام">وارد خام</option>
+              <option value="وارد مستلزمات">وارد مستلزمات</option>
+              <option value="صرف لشحنة">صرف لشحنة</option>
+              <option value="هالك">هالك وتشغيل</option>
+            </select>
+          </div>
+          <span class="text-[11px] text-outline font-mono">سجل الحركة التراكمي للمحطة</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">نوع الحركة</th>
+                <th class="p-3">المكون / الصنف</th>
+                <th class="p-3">رقم المرجع / المستند</th>
+                <th class="p-3 font-mono">الكمية (+ وارد / - منصرف)</th>
+                <th class="p-3 font-mono">الرصيد بعد الحركة</th>
+              </tr>
+            </thead>
+            <tbody id="movements-tbody" class="divide-y divide-outline-variant/40">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: STATION ANALYTICS (مؤشرات المحطة) -->
+      <div id="tab-content-analytics-tab" class="tab-pane hidden space-y-5">
+        <div class="bg-emerald-50/50 border border-emerald-200 p-4 rounded-xl space-y-1">
+          <h3 class="font-bold text-emerald-950 text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px] text-emerald-700">insights</span>
+            مؤشرات الأداء التشغيلي والمالي للمحطة
+          </h3>
+          <p class="text-[11px] text-emerald-800">تحليل استهلاك الخامات والمستلزمات ومعدلات الهالك ومستحقات التشغيل بالمحطة</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">كمية الخام المصنعة والمعالجة</span>
+            <div class="text-xl font-bold text-primary font-mono">45.0 <span class="text-xs font-normal">طن</span></div>
+            <span class="text-[10px] text-emerald-700">تجميد فراولة IQF هذا الموسم</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">إجمالي عدد الشحنات</span>
+            <div class="text-xl font-bold text-primary font-mono">12 <span class="text-xs font-normal">شحنة</span></div>
+            <span class="text-[10px] text-emerald-700">مكتملة ومجهزة للتصدير</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">متوسط نسبة الهالك بالمحطة</span>
+            <div class="text-xl font-bold text-rose-600 font-mono">4.20% <span class="text-xs font-normal">(300 KG)</span></div>
+            <span class="text-[10px] text-rose-600">ضمن الحدود المسموح بها (أقل من 5%)</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">استهلاك الكراتين</span>
+            <div class="text-xl font-bold text-emerald-800 font-mono">4,250 <span class="text-xs font-normal">كرتونة</span></div>
+            <span class="text-[10px] text-emerald-700">تعبئة شحنات 10k و 5k</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">استهلاك الأكياس</span>
+            <div class="text-xl font-bold text-secondary font-mono">1,200 <span class="text-xs font-normal">كيس</span></div>
+            <span class="text-[10px] text-secondary">تعبئة بوليثين داخلية</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">استهلاك اللزق</span>
+            <div class="text-xl font-bold text-purple-800 font-mono">320 <span class="text-xs font-normal">رول</span></div>
+            <span class="text-[10px] text-purple-700">تغليق كراتين الشحنات</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">مستحقات تشغيل المحطة</span>
+            <div class="text-xl font-bold text-amber-800 font-mono">25,000.00 <span class="text-xs font-normal">ج.م</span></div>
+            <span class="text-[10px] text-amber-700">أجور رسوم معالجة</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">مستحقات المقاول القائمة</span>
+            <div class="text-xl font-bold text-rose-700 font-mono">15,000.00 <span class="text-xs font-normal">ج.م</span></div>
+            <span class="text-[10px] text-rose-600">أجور عمالة وتجهيز</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+<script>
+const stationSuppliesData = [
+  { category: "كراتين", name: "كرتونة سما 10 كجم", unit: "كرتونة", stock: 3000, price: 15.00, lastMove: "08/08/2026 (SH-000125)" },
+  { category: "كراتين", name: "كرتونة سما 5 كجم", unit: "كرتونة", stock: 1250, price: 10.00, lastMove: "05/08/2026" },
+  { category: "أكياس", name: "كيس تعبئة 5 كجم", unit: "كيس", stock: 800, price: 1.50, lastMove: "08/08/2026" },
+  { category: "أكياس", name: "كيس تعبئة 10 كجم", unit: "كيس", stock: 400, price: 2.50, lastMove: "02/08/2026" },
+  { category: "أكياس", name: "كيس تصدير عالي الكثافة", unit: "كيس", stock: 200, price: 3.00, lastMove: "01/08/2026" },
+  { category: "لزق", name: "لزق أزرق عريض", unit: "رول", stock: 320, price: 12.00, lastMove: "08/08/2026" },
+  { category: "أخرى", name: "أحزمة تربيط بالتات", unit: "لفافة", stock: 80, price: 45.00, lastMove: "01/08/2026" }
+];
+
+const stationMovementsData = [
+  { date: "08/08/2026", type: "صرف لشحنة", item: "فراولة خام (8,500 كجم) + لزق + كراتين", ref: "SH-000125", qty: "- 4,000 KG / - 370 كرتونة", balance: "8,500 KG خام / 4,250 كرتونة" },
+  { date: "08/08/2026", type: "وارد مستلزمات", item: "كرتونة سما 10 كجم", ref: "PKG-2026-001", qty: "+ 3,000 كرتونة", balance: "4,250 كرتونة" },
+  { date: "05/08/2026", type: "وارد خام", item: "فراولة خام درجة أولى", ref: "PUR-2026-005", qty: "+ 10,000 KG", balance: "12,500 KG" },
+  { date: "03/08/2026", type: "هالك", item: "هالك فرز وتصنيع فراولة", ref: "SH-000121", qty: "- 300 KG", balance: "8,500 KG" },
+  { date: "01/08/2026", type: "وارد خام", item: "فراولة خام درجة أولى", ref: "PUR-2026-001", qty: "+ 8,500 KG", balance: "8,500 KG" }
+];
+
+let selectedSuppliesCategory = 'ALL';
+
+function switchTab(tabKey, targetCategory, btnElement) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('bg-primary', 'text-white');
+    b.classList.add('bg-surface-variant/60', 'text-on-surface');
+  });
+
+  const contentEl = document.getElementById(`tab-content-${tabKey}`);
+  if (contentEl) contentEl.classList.remove('hidden');
+
+  if (btnElement) {
+    btnElement.classList.remove('bg-surface-variant/60', 'text-on-surface');
+    btnElement.classList.add('bg-primary', 'text-white');
+  }
+
+  if (targetCategory && tabKey === 'supplies-tab') {
+    const chipBtn = document.getElementById(`chip-${targetCategory}`);
+    filterSuppliesTab(targetCategory, chipBtn);
+  }
+}
+
+function filterSuppliesTab(cat, btn) {
+  selectedSuppliesCategory = cat;
+  document.querySelectorAll('.supp-chip').forEach(b => {
+    b.classList.remove('bg-primary', 'text-white');
+    b.classList.add('bg-surface-variant/60', 'text-on-surface');
+  });
+
+  if (btn) {
+    btn.classList.remove('bg-surface-variant/60', 'text-on-surface');
+    btn.classList.add('bg-primary', 'text-white');
+  }
+
+  renderSuppliesTable();
+}
+
+function renderSuppliesTable() {
+  const tbody = document.getElementById('station-supplies-tbody');
+  tbody.innerHTML = '';
+
+  stationSuppliesData.forEach(item => {
+    if (selectedSuppliesCategory === 'ALL' || item.category === selectedSuppliesCategory) {
+      let catBadgeClass = 'bg-gray-100 text-gray-800 border-gray-300';
+      if (item.category === 'كراتين') catBadgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-300';
+      else if (item.category === 'أكياس') catBadgeClass = 'bg-blue-100 text-blue-900 border-blue-300';
+      else if (item.category === 'لزق') catBadgeClass = 'bg-purple-100 text-purple-900 border-purple-300';
+
+      tbody.innerHTML += `
+        <tr class="hover:bg-surface-variant/40 transition-colors">
+          <td class="p-3"><span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold border ${catBadgeClass}">${item.category}</span></td>
+          <td class="p-3 font-bold text-primary">${item.name}</td>
+          <td class="p-3 font-semibold">${item.unit}</td>
+          <td class="p-3 font-mono font-bold text-secondary text-sm">${item.stock.toLocaleString()} ${item.unit}</td>
+          <td class="p-3 font-mono font-bold text-emerald-700">${item.price.toFixed(2)} ج.م</td>
+          <td class="p-3 font-mono text-[11px] text-outline">${item.lastMove}</td>
+        </tr>
+      `;
+    }
+  });
+}
+
+function renderMovementsTable() {
+  const tbody = document.getElementById('movements-tbody');
+  tbody.innerHTML = '';
+  const filterType = document.getElementById('movement-type-select').value;
+
+  stationMovementsData.forEach(m => {
+    if (filterType === 'ALL' || m.type === filterType) {
+      let typeBadge = 'bg-gray-100 text-gray-800 border-gray-300';
+      if (m.type === 'وارد خام') typeBadge = 'bg-emerald-100 text-emerald-900 border-emerald-300';
+      else if (m.type === 'وارد مستلزمات') typeBadge = 'bg-blue-100 text-blue-900 border-blue-300';
+      else if (m.type === 'صرف لشحنة') typeBadge = 'bg-purple-100 text-purple-900 border-purple-300';
+      else if (m.type === 'هالك') typeBadge = 'bg-rose-100 text-rose-900 border-rose-300';
+
+      tbody.innerHTML += `
+        <tr class="hover:bg-surface-variant/40 transition-colors">
+          <td class="p-3 font-mono text-on-surface-variant">${m.date}</td>
+          <td class="p-3"><span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold border ${typeBadge}">${m.type}</span></td>
+          <td class="p-3 font-bold text-primary">${m.item}</td>
+          <td class="p-3 font-mono font-bold text-secondary">${m.ref}</td>
+          <td class="p-3 font-mono font-bold ${m.qty.includes('+') ? 'text-emerald-700' : 'text-rose-600'}">${m.qty}</td>
+          <td class="p-3 font-mono font-bold text-primary">${m.balance}</td>
+        </tr>
+      `;
+    }
+  });
+}
+
+function filterMovements() {
+  renderMovementsTable();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderSuppliesTable();
+  renderMovementsTable();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>وارد الخام - تسجيل واستلام الخام ومتابعة الرصيد</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Page Header Banner -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">shopping_cart</span>
+            وارد الخام
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">تسجيل سريع في شاشة واحدة</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">تسجيل استلام خام جديد وإضافته آلياً إلى مخزون خام المحطة المحددة وحسابات المورد</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="scrollToForm()" class="bg-primary text-white hover:bg-primary-container px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+          + تسجيل وارد خام
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="raw-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="raw-toast-msg">تم تسجيل استلام الخام بنجاح!</span>
+    </div>
+
+    <!-- SINGLE CLEAN ENTRY FORM & LIVE COST CARD GRID (NO WIZARD) -->
+    <div id="raw-entry-section" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- RECEIVING FORM (8 COLS) -->
+      <div class="lg:col-span-8 bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+        <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+          <h2 class="text-base font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">add_box</span>
+            تسجيل وارد خام (شاشة استلام موحدة)
+          </h2>
+          <span class="text-xs font-mono font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-1 rounded">
+            رقم الوارد التلقائي: <strong id="auto-ref-code">REC-2026-0001</strong>
+          </span>
+        </div>
+
+        <form onsubmit="handleRawSubmit(event)" class="space-y-4 text-xs">
+          <!-- Row 1: Supplier & Product -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="font-bold text-on-surface-variant block">المورد الزراعي *</label>
+              <select id="raw-supplier-select" onchange="onSupplierChange()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-bold text-primary focus:ring-2 focus:ring-primary focus:border-primary">
+                <option value="شركة الخير" selected>شركة الخير للتنمية الزراعية</option>
+                <option value="مزارع الوادي">مزارع الوادي الحديثة</option>
+                <option value="شركة النيل">شركة النيل للزراعات</option>
+              </select>
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-on-surface-variant block">المنتج الخام *</label>
+              <select id="raw-product-select" onchange="onProductChange()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-bold text-primary focus:ring-2 focus:ring-primary focus:border-primary">
+                <!-- Populated via JS -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 2: Station & Read-Only Raw Warehouse -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="font-bold text-on-surface-variant block">المحطة المستلمة *</label>
+              <select id="raw-station-select" onchange="onStationChange()" class="w-full bg-surface border-2 border-blue-200 rounded-lg p-2.5 font-bold text-on-surface focus:outline-none focus:border-primary">
+                <option value="محطة النور" selected>محطة النور للمعالجة والتجميد - البحيرة</option>
+                <option value="محطة السلام">محطة السلام للتجهيز والتصدير - الإسماعيلية</option>
+              </select>
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-on-surface-variant block">مخزن الخام المربوط بالمحطة (تلقائي وقراءة فقط)</label>
+              <div id="read-only-raw-wh" class="w-full bg-emerald-50/60 border border-emerald-300 rounded-lg p-2.5 font-bold text-emerald-900 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px] text-emerald-700">warehouse</span>
+                مخزن خام - محطة النور
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-outline-variant/60 my-2"/>
+
+          <!-- Row 3: Quantity, Default Price & Actual Price -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="space-y-1">
+              <label class="font-bold text-primary block">الكمية المقبوضة (كجم) *</label>
+              <div class="relative">
+                <input id="raw-qty" type="number" step="100" required value="10000" oninput="calculateCost()" class="w-full bg-surface border-2 border-blue-200 rounded-lg p-2.5 font-mono font-bold text-primary text-base focus:outline-none focus:border-primary pl-12"/>
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-outline text-xs">KG</span>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-on-surface-variant block">السعر الافتراضي للمورد</label>
+              <div id="display-default-price" class="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-lg p-2.5 font-mono font-bold text-on-surface-variant">
+                50.00 ج.م / KG
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="font-bold text-primary block">سعر الشراء الفعلي (ج.م/KG) *</label>
+              <div class="relative">
+                <input id="raw-actual-price" type="number" step="0.5" required value="50.00" oninput="calculateCost()" class="w-full bg-surface border-2 border-blue-200 rounded-lg p-2.5 font-mono font-bold text-emerald-700 text-base focus:outline-none focus:border-primary pl-12"/>
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-outline text-xs">ج.م</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: Optional Transport Cost -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div class="space-y-1">
+              <label class="font-bold text-on-surface-variant block">تكلفة النقل والشحن (اختياري)</label>
+              <div class="relative">
+                <input id="raw-transport-cost" type="number" step="100" value="2500" placeholder="0.00" oninput="calculateCost()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-mono font-bold text-on-surface focus:ring-2 focus:ring-primary focus:border-primary pl-12"/>
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-outline text-xs">ج.م</span>
+              </div>
+            </div>
+
+            <div class="flex items-end justify-end">
+              <button type="submit" class="w-full bg-primary text-white hover:bg-primary-container py-2.5 px-5 rounded-lg font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">save</span>
+                حفظ الوارد وإضافة للمخزون
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- LIVE COST SUMMARY CARD (4 COLS) -->
+      <div class="lg:col-span-4 bg-surface rounded-xl border border-outline-variant shadow-sm p-5 space-y-4 flex flex-col justify-between">
+        <div class="space-y-3">
+          <h3 class="font-bold text-primary text-sm border-b border-outline-variant/60 pb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px] text-secondary">calculate</span>
+            ملخص التكلفة الحسابية لعملية الوارد
+          </h3>
+
+          <div class="space-y-2.5 text-xs">
+            <div class="flex justify-between items-center bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40">
+              <span class="text-on-surface-variant font-medium">قيمة الخامات الخالصة:</span>
+              <span id="summary-raw-value" class="font-mono font-bold text-primary text-sm">500,000.00 ج.م</span>
+            </div>
+
+            <div class="flex justify-between items-center bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40">
+              <span class="text-on-surface-variant font-medium">تكلفة النقل والمشال:</span>
+              <span id="summary-transport-cost" class="font-mono font-bold text-on-surface">2,500.00 ج.م</span>
+            </div>
+
+            <div class="bg-primary text-white p-3.5 rounded-xl shadow-sm space-y-1 mt-2">
+              <span class="text-xs text-white/80 font-medium block">إجمالي تكلفة استلام الشحنة:</span>
+              <div id="summary-total-cost" class="text-2xl font-bold font-mono text-emerald-300">502,500.00 <span class="text-xs font-normal">ج.م</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-[11px] text-emerald-900 font-medium space-y-1">
+          <span class="font-bold block">💡 التتبع والمستحقات الآلية:</span>
+          <span>حفظ هذه الحركة يضيف <strong>+10,000 كجم</strong> آلياً لمخزن خام المحطة، ويحسب استحقاق <strong>502,500 ج.م</strong> لحساب المورد.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RECENT RECEIVING TRANSACTIONS TABLE SECTION -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-outline-variant/60 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">history</span>
+            سجل حركات وارد الخام المعتمدة (Recent Receiving Transactions)
+          </h2>
+          <p class="text-[11px] text-on-surface-variant">تتبع دفعات استلام الخام والمتاح منها حالياً للسحب والتشغيل للشحنات</p>
+        </div>
+
+        <span class="text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full">
+          3 حركات استلام مجهزة
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+            <tr>
+              <th class="p-3">رقم الوارد</th>
+              <th class="p-3">التاريخ</th>
+              <th class="p-3">المورد</th>
+              <th class="p-3">المنتج الخام</th>
+              <th class="p-3">المحطة والمخزن</th>
+              <th class="p-3 font-mono">الكمية المقبوضة</th>
+              <th class="p-3 font-mono">سعر KG</th>
+              <th class="p-3 font-mono">النقل</th>
+              <th class="p-3 font-mono">إجمالي التكلفة</th>
+              <th class="p-3 font-mono">الكمية المتاحة حالياً</th>
+              <th class="p-3 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="raw-transactions-tbody" class="divide-y divide-outline-variant/40">
+            
+            <!-- Row 1 -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='raw-purchase-details.html?id=REC-2026-0001'">
+              <td class="p-3 font-mono font-bold text-primary">REC-2026-0001</td>
+              <td class="p-3 font-mono text-on-surface-variant">14/08/2026</td>
+              <td class="p-3 font-bold text-primary"><a href="supplier-details.html" class="hover:underline">شركة الخير</a></td>
+              <td class="p-3 font-bold">فراولة خام درجة أولى</td>
+              <td class="p-3">
+                <span class="font-bold text-on-surface block">محطة النور</span>
+                <span class="text-[10px] text-outline block">مخزن خام محطة النور</span>
+              </td>
+              <td class="p-3 font-mono font-bold text-emerald-800">10,000 KG</td>
+              <td class="p-3 font-mono">50.00 ج.م</td>
+              <td class="p-3 font-mono">2,500.00 ج.م</td>
+              <td class="p-3 font-mono font-bold text-primary">502,500.00 ج.م</td>
+              <td class="p-3 font-mono font-bold text-emerald-700 text-sm">8,500 KG</td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <a href="raw-purchase-details.html?id=REC-2026-0001" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all inline-flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">visibility</span>
+                  عرض التفاصيل والتتبع
+                </a>
+              </td>
+            </tr>
+
+            <!-- Row 2 -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='raw-purchase-details.html?id=REC-2026-0002'">
+              <td class="p-3 font-mono font-bold text-primary">REC-2026-0002</td>
+              <td class="p-3 font-mono text-on-surface-variant">10/08/2026</td>
+              <td class="p-3 font-bold text-primary"><a href="supplier-details.html" class="hover:underline">مزارع الوادي</a></td>
+              <td class="p-3 font-bold">مانجو خام للتجميد</td>
+              <td class="p-3">
+                <span class="font-bold text-on-surface block">محطة السلام</span>
+                <span class="text-[10px] text-outline block">مخزن خام محطة السلام</span>
+              </td>
+              <td class="p-3 font-mono font-bold text-emerald-800">6,000 KG</td>
+              <td class="p-3 font-mono">45.00 ج.م</td>
+              <td class="p-3 font-mono">1,500.00 ج.م</td>
+              <td class="p-3 font-mono font-bold text-primary">271,500.00 ج.م</td>
+              <td class="p-3 font-mono font-bold text-emerald-700 text-sm">6,000 KG</td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <a href="raw-purchase-details.html?id=REC-2026-0002" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all inline-flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">visibility</span>
+                  عرض التفاصيل والتتبع
+                </a>
+              </td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='raw-purchase-details.html?id=REC-2026-0003'">
+              <td class="p-3 font-mono font-bold text-primary">REC-2026-0003</td>
+              <td class="p-3 font-mono text-on-surface-variant">05/08/2026</td>
+              <td class="p-3 font-bold text-primary"><a href="supplier-details.html" class="hover:underline">شركة النيل</a></td>
+              <td class="p-3 font-bold">فاصوليا خضراء خام</td>
+              <td class="p-3">
+                <span class="font-bold text-on-surface block">محطة السلام</span>
+                <span class="text-[10px] text-outline block">مخزن خام محطة السلام</span>
+              </td>
+              <td class="p-3 font-mono font-bold text-emerald-800">5,000 KG</td>
+              <td class="p-3 font-mono">30.00 ج.م</td>
+              <td class="p-3 font-mono">0.00 ج.م</td>
+              <td class="p-3 font-mono font-bold text-primary">150,000.00 ج.م</td>
+              <td class="p-3 font-mono font-bold text-rose-600">0 KG (مستنفذ)</td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <a href="raw-purchase-details.html?id=REC-2026-0003" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all inline-flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">visibility</span>
+                  عرض التفاصيل والتتبع
+                </a>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+<script>
+const supplierProductsMap = {
+  "شركة الخير": [
+    { name: "فراولة خام درجة أولى", price: 50.00 },
+    { name: "مانجو خام للتجميد", price: 48.00 }
+  ],
+  "مزارع الوادي": [
+    { name: "مانجو خام للتجميد", price: 45.00 },
+    { name: "فراولة خام درجة أولى", price: 51.00 }
+  ],
+  "شركة النيل": [
+    { name: "فاصوليا خضراء خام", price: 30.00 },
+    { name: "بازلاء مجمدة خام", price: 28.00 }
+  ]
+};
+
+const stationWarehousesMap = {
+  "محطة النور": "مخزن خام - محطة النور",
+  "محطة السلام": "مخزن خام - محطة السلام"
+};
+
+function onSupplierChange() {
+  const sup = document.getElementById('raw-supplier-select').value;
+  const prodSelect = document.getElementById('raw-product-select');
+  prodSelect.innerHTML = '';
+
+  const prods = supplierProductsMap[sup] || supplierProductsMap['شركة الخير'];
+  prods.forEach(p => {
+    prodSelect.innerHTML += `<option value="${p.name}" data-price="${p.price}">${p.name}</option>`;
+  });
+
+  onProductChange();
+}
+
+function onProductChange() {
+  const prodSelect = document.getElementById('raw-product-select');
+  const selectedOpt = prodSelect.options[prodSelect.selectedIndex];
+  if (!selectedOpt) return;
+
+  const defaultPrice = parseFloat(selectedOpt.getAttribute('data-price')) || 50.00;
+  document.getElementById('display-default-price').innerText = `${defaultPrice.toFixed(2)} ج.م / KG`;
+  document.getElementById('raw-actual-price').value = defaultPrice.toFixed(2);
+
+  calculateCost();
+}
+
+function onStationChange() {
+  const station = document.getElementById('raw-station-select').value;
+  const whName = stationWarehousesMap[station] || "مخزن خام - " + station;
+  document.getElementById('read-only-raw-wh').innerHTML = `
+    <span class="material-symbols-outlined text-[18px] text-emerald-700">warehouse</span>
+    ${whName}
+  `;
+}
+
+function calculateCost() {
+  const qty = parseFloat(document.getElementById('raw-qty').value) || 0;
+  const price = parseFloat(document.getElementById('raw-actual-price').value) || 0;
+  const transport = parseFloat(document.getElementById('raw-transport-cost').value) || 0;
+
+  const rawVal = qty * price;
+  const total = rawVal + transport;
+
+  document.getElementById('summary-raw-value').innerText = `${rawVal.toLocaleString('ar-EG', {minimumFractionDigits: 2})} ج.م`;
+  document.getElementById('summary-transport-cost').innerText = `${transport.toLocaleString('ar-EG', {minimumFractionDigits: 2})} ج.م`;
+  document.getElementById('summary-total-cost').innerHTML = `${total.toLocaleString('ar-EG', {minimumFractionDigits: 2})} <span class="text-xs font-normal">ج.م</span>`;
+}
+
+function handleRawSubmit(e) {
+  e.preventDefault();
+  const refCode = document.getElementById('auto-ref-code').innerText;
+  const sup = document.getElementById('raw-supplier-select').value;
+  const prod = document.getElementById('raw-product-select').value;
+  const qty = parseFloat(document.getElementById('raw-qty').value) || 0;
+
+  document.getElementById('raw-toast-msg').innerText = `تم تسجيل إذن الوارد "${refCode}" للمورد "${sup}" بوزن (${qty.toLocaleString()} كجم) بنجاح واشتراط مخزن الخام آلياً!`;
+  document.getElementById('raw-toast').classList.remove('hidden');
+
+  setTimeout(() => {
+    window.location.href = `raw-purchase-details.html?id=${refCode}`;
+  }, 1200);
+}
+
+function scrollToForm() {
+  document.getElementById('raw-entry-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  onSupplierChange();
+  onStationChange();
+});
+</script>
+</body>
+</html>

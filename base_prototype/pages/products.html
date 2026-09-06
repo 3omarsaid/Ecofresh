@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إدارة المنتجات والبيانات الأساسية - ERP التصدير</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- PAGE HEADER BANNER -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">inventory_2</span>
+            إدارة المنتجات (Product Master Data)
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">دليل أصناف التجميد والتصدير المركزية</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">إدارة أصناف المنتجات ودرجاتها ومواصفاتها ومخزونها وربطها بالمشتريات والتشغيل والشحنات والعملاء</p>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="openAddProductModal()" class="bg-primary text-white text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-primary-container transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          + إضافة منتج
+        </button>
+        <button onclick="window.showToast('استيراد الأصناف عبر ملف Excel جاهز', 'info')" class="bg-surface border border-outline-variant text-primary text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">upload_file</span>
+          استيراد منتجات
+        </button>
+        <button onclick="window.showToast('تم تصدير دليل المنتجات بصيغة Excel', 'success')" class="bg-surface border border-outline-variant text-primary text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">download</span>
+          تصدير Excel
+        </button>
+        <button onclick="window.print()" class="bg-surface border border-outline-variant text-primary text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">print</span>
+          طباعة
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="product-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="product-toast-msg">تم حفظ بيانات المنتج بنجاح</span>
+    </div>
+
+    <!-- KPI SUMMARY CARDS (8 EXECUTIVE INDICATORS) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+      
+      <div class="bg-surface p-3 rounded-xl border border-outline-variant shadow-sm space-y-0.5">
+        <span class="text-[10px] text-on-surface-variant font-semibold">إجمالي المنتجات</span>
+        <div class="text-base font-bold text-primary font-mono">24 <span class="text-[10px] font-normal">صنف</span></div>
+        <span class="text-[9px] text-outline">Master Directory</span>
+      </div>
+
+      <div class="bg-surface p-3 rounded-xl border border-outline-variant shadow-sm space-y-0.5">
+        <span class="text-[10px] text-on-surface-variant font-semibold">المنتجات النشطة</span>
+        <div class="text-base font-bold text-emerald-800 font-mono">20 <span class="text-[10px] font-normal">صنف</span></div>
+        <span class="text-[9px] text-emerald-700 font-bold">● متاحة للتداول</span>
+      </div>
+
+      <div class="bg-surface p-3 rounded-xl border border-outline-variant shadow-sm space-y-0.5">
+        <span class="text-[10px] text-on-surface-variant font-semibold">غير النشطة</span>
+        <div class="text-base font-bold text-outline font-mono">4 <span class="text-[10px] font-normal">أصناف</span></div>
+        <span class="text-[9px] text-outline">موقوفة تشغيلياً</span>
+      </div>
+
+      <div class="bg-surface p-3 rounded-xl border border-outline-variant shadow-sm space-y-0.5">
+        <span class="text-[10px] text-on-surface-variant font-semibold">لها مخزون فعلي</span>
+        <div class="text-base font-bold text-secondary font-mono">18 <span class="text-[10px] font-normal">صنف</span></div>
+        <span class="text-[9px] text-secondary font-bold">متاحة بالمخازن</span>
+      </div>
+
+      <div class="bg-surface p-3 rounded-xl border border-amber-300 bg-amber-50/40 shadow-sm space-y-0.5">
+        <span class="text-[10px] text-amber-950 font-semibold">تحت حد الأمان</span>
+        <div class="text-base font-bold text-amber-800 font-mono">3 <span class="text-[10px] font-normal">أصناف</span></div>
+        <span class="text-[9px] text-amber-800 font-bold">⚠️ تحتاج إعادة طلب</span>
+      </div>
+
+      <div class="bg-surface p-3 rounded-xl border border-outline-variant shadow-sm space-y-0.5">
+        <span class="text-[10px] text-on-surface-variant font-semibold">درجات الفرز (Grades)</span>
+        <div class="text-base font-bold text-primary font-mono">42 <span class="text-[10px] font-normal">درجة</span></div>
+        <span class="text-[9px] text-outline">مواصفات فرز</span>
+      </div>
+
+      <div class="bg-surface p-3 rounded-xl border border-outline-variant shadow-sm space-y-0.5">
+        <span class="text-[10px] text-on-surface-variant font-semibold">مستخدمة بشحنات</span>
+        <div class="text-base font-bold text-emerald-800 font-mono">16 <span class="text-[10px] font-normal">صنف</span></div>
+        <span class="text-[9px] text-emerald-700 font-bold">شحنات منجزة</span>
+      </div>
+
+      <div class="bg-surface p-3 rounded-xl border border-outline-variant shadow-sm space-y-0.5">
+        <span class="text-[10px] text-on-surface-variant font-semibold">عقود العملاء</span>
+        <div class="text-base font-bold text-primary font-mono">19 <span class="text-[10px] font-normal">صنف</span></div>
+        <span class="text-[9px] text-outline">مرتبطة باتفاقيات</span>
+      </div>
+
+    </div>
+
+    <!-- SEARCH & FILTER BAR -->
+    <div class="bg-surface rounded-xl border border-outline-variant p-4 shadow-sm space-y-3">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
+        
+        <!-- Search Input -->
+        <div class="flex-1 w-full relative">
+          <input type="text" id="search-product-input" onkeyup="filterProducts()" placeholder="ابحث باسم المنتج، كود المنتج (PRD-001)، الدرجة (IQF 25/30)، أو SKU..." class="w-full bg-background border border-outline-variant rounded-lg px-3 py-2 pr-9 text-xs font-bold focus:outline-none focus:border-primary"/>
+          <span class="material-symbols-outlined text-[18px] text-outline absolute right-3 top-1/2 -translate-y-1/2">search</span>
+        </div>
+
+        <!-- View Switcher -->
+        <div class="flex items-center gap-1 bg-surface-variant/40 p-1 rounded-lg border border-outline-variant/60 shrink-0 text-xs font-bold">
+          <button onclick="switchView('table')" id="view-btn-table" class="px-3 py-1 rounded bg-primary text-white transition-all flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">table_rows</span>
+            جدول
+          </button>
+          <button onclick="switchView('cards')" id="view-btn-cards" class="px-3 py-1 rounded text-on-surface hover:bg-surface-variant transition-all flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">grid_view</span>
+            بطاقات Cards
+          </button>
+        </div>
+      </div>
+
+      <!-- Advanced Filters Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
+        
+        <select id="filter-type" onchange="filterProducts()" class="bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">جميع أنواع المنتجات</option>
+          <option value="RAW">منتج خام (Raw Material)</option>
+          <option value="FINISHED">منتج تام (Finished Product)</option>
+          <option value="WIP">تحت التشغيل (WIP)</option>
+        </select>
+
+        <select id="filter-grade" onchange="filterProducts()" class="bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">جميع الدرجات</option>
+          <option value="IQF 25/30">IQF 25/30 (درجة أولى)</option>
+          <option value="15/22">15/22 (درجة ثانية)</option>
+          <option value="صناعي">صناعي / مهروس</option>
+        </select>
+
+        <select id="filter-status" onchange="filterProducts()" class="bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">جميع الحالات</option>
+          <option value="ACTIVE">نشط فقط</option>
+          <option value="INACTIVE">غير نشط</option>
+        </select>
+
+        <select id="filter-stock" onchange="filterProducts()" class="bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">حالة المخزون (الكل)</option>
+          <option value="HAS_STOCK">له مخزون متوفر</option>
+          <option value="LOW_STOCK">⚠️ تحت حد الأمان</option>
+        </select>
+
+        <select id="filter-station" onchange="filterProducts()" class="bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+          <option value="ALL">المحطة التشغيلية (الكل)</option>
+          <option value="محطة النور">محطة النور</option>
+          <option value="محطة السلام">محطة السلام</option>
+        </select>
+
+        <button onclick="resetProductFilters()" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-outline-variant/60 flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+          مسح الفلاتر
+        </button>
+
+      </div>
+    </div>
+
+    <!-- TABS BAR -->
+    <div class="border-b border-outline-variant flex gap-2 overflow-x-auto bg-surface px-3 pt-2 rounded-xl border border-outline-variant/60 shadow-sm text-xs font-bold">
+      <button onclick="switchTab('ALL', this)" class="product-tab active border-b-2 border-primary text-primary px-4 py-2 transition-all">
+        كل المنتجات (24)
+      </button>
+      <button onclick="switchTab('RAW', this)" class="product-tab border-b-2 border-transparent text-on-surface-variant hover:text-primary px-4 py-2 transition-all">
+        المنتجات الخام (6)
+      </button>
+      <button onclick="switchTab('FINISHED', this)" class="product-tab border-b-2 border-transparent text-on-surface-variant hover:text-primary px-4 py-2 transition-all">
+        المنتجات التامة (14)
+      </button>
+      <button onclick="switchTab('WIP', this)" class="product-tab border-b-2 border-transparent text-on-surface-variant hover:text-primary px-4 py-2 transition-all">
+        تحت التشغيل (4)
+      </button>
+      <button onclick="switchTab('ACTIVE', this)" class="product-tab border-b-2 border-transparent text-on-surface-variant hover:text-primary px-4 py-2 transition-all">
+        النشطة (20)
+      </button>
+      <button onclick="switchTab('INACTIVE', this)" class="product-tab border-b-2 border-transparent text-on-surface-variant hover:text-primary px-4 py-2 transition-all">
+        غير النشطة (4)
+      </button>
+    </div>
+
+    <!-- VIEW 1: TABLE VIEW SECTION -->
+    <div id="products-table-container" class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h2 class="text-base font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">inventory</span>
+          دليل وسجل الأصناف المركزية (Product Master Directory)
+        </h2>
+        <span class="text-xs text-on-surface-variant">الرصيد محسوب تلقائياً من حركات الوارد والمنصرف والتشغيل والشحن</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+            <tr>
+              <th class="p-3 font-mono">كود المنتج</th>
+              <th class="p-3">اسم المنتج الأصلي</th>
+              <th class="p-3">نوع المنتج</th>
+              <th class="p-3">التصنيف الرئيسي</th>
+              <th class="p-3">الدرجة (Grade)</th>
+              <th class="p-3 font-mono">المواصفة / الحجم</th>
+              <th class="p-3 font-mono">الوحدة</th>
+              <th class="p-3 font-mono text-base">الرصيد الحالي</th>
+              <th class="p-3 text-center">المخازن</th>
+              <th class="p-3 text-center">الموردون</th>
+              <th class="p-3 text-center">العملاء</th>
+              <th class="p-3 font-mono">آخر حركة</th>
+              <th class="p-3 text-center">الحالة</th>
+              <th class="p-3 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody" class="divide-y divide-outline-variant/40">
+            
+            <!-- Item 1: PRD-001 -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='product-details.html?id=PRD-001'">
+              <td class="p-3 font-mono font-bold text-secondary">
+                <a href="product-details.html?id=PRD-001" class="hover:underline">PRD-001</a>
+              </td>
+              <td class="p-3 font-bold text-primary text-sm">
+                <a href="product-details.html?id=PRD-001" class="hover:underline flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[18px] text-emerald-800">ac_unit</span>
+                  فراولة مجمدة
+                </a>
+              </td>
+              <td class="p-3"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">منتج تام</span></td>
+              <td class="p-3 font-semibold text-primary">فواكه مجمدة IQF</td>
+              <td class="p-3 font-bold text-primary">درجة أولى (IQF)</td>
+              <td class="p-3 font-mono text-on-surface">25/30</td>
+              <td class="p-3 font-mono font-bold">KG</td>
+              <td class="p-3 font-mono font-bold text-emerald-800 text-base">25,800 KG</td>
+              <td class="p-3 text-center font-bold font-mono">4 مخازن</td>
+              <td class="p-3 text-center font-bold font-mono">14 مورد</td>
+              <td class="p-3 text-center font-bold font-mono text-secondary">24 عميل</td>
+              <td class="p-3 font-mono text-on-surface-variant">اليوم 10:30</td>
+              <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">نشط</span></td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1">
+                  <a href="product-details.html?id=PRD-001" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-[11px] font-bold transition-all shadow-sm">
+                    👁 التفاصيل
+                  </a>
+                  <a href="product-details.html?id=PRD-001&tab=ledger" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-[11px] font-bold transition-all border border-outline-variant">
+                    📜 الحركة
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Item 2: PRD-002 -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='product-details.html?id=PRD-002'">
+              <td class="p-3 font-mono font-bold text-secondary">
+                <a href="product-details.html?id=PRD-002" class="hover:underline">PRD-002</a>
+              </td>
+              <td class="p-3 font-bold text-primary text-sm">
+                <a href="product-details.html?id=PRD-002" class="hover:underline flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[18px] text-emerald-800">ac_unit</span>
+                  فراولة مجمدة
+                </a>
+              </td>
+              <td class="p-3"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">منتج تام</span></td>
+              <td class="p-3 font-semibold text-primary">فواكه مجمدة IQF</td>
+              <td class="p-3 font-bold text-primary">درجة ثانية</td>
+              <td class="p-3 font-mono text-on-surface">15/22</td>
+              <td class="p-3 font-mono font-bold">KG</td>
+              <td class="p-3 font-mono font-bold text-emerald-800 text-base">8,200 KG</td>
+              <td class="p-3 text-center font-bold font-mono">2 مخزن</td>
+              <td class="p-3 text-center font-bold font-mono">9 مورد</td>
+              <td class="p-3 text-center font-bold font-mono text-secondary">12 عميل</td>
+              <td class="p-3 font-mono text-on-surface-variant">أمس 14:15</td>
+              <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">نشط</span></td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1">
+                  <a href="product-details.html?id=PRD-002" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-[11px] font-bold transition-all shadow-sm">
+                    👁 التفاصيل
+                  </a>
+                  <a href="product-details.html?id=PRD-002&tab=ledger" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-[11px] font-bold transition-all border border-outline-variant">
+                    📜 الحركة
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Item 3: PRD-RAW-01 (Low stock warning) -->
+            <tr class="hover:bg-surface-variant/40 transition-colors bg-amber-50/50 cursor-pointer" onclick="window.location.href='product-details.html?id=PRD-RAW-01'">
+              <td class="p-3 font-mono font-bold text-secondary">
+                <a href="product-details.html?id=PRD-RAW-01" class="hover:underline">PRD-RAW-01</a>
+              </td>
+              <td class="p-3 font-bold text-primary text-sm">
+                <a href="product-details.html?id=PRD-RAW-01" class="hover:underline flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[18px] text-amber-700">agriculture</span>
+                  فراولة طازجة خام
+                </a>
+              </td>
+              <td class="p-3"><span class="bg-amber-100 text-amber-950 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-bold">منتج خام</span></td>
+              <td class="p-3 font-semibold text-primary">خام زراعي وادي النيل</td>
+              <td class="p-3 font-bold text-primary">استلام طازج</td>
+              <td class="p-3 font-mono text-on-surface">درجة فرز 1</td>
+              <td class="p-3 font-mono font-bold">KG</td>
+              <td class="p-3 font-mono font-bold text-amber-800 text-base">
+                1,500 KG ⚠️
+                <span class="text-[9px] text-amber-900 font-bold block">تحت حد الأمان (5,000 KG)</span>
+              </td>
+              <td class="p-3 text-center font-bold font-mono">1 مخزن خام</td>
+              <td class="p-3 text-center font-bold font-mono">6 موردين</td>
+              <td class="p-3 text-center font-mono text-outline">—</td>
+              <td class="p-3 font-mono text-on-surface-variant">اليوم 09:00</td>
+              <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">نشط</span></td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1">
+                  <a href="product-details.html?id=PRD-RAW-01" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-[11px] font-bold transition-all shadow-sm">
+                    👁 التفاصيل
+                  </a>
+                  <a href="product-details.html?id=PRD-RAW-01&tab=ledger" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-[11px] font-bold transition-all border border-outline-variant">
+                    📜 الحركة
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Item 4: PRD-003 (Inactive) -->
+            <tr class="hover:bg-surface-variant/40 transition-colors opacity-75 cursor-pointer" onclick="window.location.href='product-details.html?id=PRD-003'">
+              <td class="p-3 font-mono font-bold text-outline">
+                <a href="product-details.html?id=PRD-003" class="hover:underline">PRD-003</a>
+              </td>
+              <td class="p-3 font-bold text-on-surface-variant text-sm">
+                <a href="product-details.html?id=PRD-003" class="hover:underline flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[18px]">blender</span>
+                  فراولة مهروسة (صناعي)
+                </a>
+              </td>
+              <td class="p-3"><span class="bg-surface-variant text-on-surface-variant border border-outline-variant px-2 py-0.5 rounded text-[10px] font-bold">تحت التشغيل</span></td>
+              <td class="p-3 text-outline">مصنعات وصناعي</td>
+              <td class="p-3 text-outline">درجة صناعي</td>
+              <td class="p-3 font-mono text-outline">برميل 200ك</td>
+              <td class="p-3 font-mono">PCS</td>
+              <td class="p-3 font-mono font-bold text-outline text-base">450 PCS</td>
+              <td class="p-3 text-center font-mono">1 مخزن</td>
+              <td class="p-3 text-center font-mono">3 موردين</td>
+              <td class="p-3 text-center font-mono">5 عملاء</td>
+              <td class="p-3 font-mono text-outline">01/08/2026</td>
+              <td class="p-3 text-center"><span class="bg-surface-variant text-on-surface-variant border border-outline-variant px-2.5 py-0.5 rounded-full text-[10px] font-bold">غير نشط</span></td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1">
+                  <a href="product-details.html?id=PRD-003" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-[11px] font-bold transition-all shadow-sm">
+                    👁 التفاصيل
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW 2: CARDS GRID VIEW SECTION (HIDDEN BY DEFAULT) -->
+    <div id="products-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+      
+      <!-- Product Card 1 -->
+      <div class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4 hover:border-primary/40 transition-all flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold">
+                <span class="material-symbols-outlined text-[22px]">ac_unit</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-primary text-sm"><a href="product-details.html?id=PRD-001" class="hover:underline">فراولة مجمدة</a></h3>
+                <span class="font-mono text-xs text-secondary font-bold">PRD-001 • IQF 25/30</span>
+              </div>
+            </div>
+            <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● نشط</span>
+          </div>
+
+          <div class="bg-emerald-50/60 p-3 rounded-xl border border-emerald-200 text-center space-y-0.5">
+            <span class="text-[11px] text-emerald-950 font-semibold block">الرصيد الحالي بالمخازن</span>
+            <div class="text-2xl font-bold text-emerald-800 font-mono">25,800 <span class="text-xs font-normal">KG</span></div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-surface-variant/30 p-2 rounded-lg border border-outline-variant/40">
+              <span class="text-outline text-[10px] block">المخازن</span>
+              <strong class="font-mono text-primary">4 مخازن</strong>
+            </div>
+            <div class="bg-surface-variant/30 p-2 rounded-lg border border-outline-variant/40">
+              <span class="text-outline text-[10px] block">الموردون</span>
+              <strong class="font-mono text-primary">14 مورد</strong>
+            </div>
+            <div class="bg-surface-variant/30 p-2 rounded-lg border border-outline-variant/40">
+              <span class="text-outline text-[10px] block">العملاء</span>
+              <strong class="font-mono text-secondary">24 عميل</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-outline-variant/60 flex items-center justify-between text-xs">
+          <span class="text-[10px] text-outline font-mono">آخر حركة: اليوم 10:30</span>
+          <div class="flex items-center gap-1.5">
+            <a href="product-details.html?id=PRD-001" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm">
+              عرض التفاصيل
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ADD PRODUCT MODAL -->
+  <div id="add-product-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-2xl max-w-xl w-full p-6 space-y-4 overflow-hidden relative">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h3 class="font-bold text-primary text-base flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">add_circle</span>
+          إضافة صنف منتج جديد (Master Product Entry)
+        </h3>
+        <button onclick="closeAddProductModal()" class="text-on-surface-variant hover:text-primary p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="handleProductSubmit(event)" class="space-y-4 text-xs">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1">
+            <label class="font-bold text-primary">كود المنتج الفريد (Unique Code) *</label>
+            <input type="text" value="PRD-005" required class="w-full bg-surface-variant border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono text-secondary focus:outline-none"/>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">اسم المنتج بالعربية *</label>
+            <input type="text" placeholder="مثال: مانجو مجمدة شرائح" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-primary">نوع المنتج *</label>
+            <select class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+              <option value="FINISHED">منتج تام (Finished Product)</option>
+              <option value="RAW">منتج خام (Raw Material)</option>
+              <option value="WIP">تحت التشغيل (WIP)</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">التصنيف الرئيسي *</label>
+            <input type="text" placeholder="فواكه مجمدة IQF" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">درجة الفرز (Grade) *</label>
+            <input type="text" placeholder="درجة أولى IQF" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-primary">المواصفة / الحجم</label>
+            <input type="text" placeholder="25/30 أو 15/22" class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">الوحدة الأساسية *</label>
+            <select class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+              <option value="KG">KG - كيلوجرام</option>
+              <option value="TON">TON - طن</option>
+              <option value="PCS">PCS - قطعة / برميل</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">حد إعادة الطلب (Reorder Level)</label>
+            <input type="number" placeholder="5000" class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono focus:outline-none focus:border-primary"/>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-primary">ملاحظات ومواصفات إضافية</label>
+          <textarea rows="2" placeholder="أدخل أي ملاحظات فنية حول التخزين والدرجة..." class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/60">
+          <button type="button" onclick="closeAddProductModal()" class="bg-surface-variant text-on-surface px-4 py-2 rounded-lg text-xs font-bold hover:bg-outline-variant">
+            إلغاء
+          </button>
+          <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">check_circle</span>
+            حفظ المنتج في الدليل
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+<script>
+function openAddProductModal() { document.getElementById('add-product-modal').classList.remove('hidden'); }
+function closeAddProductModal() { document.getElementById('add-product-modal').classList.add('hidden'); }
+
+function handleProductSubmit(e) {
+  e.preventDefault();
+  closeAddProductModal();
+  const toast = document.getElementById('product-toast');
+  document.getElementById('product-toast-msg').innerText = 'تم إضافة صنف المنتج الجديد بنجاح وثبيت الكود المركزي';
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 5000);
+}
+
+function switchView(viewMode) {
+  const tableBtn = document.getElementById('view-btn-table');
+  const cardsBtn = document.getElementById('view-btn-cards');
+  const tableContainer = document.getElementById('products-table-container');
+  const cardsContainer = document.getElementById('products-cards-container');
+
+  if (viewMode === 'cards') {
+    cardsBtn.classList.add('bg-primary', 'text-white');
+    cardsBtn.classList.remove('text-on-surface');
+    tableBtn.classList.remove('bg-primary', 'text-white');
+    tableBtn.classList.add('text-on-surface');
+    tableContainer.classList.add('hidden');
+    cardsContainer.classList.remove('hidden');
+  } else {
+    tableBtn.classList.add('bg-primary', 'text-white');
+    tableBtn.classList.remove('text-on-surface');
+    cardsBtn.classList.remove('bg-primary', 'text-white');
+    cardsBtn.classList.add('text-on-surface');
+    cardsContainer.classList.add('hidden');
+    tableContainer.classList.remove('hidden');
+  }
+}
+
+function switchTab(tabType, btnElement) {
+  document.querySelectorAll('.product-tab').forEach(b => {
+    b.classList.remove('active', 'border-primary', 'text-primary');
+    b.classList.add('border-transparent', 'text-on-surface-variant');
+  });
+
+  btnElement.classList.add('active', 'border-primary', 'text-primary');
+  btnElement.classList.remove('border-transparent', 'text-on-surface-variant');
+
+  filterProducts(tabType);
+}
+
+function filterProducts(tabFilter) {
+  const typeVal = document.getElementById('filter-type').value;
+  const gradeVal = document.getElementById('filter-grade').value;
+  const statusVal = document.getElementById('filter-status').value;
+  const query = document.getElementById('search-product-input').value.toLowerCase().trim();
+
+  const rows = document.querySelectorAll('#products-tbody tr');
+
+  rows.forEach(r => {
+    const text = r.innerText.toLowerCase();
+    
+    let matchQuery = !query || text.includes(query);
+    let matchType = (typeVal === 'ALL');
+    if (typeVal === 'RAW') matchType = text.includes('منتج خام');
+    else if (typeVal === 'FINISHED') matchType = text.includes('منتج تام');
+    else if (typeVal === 'WIP') matchType = text.includes('تحت التشغيل');
+
+    let matchStatus = (statusVal === 'ALL');
+    if (statusVal === 'ACTIVE') matchStatus = text.includes('نشط') && !text.includes('غير نشط');
+    else if (statusVal === 'INACTIVE') matchStatus = text.includes('غير نشط');
+
+    if (matchQuery && matchType && matchStatus) {
+      r.classList.remove('hidden');
+    } else {
+      r.classList.add('hidden');
+    }
+  });
+}
+
+function resetProductFilters() {
+  document.getElementById('search-product-input').value = '';
+  document.getElementById('filter-type').value = 'ALL';
+  document.getElementById('filter-grade').value = 'ALL';
+  document.getElementById('filter-status').value = 'ALL';
+  document.getElementById('filter-stock').value = 'ALL';
+  document.getElementById('filter-station').value = 'ALL';
+  filterProducts();
+}
+</script>
+</body>
+</html>

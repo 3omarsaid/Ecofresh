@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>العملاء والاتفاقيات - نظام الـ ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/state.js"></script>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Page Header Banner -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">groups</span>
+            العملاء والاتفاقيات
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">مركز الاتفاقيات التجارية</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">إدارة العملاء والاتفاقيات التجارية ومتابعة أرصدة المبيعات والمدفوعات والربط الآلي بالشحنات</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="openAddCustomerModal()" class="bg-primary text-white hover:bg-primary-container px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">person_add</span>
+          + إضافة عميل
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="customers-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="customers-toast-msg">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- SUMMARY KPI CARDS (4 CARDS) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">إجمالي العملاء</span>
+          <span class="material-symbols-outlined text-[20px] text-primary bg-primary/5 p-1.5 rounded-lg border border-primary/20">groups</span>
+        </div>
+        <div id="kpi-total-customers" class="text-2xl font-bold text-primary font-mono">0 <span class="text-xs font-normal text-on-surface-variant">عملاء مسجلين</span></div>
+        <div class="text-[11px] text-emerald-700 font-medium">شركات استيراد وتوزيع وتصدير</div>
+      </div>
+
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">العملاء النشطون</span>
+          <span class="material-symbols-outlined text-[20px] text-emerald-700 bg-emerald-50 p-1.5 rounded-lg border border-emerald-200">check_circle</span>
+        </div>
+        <div id="kpi-active-customers" class="text-2xl font-bold text-emerald-800 font-mono">0 <span class="text-xs font-normal">عملاء نشطين</span></div>
+        <div class="text-[11px] text-emerald-700 font-medium">حسابات تجارية معتمدة</div>
+      </div>
+
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">الاتفاقيات النشطة</span>
+          <span class="material-symbols-outlined text-[20px] text-secondary bg-blue-50 p-1.5 rounded-lg border border-blue-200">handshake</span>
+        </div>
+        <div id="kpi-agreements-count" class="text-2xl font-bold text-secondary font-mono">0 <span class="text-xs font-normal">اتفاقية تعبئة</span></div>
+        <div class="text-[11px] text-secondary font-medium">مربوطة بأسعار البيع والمستلزمات</div>
+      </div>
+
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-2">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">إجمالي الرصيد المستحق (AR)</span>
+          <span class="material-symbols-outlined text-[20px] text-rose-700 bg-rose-50 p-1.5 rounded-lg border border-rose-200">account_balance_wallet</span>
+        </div>
+        <div id="kpi-total-receivables" class="text-2xl font-bold text-rose-700 font-mono">0 <span class="text-xs font-normal">ج.م</span></div>
+        <div class="text-[11px] text-rose-600 font-medium">مديونيات قائمة تحت التحصيل</div>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS TABLE SECTION -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-outline-variant/60 pb-3">
+        <div class="flex items-center gap-3 w-full sm:w-80">
+          <span class="material-symbols-outlined text-outline text-[20px]">search</span>
+          <input type="text" id="search-customer-input" onkeyup="filterCustomers()" placeholder="بحث باسم العميل أو الكود..." class="w-full bg-background border border-outline-variant rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-primary font-bold"/>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-on-surface-variant font-bold">الحالة:</span>
+          <select id="filter-status-select" onchange="filterCustomers()" class="bg-background border border-outline-variant rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+            <option value="ALL">جميع الحالات</option>
+            <option value="ACTIVE">نشط فقط</option>
+            <option value="DEBT">عليهم مديونية قائمة</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table Component -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-surface-variant text-on-surface-variant font-bold border-b border-outline-variant/60">
+            <tr>
+              <th class="p-3">اسم العميل وكوده</th>
+              <th class="p-3 font-mono text-center">المنتجات والاتفاقيات</th>
+              <th class="p-3">ميناء الوصول</th>
+              <th class="p-3 font-mono">شروط الدفع</th>
+              <th class="p-3 font-mono">الرصيد المستحق</th>
+              <th class="p-3 text-center">الحالة</th>
+              <th class="p-3 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="customers-tbody" class="divide-y divide-outline-variant/40">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ADD CUSTOMER MODAL (SHORT & CLEAN DATA ENTRY) -->
+  <div id="add-customer-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-2xl max-w-lg w-full p-6 space-y-4 relative">
+      <div class="flex justify-between items-center border-b border-outline-variant pb-3">
+        <h3 class="font-bold text-primary text-base flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary">person_add</span>
+          إضافة عميل جديد
+        </h3>
+        <button onclick="closeAddCustomerModal()" class="text-on-surface-variant hover:text-error">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="saveCustomer(event)" class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">اسم العميل / الشركة *</label>
+            <input required type="text" id="new-cust-name" placeholder="مثال: شركة سما للتجارة والتصدير" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-primary focus:ring-2 focus:ring-primary focus:border-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">الدولة وميناء الوصول *</label>
+            <input required type="text" id="new-cust-port" placeholder="مثال: هولندا - ميناء روتردام" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-on-surface focus:ring-2 focus:ring-primary focus:border-primary"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">الشخص المسؤول / جهة الاتصال</label>
+            <input type="text" id="new-cust-person" placeholder="اسم مسؤول المشتريات" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-on-surface focus:ring-2 focus:ring-primary focus:border-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">رقم الهاتف / الواتس *</label>
+            <input required type="tel" dir="ltr" id="new-cust-phone" placeholder="+31 20 123 4567" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-mono font-bold text-left text-on-surface focus:ring-2 focus:ring-primary focus:border-primary"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">البريد الإلكتروني</label>
+            <input type="email" dir="ltr" id="new-cust-email" placeholder="orders@company.com" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-left text-on-surface focus:ring-2 focus:ring-primary focus:border-primary"/>
+          </div>
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">عملة التعاقد وشروط السداد</label>
+            <select id="new-cust-currency" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-primary">
+              <option value="EUR">يورو EUR (تحويل بنكي 30 يوم)</option>
+              <option value="USD">دولار USD (اعتماد مستندي LC)</option>
+              <option value="EGP">جنيه مصري EGP (نقدي / شيك)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-outline-variant flex justify-end gap-2">
+          <button type="button" onclick="closeAddCustomerModal()" class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface font-bold hover:bg-surface-variant">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-primary text-white font-bold hover:bg-primary-container flex items-center gap-1 shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">save</span>
+            حفظ العميل بالسجل الموحد
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+function openAddCustomerModal() {
+  document.getElementById('add-customer-modal').classList.remove('hidden');
+}
+
+function closeAddCustomerModal() {
+  document.getElementById('add-customer-modal').classList.add('hidden');
+}
+
+function renderCustomersTable() {
+  const state = ERPState.load();
+  const tbody = document.getElementById('customers-tbody');
+  tbody.innerHTML = '';
+
+  let totalAgrCount = 0;
+  let totalReceivables = 0;
+
+  (state.customers || []).forEach(c => {
+    const agrCount = c.agreedProducts ? c.agreedProducts.length : 0;
+    totalAgrCount += agrCount;
+    const balance = ERPState.getCustomerBalance(c.name);
+    if (balance > 0) totalReceivables += balance;
+
+    const shortName = c.name.split(' ')[1] || c.name.slice(0, 4);
+
+    tbody.innerHTML += `
+      <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='customer-details.html?id=${c.id}'">
+        <td class="p-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs shrink-0">${shortName}</div>
+            <div>
+              <a href="customer-details.html?id=${c.id}" class="font-bold text-primary hover:underline text-sm block">${c.name}</a>
+              <span class="text-[11px] text-on-surface-variant font-mono">${c.id} • ${c.contactPerson || c.country}</span>
+            </div>
+          </div>
+        </td>
+        <td class="p-3 text-center">
+          <span class="bg-blue-50 text-blue-900 border border-blue-200 px-2 py-0.5 rounded font-bold font-mono text-[11px] block">${agrCount} اتفاقية أسعار</span>
+          <span class="text-[9px] text-outline mt-0.5 block">${c.agreedProducts?.map(p => p.productName).join('، ') || 'اتفاقية عامة'}</span>
+        </td>
+        <td class="p-3 font-semibold text-primary">
+          <span>${c.destinationPort || c.country}</span>
+        </td>
+        <td class="p-3 text-on-surface-variant font-medium">
+          <span>${c.paymentTerms || 'تحويل بنكي'} (${c.currency || 'EUR'})</span>
+        </td>
+        <td class="p-3 font-mono font-bold ${balance > 0 ? 'text-rose-600' : 'text-emerald-700'} text-sm">
+          ${balance > 0 ? balance.toLocaleString() + ' ج.م' : '0.00 ج.م (خالص)'}
+        </td>
+        <td class="p-3 text-center">
+          <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">● ${c.status || 'نشط'}</span>
+        </td>
+        <td class="p-3 text-center" onclick="event.stopPropagation()">
+          <div class="flex items-center justify-center gap-1">
+            <a href="customer-details.html?id=${c.id}" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all inline-flex items-center gap-1">
+              <span class="material-symbols-outlined text-[15px]">visibility</span>
+              عرض البروفايل
+            </a>
+            <a href="financial-statements.html?customer=${encodeURIComponent(c.name)}" class="bg-surface border border-outline-variant hover:bg-surface-variant text-secondary px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all" title="كشف الحساب">
+              <span class="material-symbols-outlined text-[15px]">receipt_long</span>
+            </a>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById('kpi-total-customers').innerHTML = `${(state.customers || []).length} <span class="text-xs font-normal text-on-surface-variant">عميل</span>`;
+  document.getElementById('kpi-active-customers').innerHTML = `${(state.customers || []).length} <span class="text-xs font-normal">عميل نشط</span>`;
+  document.getElementById('kpi-agreements-count').innerHTML = `${totalAgrCount} <span class="text-xs font-normal">اتفاقية تعبئة</span>`;
+  document.getElementById('kpi-total-receivables').innerHTML = `${Math.round(totalReceivables).toLocaleString()} <span class="text-xs font-normal">ج.م</span>`;
+}
+
+function saveCustomer(e) {
+  e.preventDefault();
+  const name = document.getElementById('new-cust-name').value;
+  const port = document.getElementById('new-cust-port').value;
+  const person = document.getElementById('new-cust-person').value;
+  const phone = document.getElementById('new-cust-phone').value;
+  const email = document.getElementById('new-cust-email').value;
+  const currency = document.getElementById('new-cust-currency').value;
+
+  const res = ERPState.addCustomer({
+    name: name,
+    destinationPort: port,
+    contactPerson: person,
+    phone: phone,
+    email: email,
+    currency: currency,
+    paymentTerms: "تحويل بنكي 30 يوم",
+    agreedProducts: [
+      { productName: "فراولة مجمدة IQF", targetPriceEur: 1.85, packagingSpec: "كرتونة 10 كجم (5 طبقات)" }
+    ]
+  });
+
+  closeAddCustomerModal();
+  renderCustomersTable();
+  document.getElementById('customers-toast-msg').innerText = res.message;
+  document.getElementById('customers-toast').classList.remove('hidden');
+  setTimeout(() => document.getElementById('customers-toast').classList.add('hidden'), 4000);
+}
+
+function filterCustomers() {
+  const query = document.getElementById('search-customer-input').value.toLowerCase();
+  const status = document.getElementById('filter-status-select').value;
+  const rows = document.querySelectorAll('#customers-tbody tr');
+
+  rows.forEach(r => {
+    const text = r.innerText.toLowerCase();
+    let matchesQuery = text.includes(query);
+    let matchesStatus = true;
+
+    if (status === 'ACTIVE') matchesStatus = text.includes('نشط');
+    else if (status === 'DEBT') matchesStatus = hasDebt;
+
+    if (matchesQuery && matchesStatus) r.classList.remove('hidden');
+    else r.classList.add('hidden');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderCustomersTable();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>عمليات التشغيل والتدوير - Nilotic Frost ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+    darkMode: "class",
+    theme: {
+        extend: {
+            colors: {
+                "primary": "#012d1d",
+                "primary-container": "#1b4332",
+                "secondary": "#0054cd",
+                "background": "#f8f9fa",
+                "surface": "#ffffff",
+                "surface-variant": "#e1e3e4",
+                "on-surface": "#191c1d",
+                "on-surface-variant": "#414844",
+                "outline": "#717973",
+                "outline-variant": "#c1c8c2",
+                "error": "#ba1a1a"
+            }
+        }
+    }
+}
+</script>
+<script src="../js/state.js"></script>
+<script src="../js/navigation.js" defer></script>
+<style>
+  body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+  .font-data-mono { font-family: 'IBM Plex Sans', sans-serif; }
+  .tab-active { border-bottom: 3px solid #012d1d; color: #012d1d; font-weight: 700; }
+  input[type="number"]::-webkit-inner-spin-button, 
+  input[type="number"]::-webkit-outer-spin-button { opacity: 1; }
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-4 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+
+    <!-- TOP HEADER WITH RBAC USER SWITCHER -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-surface border border-outline-variant p-4 md:p-5 rounded-2xl shadow-sm">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-sm">NF</div>
+        <div>
+          <h1 class="font-bold text-base md:text-lg text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-xl text-primary">autorenew</span>
+            <span>توثيق وإدارة عمليات التشغيل (Processing Operations)</span>
+          </h1>
+          <p class="text-[11px] text-on-surface-variant">سحب الخام من اللوطات، تسجيل هالك المستلزمات، احتساب تكلفة الكيلو، وتوليد باتشات التصدير</p>
+        </div>
+      </div>
+
+      <!-- RBAC CURRENT USER & ACTIONS -->
+      <div class="flex items-center flex-wrap gap-2.5">
+        <!-- User Switcher Dropdown -->
+        <div class="flex items-center gap-2 bg-surface-variant/50 border border-outline-variant px-3 py-1.5 rounded-xl text-xs">
+          <span id="headerUserAvatar" class="text-base">👑</span>
+          <div class="text-right">
+            <span class="text-[10px] text-on-surface-variant block">المستخدم النشط:</span>
+            <strong id="headerUserName" class="text-primary font-bold">م. أحمد محمود</strong>
+          </div>
+          <span id="headerUserRoleBadge" class="bg-primary text-white px-2 py-0.5 rounded-md text-[10px] font-mono font-bold mr-1">Admin</span>
+          <button onclick="openUserModal()" class="text-secondary hover:underline mr-1 text-[11px] font-bold">تبديل</button>
+        </div>
+
+        <button onclick="resetDataAction()" class="p-2 border border-outline-variant hover:bg-surface-variant text-on-surface-variant rounded-xl text-xs font-bold transition-all" title="إعادة ضبط البيانات الافتراضية">
+          <span class="material-symbols-outlined text-base">restart_alt</span>
+        </button>
+
+        <button id="btnCreateNewOp" onclick="openNewOpModal()" class="bg-primary hover:bg-primary-container text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-lg">add_circle</span>
+          <span>+ عملية تشغيل جديدة</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 6 KPI CARDS -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="bg-surface border border-outline-variant rounded-2xl p-4 shadow-xs">
+        <div class="flex justify-between items-center text-on-surface-variant mb-1">
+          <span class="text-xs font-semibold">إجمالي العمليات</span>
+          <span class="material-symbols-outlined text-primary text-lg">numbers</span>
+        </div>
+        <div id="kpiTotalOps" class="text-2xl font-bold text-primary font-data-mono">0</div>
+        <span class="text-[11px] text-on-surface-variant">عملية مسجلة</span>
+      </div>
+
+      <div class="bg-surface border border-outline-variant rounded-2xl p-4 shadow-xs">
+        <div class="flex justify-between items-center text-on-surface-variant mb-1">
+          <span class="text-xs font-semibold">الخام المسحوب</span>
+          <span class="material-symbols-outlined text-primary text-lg">input</span>
+        </div>
+        <div id="kpiRawInput" class="text-xl font-bold text-on-surface font-data-mono">0</div>
+        <span class="text-[11px] text-on-surface-variant">كجم خام من الباتشات</span>
+      </div>
+
+      <div class="bg-surface border border-outline-variant rounded-2xl p-4 shadow-xs">
+        <div class="flex justify-between items-center text-on-surface-variant mb-1">
+          <span class="text-xs font-semibold">المنتج التام الناتج</span>
+          <span class="material-symbols-outlined text-green-700 text-lg">output</span>
+        </div>
+        <div id="kpiFinishedOutput" class="text-xl font-bold text-green-700 font-data-mono">0</div>
+        <span class="text-[11px] text-on-surface-variant">كجم بمخزن الجاهز</span>
+      </div>
+
+      <div class="bg-surface border border-outline-variant rounded-2xl p-4 shadow-xs">
+        <div class="flex justify-between items-center text-on-surface-variant mb-1">
+          <span class="text-xs font-semibold">هالك الفرز الكلي</span>
+          <span class="material-symbols-outlined text-error text-lg">delete_sweep</span>
+        </div>
+        <div id="kpiRawWaste" class="text-xl font-bold text-error font-data-mono">0</div>
+        <span class="text-[11px] text-on-surface-variant">كجم هالك تشغيلي</span>
+      </div>
+
+      <div class="bg-surface border border-outline-variant rounded-2xl p-4 shadow-xs">
+        <div class="flex justify-between items-center text-on-surface-variant mb-1">
+          <span class="text-xs font-semibold">متوسط التصافي Yield</span>
+          <span class="material-symbols-outlined text-secondary text-lg">percent</span>
+        </div>
+        <div id="kpiAvgYield" class="text-2xl font-bold text-secondary font-data-mono">0.0%</div>
+        <span class="text-[11px] text-on-surface-variant">نسبة الاستخلاص</span>
+      </div>
+
+      <div class="bg-surface border border-outline-variant rounded-2xl p-4 shadow-xs">
+        <div class="flex justify-between items-center text-on-surface-variant mb-1">
+          <span class="text-xs font-semibold">إجمالي التكلفة</span>
+          <span class="material-symbols-outlined text-primary text-lg">payments</span>
+        </div>
+        <div id="kpiTotalCost" class="text-lg font-bold text-primary font-data-mono">0</div>
+        <span class="text-[11px] text-on-surface-variant">جنيه مصري</span>
+      </div>
+    </div>
+
+    <!-- FILTER & SEARCH BAR -->
+    <div class="bg-surface border border-outline-variant rounded-2xl p-4 shadow-xs flex flex-col md:flex-row gap-3 justify-between items-center">
+      <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+        <div class="relative flex-1 sm:w-64">
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+          <input id="searchInput" type="text" onkeyup="renderOperationsTable()" placeholder="بحث برقم العملية أو المقاول أو الباتش..." class="w-full bg-surface border border-outline-variant rounded-xl py-2 pr-9 pl-4 text-xs focus:outline-none focus:border-primary"/>
+        </div>
+        <div>
+          <select id="filterStation" onchange="renderOperationsTable()" class="bg-surface border border-outline-variant rounded-xl py-2 px-3 text-xs focus:border-primary">
+            <option value="">جميع المحطات</option>
+            <option value="محطة النخيل">محطة النخيل</option>
+            <option value="محطة السلام">محطة السلام</option>
+            <option value="محطة المدينة">محطة المدينة</option>
+          </select>
+        </div>
+        <div>
+          <select id="filterProduct" onchange="renderOperationsTable()" class="bg-surface border border-outline-variant rounded-xl py-2 px-3 text-xs focus:border-primary">
+            <option value="">جميع المنتجات</option>
+            <option value="فراولة">فراولة</option>
+            <option value="مانجو">مانجو</option>
+            <option value="بامية">بامية</option>
+          </select>
+        </div>
+      </div>
+      <div class="text-xs text-on-surface-variant font-medium">
+        سجلات العمليات: <span id="recordsCount" class="font-bold text-primary font-data-mono">0</span>
+      </div>
+    </div>
+
+    <!-- OPERATIONS TABLE -->
+    <div class="bg-surface border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+      <div class="overflow-x-auto">
+        <table class="w-full text-right border-collapse whitespace-nowrap text-xs">
+          <thead class="bg-surface-variant/70 border-b border-outline-variant font-bold text-on-surface-variant">
+            <tr>
+              <th class="p-3.5">رقم العملية</th>
+              <th class="p-3.5">التاريخ</th>
+              <th class="p-3.5">المحطة</th>
+              <th class="p-3.5">المنتج الخام</th>
+              <th class="p-3.5">المنتج التام الناتج</th>
+              <th class="p-3.5 font-data-mono">الخام الداخل</th>
+              <th class="p-3.5 font-data-mono">المنتج التام</th>
+              <th class="p-3.5 font-data-mono">هالك الفرز</th>
+              <th class="p-3.5 font-data-mono">Yield %</th>
+              <th class="p-3.5 font-data-mono">إجمالي التكلفة</th>
+              <th class="p-3.5 font-data-mono">تكلفة / كجم</th>
+              <th class="p-3.5 text-center">الحالة / القفل</th>
+              <th class="p-3.5 text-left">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="operationsTableBody" class="divide-y divide-outline-variant/50">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: FAST 1-SCREEN 3-BLOCK OPERATION DOCUMENTATION                      -->
+  <!-- ========================================================================= -->
+  <div id="newOpModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Header -->
+      <div class="p-5 border-b border-outline-variant bg-primary text-white flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl text-emerald-400">precision_manufacturing</span>
+          </div>
+          <div>
+            <h2 class="text-base font-bold">توثيق واقعة تشغيل وإنتاج (Log Processing Operation)</h2>
+            <p class="text-xs text-white/80">تخصيص لوطات الخام، استهلاك المستلزمات والهالك، واحتساب تكلفة الكيلو التام النهائي</p>
+          </div>
+        </div>
+        <button onclick="closeNewOpModal()" class="text-white/80 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+
+      <!-- Form Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto flex-1 space-y-6 text-xs">
+        
+        <!-- BLOCK 1: RAW BATCH ALLOCATION -->
+        <div class="bg-surface border border-outline-variant/80 rounded-2xl p-5 shadow-xs space-y-4">
+          <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+            <h3 class="font-bold text-sm text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-base">inventory_2</span>
+              <span>1. بيانات العملية وسحب الخام من اللوطات (Raw Batches)</span>
+            </h3>
+            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
+              خصم مباشر من رصيد اللوطات المتاحة
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">المحطة *</label>
+              <select id="modalStation" onchange="onStationOrProductChange()" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-xs font-bold text-primary focus:border-primary">
+                <option value="محطة النخيل">محطة النخيل</option>
+                <option value="محطة السلام">محطة السلام</option>
+                <option value="محطة المدينة">محطة المدينة</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">تاريخ التشغيل *</label>
+              <input id="modalDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-xs focus:border-primary"/>
+            </div>
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">المنتج الخام *</label>
+              <select id="modalRawProduct" onchange="onStationOrProductChange()" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-xs font-bold text-primary focus:border-primary">
+                <option value="فراولة">فراولة</option>
+                <option value="مانجو">مانجو</option>
+                <option value="بامية">بامية</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">المنتج التام المستهدف *</label>
+              <select id="modalFinishedProduct" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-xs font-bold text-primary focus:border-primary">
+                <option value="فراولة مجمدة IQF">فراولة مجمدة IQF</option>
+                <option value="مانجو مكعبات مجمدة">مانجو مكعبات مجمدة</option>
+                <option value="بامية مجمدة ممتاز">بامية مجمدة ممتاز</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">مقاول التشغيل *</label>
+              <select id="modalContractor" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-xs font-bold text-primary focus:border-primary">
+                <option value="مقاول أحمد للتجهيز">مقاول أحمد للتجهيز</option>
+                <option value="مقاول محمد للفرز">مقاول محمد للفرز</option>
+                <option value="مقاول محمود للعمالة">مقاول محمود للعمالة</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Required Qty & Auto-allocate Buttons -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-surface-variant/40 p-3.5 rounded-xl border border-outline-variant/60">
+            <div class="flex items-center gap-3">
+              <label class="font-bold text-primary whitespace-nowrap">الكمية المطلوبة من الخام للتشغيل (كجم) *</label>
+              <input id="modalRequiredRawQty" type="number" value="6000" min="1" oninput="onRequiredRawQtyChanged()" class="w-36 bg-surface border border-outline-variant rounded-xl p-2 text-sm font-bold font-data-mono text-primary focus:border-primary"/>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="autoAllocateRaw('fifo')" class="px-3 py-1.5 bg-primary text-white hover:bg-primary-container font-bold rounded-lg text-xs transition-all flex items-center gap-1 shadow-xs">
+                <span class="material-symbols-outlined text-sm">schedule</span>
+                <span>سحب تلقائي (FIFO - الأقدم)</span>
+              </button>
+              <button onclick="autoAllocateRaw('cheapest')" class="px-3 py-1.5 bg-secondary text-white hover:bg-blue-800 font-bold rounded-lg text-xs transition-all flex items-center gap-1 shadow-xs">
+                <span class="material-symbols-outlined text-sm">trending_down</span>
+                <span>سحب تلقائي (الأرخص تكلفة)</span>
+              </button>
+              <button onclick="clearRawAllocations()" class="px-3 py-1.5 border border-outline-variant bg-surface hover:bg-surface-variant font-bold rounded-lg text-xs transition-all text-on-surface">
+                تصفير
+              </button>
+            </div>
+          </div>
+
+          <!-- Raw Batches Table -->
+          <div class="border border-outline-variant rounded-xl overflow-hidden">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-surface-variant/60 font-bold text-on-surface-variant">
+                <tr>
+                  <th class="p-3">رقم الـ Batch</th>
+                  <th class="p-3">المورد المالك</th>
+                  <th class="p-3">تاريخ الورود</th>
+                  <th class="p-3 font-data-mono">الرصيد المتاح بالمخزن</th>
+                  <th class="p-3 font-data-mono">سعر الكيلو (تكلفة)</th>
+                  <th class="p-3 font-data-mono w-40">كمية السحب (كجم)</th>
+                  <th class="p-3 font-data-mono">إجمالي تكلفة السحب</th>
+                </tr>
+              </thead>
+              <tbody id="rawBatchesTableBody" class="divide-y divide-outline-variant/40 font-data-mono">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Raw Allocation Live Summary Box -->
+          <div id="rawAllocSummaryBox" class="p-3.5 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold bg-green-50 border-green-300 text-green-900 font-data-mono">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-green-700 text-base">check_circle</span>
+              <span>المطلوب: <strong id="sumRawReq">6,000</strong> KG | المسحوب: <strong id="sumRawAlloc">6,000</strong> KG | المتبقي: <strong id="sumRawRem">0</strong> KG</span>
+            </div>
+            <div>
+              <span>إجمالي تكلفة الخام: <strong id="sumRawCost" class="text-primary text-sm">112,400 EGP</strong> (متوسط الكيلو: <strong id="sumRawWeightedAvg">18.73</strong> EGP/KG)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOCK 2: PACKAGING SUPPLIES WITH WASTE TOGGLE -->
+        <div class="bg-surface border border-outline-variant/80 rounded-2xl p-5 shadow-xs space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-outline-variant/60 pb-3">
+            <div>
+              <h3 class="font-bold text-sm text-primary flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-base">inventory</span>
+                <span>2. استهلاك مستلزمات التعبئة والتغليف (Packaging Supplies)</span>
+              </h3>
+              <p class="text-[11px] text-on-surface-variant mt-0.5">تسجيل الكميات المستهلكة مع إمكانية إثبات هالك المستلزمات إن وجد</p>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer bg-surface-variant/40 px-3 py-1.5 rounded-xl border border-outline-variant/60 hover:bg-surface-variant transition-colors">
+              <input id="suppliesWasteToggle" type="checkbox" onchange="toggleSuppliesWasteMode()" class="rounded text-primary focus:ring-primary h-4 w-4"/>
+              <span class="font-bold text-primary text-xs">هل يوجد هالك في المستلزمات؟ (Record Supplies Waste)</span>
+            </label>
+          </div>
+
+          <div class="border border-outline-variant rounded-xl overflow-hidden">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-surface-variant/60 font-bold text-on-surface-variant">
+                <tr>
+                  <th class="p-3">الصنف / المستلزم</th>
+                  <th class="p-3">الوحدة</th>
+                  <th class="p-3 font-data-mono">الرصيد المتاح</th>
+                  <th class="p-3 font-data-mono">سعر الوحدة</th>
+                  <th class="p-3 font-data-mono w-36">الكمية المستخدمة (Consumed)</th>
+                  <th id="thSuppliesWaste" class="p-3 font-data-mono w-32 hidden bg-red-50 text-red-900">الهالك (Waste)</th>
+                  <th class="p-3 font-data-mono">المنصرف الكلي (Withdrawn)</th>
+                  <th class="p-3 font-data-mono">إجمالي التكلفة</th>
+                </tr>
+              </thead>
+              <tbody id="suppliesTableBody" class="divide-y divide-outline-variant/40 font-data-mono">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="p-3 bg-surface-variant/30 rounded-xl border border-outline-variant/50 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold font-data-mono">
+            <div class="text-on-surface-variant">
+              تكلفة المستهلك: <span id="sumSupConsumedCost" class="text-primary font-bold">14,400 EGP</span> | تكلفة هالك المستلزمات: <span id="sumSupWasteCost" class="text-error font-bold">600 EGP</span>
+            </div>
+            <div>
+              إجمالي تكلفة المستلزمات: <strong id="sumSupTotalCost" class="text-primary text-sm font-bold">15,000 EGP</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOCK 3: OUTPUT, COSTS, ATTACHMENTS & CONFIRMATION -->
+        <div class="bg-surface border border-outline-variant/80 rounded-2xl p-5 shadow-xs space-y-4">
+          <div class="border-b border-outline-variant/60 pb-3">
+            <h3 class="font-bold text-sm text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-base">fact_check</span>
+              <span>3. الإنتاج الفعلي، الهالك، والتكاليف الإضافية (Output & Total Costing)</span>
+            </h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60">
+            <div>
+              <span class="text-[11px] text-on-surface-variant block mb-1">الخام الداخل (محسوب آلياً من اللوطات):</span>
+              <input id="modalRawInputDisplay" type="number" readonly value="6000" class="w-full bg-surface-variant border border-outline-variant rounded-xl p-2.5 text-sm font-bold font-data-mono text-primary cursor-not-allowed"/>
+            </div>
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">كمية المنتج التام الناتج (كجم) *</label>
+              <input id="modalFinishedOutput" type="number" value="4800" oninput="calculateYieldAndCosts()" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-sm font-bold font-data-mono text-green-700 focus:border-primary"/>
+            </div>
+            <div>
+              <span class="text-[11px] text-on-surface-variant block mb-1">هالك الفرز الناتج (محسوب):</span>
+              <input id="modalRawWasteDisplay" type="text" readonly value="1,200 KG" class="w-full bg-surface-variant border border-outline-variant rounded-xl p-2.5 text-sm font-bold font-data-mono text-error cursor-not-allowed"/>
+            </div>
+            <div>
+              <span class="text-[11px] text-on-surface-variant block mb-1">نسبة التصافي (Yield %):</span>
+              <div class="flex items-center gap-2">
+                <input id="modalYieldDisplay" type="text" readonly value="80.0%" class="w-24 bg-surface-variant border border-outline-variant rounded-xl p-2.5 text-sm font-bold font-data-mono text-secondary cursor-not-allowed"/>
+                <div class="flex-1 bg-surface-variant rounded-full h-3 overflow-hidden border border-outline-variant">
+                  <div id="modalYieldBar" class="bg-secondary h-full rounded-full transition-all duration-300" style="width: 80%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Direct Operating Costs Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">مصنعية المقاول (EGP)</label>
+              <input id="modalCostContractor" type="number" value="9600" oninput="calculateYieldAndCosts()" class="w-full bg-surface border border-outline-variant rounded-xl p-2 text-xs font-bold font-data-mono focus:border-primary"/>
+            </div>
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">تكلفة تشغيل المحطة (EGP)</label>
+              <input id="modalCostStation" type="number" value="12000" oninput="calculateYieldAndCosts()" class="w-full bg-surface border border-outline-variant rounded-xl p-2 text-xs font-bold font-data-mono focus:border-primary"/>
+            </div>
+            <div>
+              <label class="block font-bold mb-1 text-on-surface">مصاريف ونثريات أخرى (EGP)</label>
+              <input id="modalCostOther" type="number" value="2500" oninput="calculateYieldAndCosts()" class="w-full bg-surface border border-outline-variant rounded-xl p-2 text-xs font-bold font-data-mono focus:border-primary"/>
+            </div>
+          </div>
+
+          <!-- Upload Photos / Attachments Section -->
+          <div class="p-4 bg-surface-variant/30 rounded-xl border border-outline-variant/60 space-y-2">
+            <div class="flex justify-between items-center">
+              <label class="font-bold text-primary flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">add_a_photo</span>
+                مرفقات وصور توثيق التشغيل (Inspection & Lab Photos)
+              </label>
+              <span class="text-[10px] text-on-surface-variant">ملاحظة: يتم حفظ البيانات الوصفية محلياً (Object Storage لاحقاً)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <input id="modalFileInput" type="file" multiple accept="image/*,.pdf" onchange="handleModalFileUpload(event)" class="text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primary file:text-white hover:file:bg-primary-container"/>
+              <div id="modalAttachmentsPreviewList" class="flex flex-wrap gap-2 text-[11px] font-mono">
+                <!-- Preview Tags -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div>
+            <label class="block font-bold mb-1 text-on-surface">ملاحظات التشغيل والفرز</label>
+            <input id="modalNotes" type="text" value="تشغيل ممتاز، فرز درجة أولى مطابق للمواصفات التصديرية" placeholder="أدخل أي ملاحظات فنية حول التشغيل..." class="w-full bg-surface border border-outline-variant rounded-xl p-2 text-xs focus:border-primary"/>
+          </div>
+
+          <!-- Costing Summary Card -->
+          <div class="bg-primary text-white p-5 rounded-2xl shadow-md space-y-4">
+            <div class="flex justify-between items-center border-b border-white/20 pb-3">
+              <span class="font-bold text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-emerald-400">calculate</span>
+                الملخص المالي النهائي لتكلفة التشغيل (Costing Breakdown)
+              </span>
+              <span class="text-xs bg-emerald-900 text-emerald-300 border border-emerald-500 px-2.5 py-0.5 rounded-full font-bold">احتساب فوري</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-data-mono text-white/80">
+              <div>خام: <strong id="cSumRaw" class="text-white">112,400 EGP</strong></div>
+              <div>مستلزمات: <strong id="cSumSup" class="text-white">14,400 EGP</strong></div>
+              <div>هالك مستلزمات: <strong id="cSumSupWaste" class="text-red-300">600 EGP</strong></div>
+              <div>تشغيل ونثريات: <strong id="cSumOp" class="text-white">24,100 EGP</strong></div>
+            </div>
+
+            <div class="pt-3 border-t border-white/20 flex flex-col sm:flex-row justify-between items-center gap-3">
+              <div>
+                <span class="text-xs text-white/80 block">إجمالي تكلفة التشغيل الكاملة:</span>
+                <strong id="modalGrandTotalCost" class="text-2xl font-bold font-data-mono text-emerald-300">151,500 EGP</strong>
+              </div>
+              <div class="bg-white/10 px-4 py-2.5 rounded-xl border border-white/20 text-right">
+                <span class="text-xs text-white/80 block">تكلفة الكيلو التام النهائي بمخزن الجاهز:</span>
+                <strong id="modalCostPerKg" class="text-xl font-bold font-data-mono text-emerald-300">31.56 EGP/KG</strong>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="p-4 bg-surface-variant/60 border-t border-outline-variant flex justify-between items-center shrink-0">
+        <button onclick="closeNewOpModal()" class="px-4 py-2 border border-outline-variant bg-surface hover:bg-surface-variant rounded-xl text-xs font-bold text-on-surface">
+          إلغاء
+        </button>
+        <button onclick="saveOperationAction()" class="px-6 py-2.5 bg-primary hover:bg-primary-container text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-base">verified</span>
+          <span>توثيق واعتماد العملية وإيداع الباتش بالثلاجة (Log & Post)</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- DRAWER: OPERATION DETAILS & TRACEABILITY AUDIT                            -->
+  <!-- ========================================================================= -->
+  <div id="opDetailsDrawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end hidden">
+    <div class="bg-surface w-full max-w-3xl h-full flex flex-col shadow-2xl overflow-hidden border-r border-outline-variant">
+      
+      <!-- Header -->
+      <div class="p-5 bg-primary text-white flex justify-between items-center shrink-0">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="drawerOpId" class="text-lg font-bold font-data-mono">PR-2026-001</h3>
+            <span id="drawerStatusBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-900 font-data-mono">معتمدة ومقفلة</span>
+          </div>
+          <p id="drawerOpSubtitle" class="text-xs text-white/80 mt-0.5">محطة النخيل • فراولة ➔ فراولة مجمدة IQF</p>
+        </div>
+        <button onclick="closeDetailsDrawer()" class="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="bg-surface-variant/60 border-b border-outline-variant px-6 flex gap-4 text-xs font-bold shrink-0 overflow-x-auto">
+        <button onclick="switchDrawerTab('overview')" id="dTab-overview" class="py-3 tab-active">نظرة عامة والإنتاج</button>
+        <button onclick="switchDrawerTab('rawIssues')" id="dTab-rawIssues" class="py-3 text-on-surface-variant">سحب اللوطات وشجرة الموردين</button>
+        <button onclick="switchDrawerTab('supplies')" id="dTab-supplies" class="py-3 text-on-surface-variant">المستلزمات والهالك</button>
+        <button onclick="switchDrawerTab('attachments')" id="dTab-attachments" class="py-3 text-on-surface-variant">المرفقات والصور</button>
+        <button onclick="switchDrawerTab('audit')" id="dTab-audit" class="py-3 text-on-surface-variant">سجل التدقيق (Audit Log)</button>
+      </div>
+
+      <!-- Body -->
+      <div id="drawerBody" class="p-6 overflow-y-auto flex-1 space-y-6 text-xs">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Footer Actions with Rollback & Lock Controls -->
+      <div class="p-4 border-t border-outline-variant bg-surface-variant/40 flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-2">
+          <button id="drawerBtnLock" onclick="toggleLockAction()" class="px-3 py-2 border border-outline-variant bg-surface hover:bg-surface-variant text-primary rounded-xl font-bold text-xs flex items-center gap-1 shadow-xs">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            <span id="drawerBtnLockText">قفل / فتح العملية</span>
+          </button>
+          <button id="drawerBtnRollback" onclick="rollbackDeleteAction()" class="px-3 py-2 bg-red-50 hover:bg-red-100 text-error border border-red-200 rounded-xl font-bold text-xs flex items-center gap-1 shadow-xs">
+            <span class="material-symbols-outlined text-sm">delete_forever</span>
+            <span>حذف مع عكس حركة المخزن (Rollback)</span>
+          </button>
+        </div>
+        <button onclick="closeDetailsDrawer()" class="px-4 py-2 bg-primary text-white rounded-xl text-xs font-bold shadow-xs">إغلاق</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RBAC USER SWITCHER MODAL -->
+  <div id="userModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface border border-outline-variant rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-base text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">badge</span>
+          <span>تبديل المستخدم التجريبي (Role Simulation)</span>
+        </h3>
+        <button onclick="closeUserModal()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <p class="text-xs text-on-surface-variant">اختر دور المستخدم لتجربة الصلاحيات وتأثيرها على الإجراءات والأزرار الحية:</p>
+      
+      <div id="usersListContainer" class="space-y-2">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC                                                          -->
+  <!-- ========================================================================= -->
+  <script>
+  let activeOp = null;
+  let stagedAttachments = [];
+
+  function initApp() {
+    updateCurrentUserUI();
+    renderAll();
+  }
+
+  function updateCurrentUserUI() {
+    const user = ERPState.getCurrentUser();
+    document.getElementById("headerUserName").innerText = user.name;
+    document.getElementById("headerUserRoleBadge").innerText = user.role;
+    document.getElementById("headerUserAvatar").innerText = user.avatar || "👤";
+
+    // RBAC check on "+ عملية جديدة"
+    const btnNew = document.getElementById("btnCreateNewOp");
+    if (!ERPState.can("CREATE_OPERATION")) {
+      btnNew.disabled = true;
+      btnNew.classList.add("opacity-50", "cursor-not-allowed");
+      btnNew.title = "ليست لديك صلاحية إنشاء عمليات تشغيل (يتطلب مشغل أو مشرف أو مدير)";
+    } else {
+      btnNew.disabled = false;
+      btnNew.classList.remove("opacity-50", "cursor-not-allowed");
+      btnNew.title = "";
+    }
+  }
+
+  function renderAll() {
+    renderKPIs();
+    renderOperationsTable();
+  }
+
+  function renderKPIs() {
+    const state = ERPState.load();
+    const ops = state.operations || [];
+    const totalOps = ops.length;
+    const totalRaw = ops.reduce((a, c) => a + (c.rawInputKg || 0), 0);
+    const totalFin = ops.reduce((a, c) => a + (c.finishedOutputKg || 0), 0);
+    const totalWaste = ops.reduce((a, c) => a + (c.rawWasteKg || 0), 0);
+    const avgYield = totalRaw > 0 ? ((totalFin / totalRaw) * 100).toFixed(1) : "0.0";
+    const totalCost = ops.reduce((a, c) => a + (c.grandTotalCost || 0), 0);
+
+    document.getElementById("kpiTotalOps").innerText = totalOps;
+    document.getElementById("kpiRawInput").innerText = totalRaw.toLocaleString();
+    document.getElementById("kpiFinishedOutput").innerText = totalFin.toLocaleString();
+    document.getElementById("kpiRawWaste").innerText = totalWaste.toLocaleString();
+    document.getElementById("kpiAvgYield").innerText = avgYield + "%";
+    document.getElementById("kpiTotalCost").innerText = Math.round(totalCost).toLocaleString();
+  }
+
+  function renderOperationsTable() {
+    const state = ERPState.load();
+    const tbody = document.getElementById("operationsTableBody");
+    tbody.innerHTML = "";
+
+    const q = document.getElementById("searchInput").value.trim().toLowerCase();
+    const stFilter = document.getElementById("filterStation").value;
+    const prFilter = document.getElementById("filterProduct").value;
+
+    const filtered = (state.operations || []).filter(op => {
+      const matchQ = !q || op.id.toLowerCase().includes(q) || op.station.toLowerCase().includes(q) || op.contractor.toLowerCase().includes(q) || (op.generatedBatchId && op.generatedBatchId.toLowerCase().includes(q));
+      const matchSt = !stFilter || op.station === stFilter;
+      const matchPr = !prFilter || op.rawProduct === prFilter;
+      return matchQ && matchSt && matchPr;
+    });
+
+    document.getElementById("recordsCount").innerText = filtered.length;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="13" class="p-8 text-center text-on-surface-variant font-medium">لا توجد عمليات تشغيل مسجلة</td></tr>`;
+      return;
+    }
+
+    filtered.forEach(op => {
+      const isLocked = op.locked !== false;
+      const badgeStyle = isLocked ? "bg-green-100 text-green-900 border border-green-300" : "bg-amber-100 text-amber-900 border border-amber-300";
+      const lockText = isLocked ? "🔒 مقفلة ومعتمدة" : "🔓 مفتوحة";
+
+      const tr = document.createElement("tr");
+      tr.className = "hover:bg-surface-variant/30 transition-colors cursor-pointer";
+      tr.onclick = (e) => {
+        if (!e.target.closest("button")) openDetailsDrawer(op.id);
+      };
+
+      tr.innerHTML = `
+        <td class="p-3.5 font-bold font-data-mono text-primary">${op.id}</td>
+        <td class="p-3.5 text-on-surface-variant">${op.date}</td>
+        <td class="p-3.5 font-medium">${op.station}</td>
+        <td class="p-3.5 font-medium">${op.rawProduct}</td>
+        <td class="p-3.5 font-bold text-primary">${op.finishedProduct}</td>
+        <td class="p-3.5 font-data-mono">${(op.rawInputKg || 0).toLocaleString()} KG</td>
+        <td class="p-3.5 font-data-mono font-bold text-green-700">${(op.finishedOutputKg || 0).toLocaleString()} KG</td>
+        <td class="p-3.5 font-data-mono text-error">${(op.rawWasteKg || 0).toLocaleString()} KG</td>
+        <td class="p-3.5 font-data-mono font-bold text-secondary">${op.yieldPercent}%</td>
+        <td class="p-3.5 font-data-mono font-bold text-primary">${Math.round(op.grandTotalCost || 0).toLocaleString()} EGP</td>
+        <td class="p-3.5 font-data-mono font-bold text-on-surface">${(op.costPerKg || 0).toFixed(2)} EGP</td>
+        <td class="p-3.5 text-center">
+          <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeStyle}">${lockText}</span>
+        </td>
+        <td class="p-3.5 text-left">
+          <button onclick="openDetailsDrawer('${op.id}')" class="px-2.5 py-1 bg-surface border border-outline-variant hover:bg-surface-variant text-primary rounded-lg font-bold text-xs flex items-center gap-1 shadow-xs">
+            <span class="material-symbols-outlined text-sm">visibility</span>
+            <span>تفاصيل</span>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // =========================================================================
+  // MODAL FORM & AUTO ALLOCATION
+  // =========================================================================
+  function openNewOpModal() {
+    if (!ERPState.can("CREATE_OPERATION")) {
+      showToast("عفواً، دورك الحالي لا يملك صلاحية تسجيل عمليات تشغيل", "error");
+      return;
+    }
+    stagedAttachments = [];
+    renderStagedAttachments();
+    onStationOrProductChange();
+    renderSuppliesForm();
+    calculateYieldAndCosts();
+    document.getElementById("newOpModal").classList.remove("hidden");
+  }
+
+  function closeNewOpModal() {
+    document.getElementById("newOpModal").classList.add("hidden");
+  }
+
+  function onStationOrProductChange() {
+    const station = document.getElementById("modalStation").value;
+    const rawProd = document.getElementById("modalRawProduct").value;
+
+    const finSelect = document.getElementById("modalFinishedProduct");
+    if (rawProd === "فراولة") finSelect.value = "فراولة مجمدة IQF";
+    else if (rawProd === "مانجو") finSelect.value = "مانجو مكعبات مجمدة";
+    else if (rawProd === "بامية") finSelect.value = "بامية مجمدة ممتاز";
+
+    renderRawBatchesTable();
+    autoAllocateRaw('fifo');
+  }
+
+  function onRequiredRawQtyChanged() {
+    autoAllocateRaw('fifo');
+  }
+
+  function renderRawBatchesTable() {
+    const state = ERPState.load();
+    const station = document.getElementById("modalStation").value;
+    const rawProd = document.getElementById("modalRawProduct").value;
+    const tbody = document.getElementById("rawBatchesTableBody");
+    tbody.innerHTML = "";
+
+    const filtered = (state.rawBatches || []).filter(b => b.station === station && b.rawProduct === rawProd && (b.availableQty || 0) > 0);
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-on-surface-variant font-sans">لا توجد لوطات خام متاحة في (${station}) لمنتج (${rawProd})</td></tr>`;
+      calculateRawAllocationSummary();
+      return;
+    }
+
+    filtered.forEach(b => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="p-3 font-bold text-primary">${b.batchId}</td>
+        <td class="p-3 font-sans">${b.supplierName}</td>
+        <td class="p-3 text-xs text-on-surface-variant">${b.receivedDate}</td>
+        <td class="p-3 font-bold text-green-700">${b.availableQty.toLocaleString()} KG</td>
+        <td class="p-3 font-bold text-on-surface">${b.unitCost.toFixed(2)} EGP</td>
+        <td class="p-3">
+          <input type="number" data-batch-id="${b.batchId}" data-max="${b.availableQty}" data-cost="${b.unitCost}" data-supplier="${b.supplierName}" value="0" min="0" max="${b.availableQty}" oninput="calculateRawAllocationSummary()" class="raw-alloc-input w-32 bg-surface border border-outline-variant rounded-lg p-1.5 text-xs font-bold font-data-mono text-primary focus:border-primary"/>
+        </td>
+        <td class="p-3 font-bold raw-batch-cost text-primary">0 EGP</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    calculateRawAllocationSummary();
+  }
+
+  function autoAllocateRaw(strategy = 'fifo') {
+    const reqQty = parseFloat(document.getElementById("modalRequiredRawQty").value) || 0;
+    const inputs = Array.from(document.querySelectorAll(".raw-alloc-input"));
+    
+    let sorted = [...inputs];
+    if (strategy === 'cheapest') {
+      sorted.sort((a, b) => parseFloat(a.getAttribute("data-cost")) - parseFloat(b.getAttribute("data-cost")));
+    }
+
+    inputs.forEach(inp => inp.value = 0);
+
+    let remainingNeeded = reqQty;
+    for (const inp of sorted) {
+      const max = parseFloat(inp.getAttribute("data-max")) || 0;
+      const alloc = Math.min(remainingNeeded, max);
+      inp.value = alloc;
+      remainingNeeded -= alloc;
+      if (remainingNeeded <= 0) break;
+    }
+
+    calculateRawAllocationSummary();
+  }
+
+  function clearRawAllocations() {
+    document.querySelectorAll(".raw-alloc-input").forEach(inp => inp.value = 0);
+    calculateRawAllocationSummary();
+  }
+
+  function calculateRawAllocationSummary() {
+    const reqQty = parseFloat(document.getElementById("modalRequiredRawQty").value) || 0;
+    const inputs = document.querySelectorAll(".raw-alloc-input");
+    let totalAlloc = 0;
+    let totalCost = 0;
+    let hasExceeded = false;
+
+    inputs.forEach(inp => {
+      const val = parseFloat(inp.value) || 0;
+      const cost = parseFloat(inp.getAttribute("data-cost")) || 0;
+      const max = parseFloat(inp.getAttribute("data-max")) || 0;
+      const tr = inp.closest("tr");
+      const costDisplay = tr.querySelector(".raw-batch-cost");
+
+      if (val > max) {
+        hasExceeded = true;
+        inp.classList.add("border-red-600", "bg-red-50");
+      } else {
+        inp.classList.remove("border-red-600", "bg-red-50");
+      }
+
+      const lineCost = val * cost;
+      if (costDisplay) costDisplay.innerText = Math.round(lineCost).toLocaleString() + " EGP";
+
+      totalAlloc += val;
+      totalCost += lineCost;
+    });
+
+    const rem = Math.max(0, reqQty - totalAlloc);
+    const weightedAvg = totalAlloc > 0 ? (totalCost / totalAlloc).toFixed(2) : "0.00";
+
+    document.getElementById("sumRawReq").innerText = reqQty.toLocaleString();
+    document.getElementById("sumRawAlloc").innerText = totalAlloc.toLocaleString();
+    document.getElementById("sumRawRem").innerText = rem.toLocaleString();
+    document.getElementById("sumRawCost").innerText = Math.round(totalCost).toLocaleString() + " EGP";
+    document.getElementById("sumRawWeightedAvg").innerText = weightedAvg;
+
+    const box = document.getElementById("rawAllocSummaryBox");
+    if (hasExceeded) {
+      box.className = "p-3.5 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold bg-red-50 border-red-300 text-red-900 font-data-mono";
+    } else if (totalAlloc !== reqQty) {
+      box.className = "p-3.5 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold bg-amber-50 border-amber-300 text-amber-900 font-data-mono";
+    } else {
+      box.className = "p-3.5 rounded-xl border flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold bg-green-50 border-green-300 text-green-900 font-data-mono";
+    }
+
+    document.getElementById("modalRawInputDisplay").value = totalAlloc;
+    calculateYieldAndCosts();
+  }
+
+  // =========================================================================
+  // SUPPLIES & COSTS
+  // =========================================================================
+  function toggleSuppliesWasteMode() {
+    const isWasteOn = document.getElementById("suppliesWasteToggle").checked;
+    const thWaste = document.getElementById("thSuppliesWaste");
+    if (isWasteOn) thWaste.classList.remove("hidden");
+    else thWaste.classList.add("hidden");
+
+    document.querySelectorAll(".td-supply-waste").forEach(el => {
+      if (isWasteOn) el.classList.remove("hidden");
+      else el.classList.add("hidden");
+    });
+
+    calculateSuppliesTotals();
+  }
+
+  function renderSuppliesForm() {
+    const state = ERPState.load();
+    const tbody = document.getElementById("suppliesTableBody");
+    tbody.innerHTML = "";
+    const isWasteOn = document.getElementById("suppliesWasteToggle").checked;
+
+    (state.supplies || []).forEach((s, idx) => {
+      let defConsumed = (idx === 0) ? 480 : (idx === 1 ? 4800 : 0);
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="p-3 font-bold text-primary font-sans">${s.name}</td>
+        <td class="p-3 text-xs text-on-surface-variant font-sans">${s.unit}</td>
+        <td class="p-3 font-bold text-on-surface">${s.stock.toLocaleString()}</td>
+        <td class="p-3">${s.unitPrice.toFixed(2)} EGP</td>
+        <td class="p-3">
+          <input type="number" data-sup-id="${s.id}" data-name="${s.name}" data-price="${s.unitPrice}" data-max="${s.stock}" value="${defConsumed}" min="0" oninput="calculateSuppliesTotals()" class="sup-consumed-input w-28 bg-surface border border-outline-variant rounded-lg p-1.5 text-xs font-bold font-data-mono text-primary focus:border-primary"/>
+        </td>
+        <td class="p-3 td-supply-waste ${isWasteOn ? '' : 'hidden'} bg-red-50/50">
+          <input type="number" data-sup-id="${s.id}" value="${idx === 0 ? 20 : (idx === 1 ? 200 : 0)}" min="0" oninput="calculateSuppliesTotals()" class="sup-waste-input w-24 bg-surface border border-red-300 rounded-lg p-1.5 text-xs font-bold font-data-mono text-error focus:border-error"/>
+        </td>
+        <td class="p-3 font-bold sup-withdrawn-display text-on-surface">0</td>
+        <td class="p-3 font-bold sup-total-cost-display text-primary">0 EGP</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    calculateSuppliesTotals();
+  }
+
+  function calculateSuppliesTotals() {
+    const isWasteOn = document.getElementById("suppliesWasteToggle").checked;
+    const consumedInputs = document.querySelectorAll(".sup-consumed-input");
+    const wasteInputs = document.querySelectorAll(".sup-waste-input");
+
+    let totalConsumedCost = 0;
+    let totalWasteCost = 0;
+
+    consumedInputs.forEach((cInp, idx) => {
+      const tr = cInp.closest("tr");
+      const wInp = wasteInputs[idx];
+      const price = parseFloat(cInp.getAttribute("data-price")) || 0;
+      const stock = parseFloat(cInp.getAttribute("data-max")) || 0;
+
+      const consumed = parseFloat(cInp.value) || 0;
+      const waste = isWasteOn ? (parseFloat(wInp.value) || 0) : 0;
+      const withdrawn = consumed + waste;
+
+      if (withdrawn > stock) cInp.classList.add("border-red-600", "bg-red-50");
+      else cInp.classList.remove("border-red-600", "bg-red-50");
+
+      const consumedCost = consumed * price;
+      const wasteCost = waste * price;
+      const totalLineCost = withdrawn * price;
+
+      tr.querySelector(".sup-withdrawn-display").innerText = withdrawn.toLocaleString();
+      tr.querySelector(".sup-total-cost-display").innerText = Math.round(totalLineCost).toLocaleString() + " EGP";
+
+      totalConsumedCost += consumedCost;
+      totalWasteCost += wasteCost;
+    });
+
+    document.getElementById("sumSupConsumedCost").innerText = Math.round(totalConsumedCost).toLocaleString() + " EGP";
+    document.getElementById("sumSupWasteCost").innerText = Math.round(totalWasteCost).toLocaleString() + " EGP";
+    document.getElementById("sumSupTotalCost").innerText = Math.round(totalConsumedCost + totalWasteCost).toLocaleString() + " EGP";
+
+    calculateYieldAndCosts();
+  }
+
+  function calculateYieldAndCosts() {
+    const rawInput = parseFloat(document.getElementById("modalRawInputDisplay").value) || 0;
+    const finOutput = parseFloat(document.getElementById("modalFinishedOutput").value) || 0;
+
+    const rawWaste = Math.max(0, rawInput - finOutput);
+    const yieldPct = rawInput > 0 ? parseFloat(((finOutput / rawInput) * 100).toFixed(1)) : 0;
+
+    document.getElementById("modalRawWasteDisplay").value = rawWaste.toLocaleString() + " KG";
+    document.getElementById("modalYieldDisplay").value = yieldPct + "%";
+    document.getElementById("modalYieldBar").style.width = Math.min(100, yieldPct) + "%";
+
+    const rawCostText = document.getElementById("sumRawCost").innerText.replace(/[^0-9.]/g, '');
+    const rawCost = parseFloat(rawCostText) || 0;
+
+    const supConsumedText = document.getElementById("sumSupConsumedCost").innerText.replace(/[^0-9.]/g, '');
+    const supConsumedCost = parseFloat(supConsumedText) || 0;
+
+    const supWasteText = document.getElementById("sumSupWasteCost").innerText.replace(/[^0-9.]/g, '');
+    const supWasteCost = parseFloat(supWasteText) || 0;
+
+    const contractorCost = parseFloat(document.getElementById("modalCostContractor").value) || 0;
+    const stationCost = parseFloat(document.getElementById("modalCostStation").value) || 0;
+    const otherCost = parseFloat(document.getElementById("modalCostOther").value) || 0;
+
+    const opCosts = contractorCost + stationCost + otherCost;
+    const grandTotal = rawCost + supConsumedCost + supWasteCost + opCosts;
+    const costPerKg = finOutput > 0 ? parseFloat((grandTotal / finOutput).toFixed(2)) : 0;
+
+    document.getElementById("cSumRaw").innerText = Math.round(rawCost).toLocaleString() + " EGP";
+    document.getElementById("cSumSup").innerText = Math.round(supConsumedCost).toLocaleString() + " EGP";
+    document.getElementById("cSumSupWaste").innerText = Math.round(supWasteCost).toLocaleString() + " EGP";
+    document.getElementById("cSumOp").innerText = Math.round(opCosts).toLocaleString() + " EGP";
+
+    document.getElementById("modalGrandTotalCost").innerText = Math.round(grandTotal).toLocaleString() + " EGP";
+    document.getElementById("modalCostPerKg").innerText = costPerKg.toFixed(2) + " EGP/KG";
+  }
+
+  // =========================================================================
+  // ATTACHMENTS HANDLING
+  // =========================================================================
+  function handleModalFileUpload(e) {
+    const files = Array.from(e.target.files);
+    const user = ERPState.getCurrentUser();
+    
+    files.forEach(f => {
+      stagedAttachments.push({
+        id: "att-" + Math.floor(1000 + Math.random() * 9000),
+        category: "صور الفرز والمعمل",
+        fileName: f.name,
+        mimeType: f.type || "image/jpeg",
+        size: (f.size / (1024 * 1024)).toFixed(2) + " MB",
+        uploadedBy: user.name,
+        uploadedAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
+      });
+    });
+    renderStagedAttachments();
+  }
+
+  function renderStagedAttachments() {
+    const container = document.getElementById("modalAttachmentsPreviewList");
+    container.innerHTML = "";
+    stagedAttachments.forEach((att, idx) => {
+      const tag = document.createElement("span");
+      tag.className = "bg-primary/10 text-primary border border-primary/20 px-2 py-1 rounded-lg flex items-center gap-1";
+      tag.innerHTML = `<span>📎 ${att.fileName}</span><button onclick="removeStagedAttachment(${idx})" class="text-error font-bold">×</button>`;
+      container.appendChild(tag);
+    });
+  }
+
+  function removeStagedAttachment(idx) {
+    stagedAttachments.splice(idx, 1);
+    renderStagedAttachments();
+  }
+
+  // =========================================================================
+  // SAVE / POST OPERATION
+  // =========================================================================
+  function saveOperationAction() {
+    if (!ERPState.can("CREATE_OPERATION")) {
+      showToast("عفواً، لا تملك صلاحية توثيق عمليات", "error");
+      return;
+    }
+
+    const state = ERPState.load();
+    const station = document.getElementById("modalStation").value;
+    const date = document.getElementById("modalDate").value;
+    const rawProd = document.getElementById("modalRawProduct").value;
+    const finProd = document.getElementById("modalFinishedProduct").value;
+    const contractor = document.getElementById("modalContractor").value;
+    const notes = document.getElementById("modalNotes").value;
+
+    const rawInput = parseFloat(document.getElementById("modalRawInputDisplay").value) || 0;
+    const finOutput = parseFloat(document.getElementById("modalFinishedOutput").value) || 0;
+    const reqQty = parseFloat(document.getElementById("modalRequiredRawQty").value) || 0;
+
+    if (rawInput <= 0) {
+      showToast("خطأ: لم يتم سحب أي كمية خام من اللوطات", "error");
+      return;
+    }
+    if (finOutput <= 0) {
+      showToast("خطأ: يرجى إدخال كمية منتج تام أكبر من صفر", "error");
+      return;
+    }
+    if (finOutput > rawInput) {
+      showToast("خطأ: كمية المنتج التام لا يمكن أن تتجاوز كمية الخام الداخلة", "error");
+      return;
+    }
+
+    // Build raw issues
+    const rawIssues = [];
+    document.querySelectorAll(".raw-alloc-input").forEach(inp => {
+      const qty = parseFloat(inp.value) || 0;
+      if (qty > 0) {
+        const batchId = inp.getAttribute("data-batch-id");
+        const cost = parseFloat(inp.getAttribute("data-cost")) || 0;
+        const supp = inp.getAttribute("data-supplier") || "مورد";
+        rawIssues.push({
+          batchId: batchId,
+          supplierName: supp,
+          qty: qty,
+          unitCost: cost,
+          totalCost: qty * cost
+        });
+      }
+    });
+
+    // Build supplies issues
+    const isWasteOn = document.getElementById("suppliesWasteToggle").checked;
+    const suppliesIssues = [];
+    document.querySelectorAll(".sup-consumed-input").forEach((cInp, idx) => {
+      const wInp = document.querySelectorAll(".sup-waste-input")[idx];
+      const supId = cInp.getAttribute("data-sup-id");
+      const name = cInp.getAttribute("data-name");
+      const price = parseFloat(cInp.getAttribute("data-price")) || 0;
+      const consumed = parseFloat(cInp.value) || 0;
+      const waste = isWasteOn ? (parseFloat(wInp.value) || 0) : 0;
+      const withdrawn = consumed + waste;
+
+      if (withdrawn > 0) {
+        suppliesIssues.push({
+          supplyId: supId,
+          name: name,
+          consumed: consumed,
+          waste: waste,
+          withdrawn: withdrawn,
+          unitCost: price,
+          consumedCost: consumed * price,
+          wasteCost: waste * price
+        });
+      }
+    });
+
+    // Financials
+    const rawCost = rawIssues.reduce((a, c) => a + c.totalCost, 0);
+    const supConsumedCost = suppliesIssues.reduce((a, c) => a + c.consumedCost, 0);
+    const supWasteCost = suppliesIssues.reduce((a, c) => a + c.wasteCost, 0);
+    const contractorCost = parseFloat(document.getElementById("modalCostContractor").value) || 0;
+    const stationCost = parseFloat(document.getElementById("modalCostStation").value) || 0;
+    const otherCost = parseFloat(document.getElementById("modalCostOther").value) || 0;
+
+    const grandTotal = rawCost + supConsumedCost + supWasteCost + contractorCost + stationCost + otherCost;
+    const costPerKg = finOutput > 0 ? parseFloat((grandTotal / finOutput).toFixed(2)) : 0;
+    const rawWaste = Math.max(0, rawInput - finOutput);
+    const yieldPercent = rawInput > 0 ? parseFloat(((finOutput / rawInput) * 100).toFixed(1)) : 0;
+
+    const opId = "PR-2026-00" + (state.operations.length + 1);
+    const genFgBatchId = "FG-" + opId;
+
+    // Build supplier breakdown summary
+    const supplierTotals = {};
+    rawIssues.forEach(r => {
+      supplierTotals[r.supplierName] = (supplierTotals[r.supplierName] || 0) + r.qty;
+    });
+    const suppliersSummary = Object.keys(supplierTotals).map(k => ({
+      supplierName: k,
+      sharePct: parseFloat(((supplierTotals[k] / rawInput) * 100).toFixed(1))
+    }));
+
+    const newOp = {
+      id: opId,
+      date: date,
+      station: station,
+      rawProduct: rawProd,
+      finishedProduct: finProd,
+      contractor: contractor,
+      locked: true,
+      rawIssues: rawIssues,
+      suppliesIssues: suppliesIssues,
+      rawInputKg: rawInput,
+      finishedOutputKg: finOutput,
+      rawWasteKg: rawWaste,
+      yieldPercent: yieldPercent,
+      costs: {
+        rawCost: rawCost,
+        suppliesConsumedCost: supConsumedCost,
+        suppliesWasteCost: supWasteCost,
+        contractorCost: contractorCost,
+        stationCost: stationCost,
+        otherCost: otherCost
+      },
+      grandTotalCost: grandTotal,
+      costPerKg: costPerKg,
+      generatedBatchId: genFgBatchId,
+      notes: notes,
+      attachments: stagedAttachments,
+      audit: []
+    };
+
+    ERPState.logOperationAudit(newOp, "CREATE_AND_POST", `توثيق عملية الإنتاج وسحب ${rawInput.toLocaleString()} كجم خام وتوليد الباتش التام ${genFgBatchId}`);
+
+    // DEDUCT INVENTORY
+    rawIssues.forEach(ri => {
+      const b = state.rawBatches.find(x => x.batchId === ri.batchId);
+      if (b) b.availableQty = Math.max(0, b.availableQty - ri.qty);
+    });
+
+    suppliesIssues.forEach(si => {
+      const s = state.supplies.find(x => x.id === si.supplyId);
+      if (s) s.stock = Math.max(0, s.stock - si.withdrawn);
+    });
+
+    // DEPOSIT FINISHED GOODS BATCH
+    state.finishedGoodsBatches.unshift({
+      fgBatchId: genFgBatchId,
+      sourceOpId: opId,
+      station: station,
+      productName: finProd,
+      productionDate: date,
+      initialQty: finOutput,
+      availableQty: finOutput,
+      costPerKg: costPerKg,
+      totalValue: grandTotal,
+      rawSources: rawIssues,
+      suppliersSummary: suppliersSummary
+    });
+
+    state.operations.unshift(newOp);
+    ERPState.save(state);
+
+    renderAll();
+    closeNewOpModal();
+    showToast(`تم توثيق العملية ${opId} بنجاح وإيداع الباتش (${genFgBatchId}) بالثلاجة!`, "success");
+  }
+
+  // =========================================================================
+  // DETAILS DRAWER & AUDIT LOG TAB
+  // =========================================================================
+  function openDetailsDrawer(opId) {
+    const state = ERPState.load();
+    activeOp = state.operations.find(o => o.id === opId);
+    if (!activeOp) return;
+
+    document.getElementById("drawerOpId").innerText = activeOp.id;
+    document.getElementById("drawerOpSubtitle").innerText = `${activeOp.station} • ${activeOp.rawProduct} ➔ ${activeOp.finishedProduct} (${activeOp.date})`;
+    
+    const badge = document.getElementById("drawerStatusBadge");
+    const isLocked = activeOp.locked !== false;
+    badge.className = isLocked ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-900 font-data-mono" : "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 font-data-mono";
+    badge.innerText = isLocked ? "🔒 مقفلة ومعتمدة" : "🔓 مفتوحة";
+
+    document.getElementById("drawerBtnLockText").innerText = isLocked ? "إلغاء القفل (Unlock)" : "قفل واعتماد (Lock)";
+
+    // RBAC check on Drawer Rollback / Lock buttons
+    const btnLock = document.getElementById("drawerBtnLock");
+    const btnRollback = document.getElementById("drawerBtnRollback");
+
+    if (!ERPState.can("LOCK_OPERATION")) {
+      btnLock.disabled = true;
+      btnLock.classList.add("opacity-50", "cursor-not-allowed");
+    } else {
+      btnLock.disabled = false;
+      btnLock.classList.remove("opacity-50", "cursor-not-allowed");
+    }
+
+    if (!ERPState.can("DELETE_OPERATION")) {
+      btnRollback.disabled = true;
+      btnRollback.classList.add("opacity-50", "cursor-not-allowed");
+    } else {
+      btnRollback.disabled = false;
+      btnRollback.classList.remove("opacity-50", "cursor-not-allowed");
+    }
+
+    switchDrawerTab('overview');
+    document.getElementById("opDetailsDrawer").classList.remove("hidden");
+  }
+
+  function closeDetailsDrawer() {
+    document.getElementById("opDetailsDrawer").classList.add("hidden");
+  }
+
+  function switchDrawerTab(tab) {
+    ['overview', 'rawIssues', 'supplies', 'attachments', 'audit'].forEach(t => {
+      const btn = document.getElementById(`dTab-${t}`);
+      if (btn) btn.className = (t === tab) ? "py-3 tab-active" : "py-3 text-on-surface-variant";
+    });
+
+    const body = document.getElementById("drawerBody");
+    const op = activeOp;
+    if (!op) return;
+
+    if (tab === 'overview') {
+      body.innerHTML = `
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-surface-variant/40 p-3 rounded-xl border border-outline-variant/50">
+            <span class="text-[11px] text-on-surface-variant block">الخام الداخل:</span>
+            <strong class="text-sm font-data-mono text-primary">${(op.rawInputKg || 0).toLocaleString()} KG</strong>
+          </div>
+          <div class="bg-surface-variant/40 p-3 rounded-xl border border-outline-variant/50">
+            <span class="text-[11px] text-on-surface-variant block">المنتج التام الناتج:</span>
+            <strong class="text-sm font-data-mono text-green-700">${(op.finishedOutputKg || 0).toLocaleString()} KG</strong>
+          </div>
+          <div class="bg-surface-variant/40 p-3 rounded-xl border border-outline-variant/50">
+            <span class="text-[11px] text-on-surface-variant block">هالك الفرز:</span>
+            <strong class="text-sm font-data-mono text-error">${(op.rawWasteKg || 0).toLocaleString()} KG</strong>
+          </div>
+          <div class="bg-surface-variant/40 p-3 rounded-xl border border-outline-variant/50">
+            <span class="text-[11px] text-on-surface-variant block">نسبة التصافي Yield:</span>
+            <strong class="text-sm font-data-mono text-secondary">${op.yieldPercent}%</strong>
+          </div>
+        </div>
+
+        <div class="bg-primary text-white p-4 rounded-xl space-y-2 font-data-mono">
+          <div class="flex justify-between text-xs text-white/80"><span>إجمالي التكلفة:</span><strong class="text-emerald-300 text-sm">${Math.round(op.grandTotalCost || 0).toLocaleString()} EGP</strong></div>
+          <div class="flex justify-between text-xs text-white/80"><span>تكلفة الكيلو التام النهائي:</span><strong class="text-emerald-300 text-base">${(op.costPerKg || 0).toFixed(2)} EGP/KG</strong></div>
+        </div>
+
+        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-1">
+          <div class="flex items-center gap-2 text-emerald-900 font-bold text-xs">
+            <span class="material-symbols-outlined text-base">verified</span>
+            <span>كود الباتش التام المولد بالمخزن:</span>
+            <strong class="font-data-mono text-sm text-emerald-800">${op.generatedBatchId || 'لا يوجد'}</strong>
+          </div>
+          <p class="text-[11px] text-emerald-700">متاح الآن للشحن والتصدير وربطه بطلبيات العملاء في شاشة الشحنات.</p>
+        </div>
+
+        ${op.notes ? `<div class="bg-surface-variant/40 p-3 rounded-xl border border-outline-variant/50 text-xs"><strong>ملاحظات:</strong> ${op.notes}</div>` : ''}
+      `;
+    } else if (tab === 'rawIssues') {
+      let rows = (op.rawIssues || []).map(r => `
+        <tr>
+          <td class="p-2.5 font-bold font-data-mono text-primary">${r.batchId}</td>
+          <td class="p-2.5 font-sans">${r.supplierName}</td>
+          <td class="p-2.5 font-data-mono font-bold">${r.qty.toLocaleString()} KG</td>
+          <td class="p-2.5 font-data-mono">${r.unitCost.toFixed(2)} EGP</td>
+          <td class="p-2.5 font-data-mono font-bold text-primary">${Math.round(r.totalCost).toLocaleString()} EGP</td>
+        </tr>
+      `).join('');
+
+      body.innerHTML = `
+        <div class="border border-outline-variant rounded-xl overflow-hidden mb-4">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/60 font-bold">
+              <tr><th class="p-2.5">رقم الـ Batch</th><th class="p-2.5">المورد</th><th class="p-2.5">الكمية المسحوبة</th><th class="p-2.5">سعر الكيلو</th><th class="p-2.5">إجمالي التكلفة</th></tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40 font-data-mono">${rows || '<tr><td colspan="5" class="p-4 text-center">لا توجد سحوبات</td></tr>'}</tbody>
+          </table>
+        </div>
+      `;
+    } else if (tab === 'supplies') {
+      let rows = (op.suppliesIssues || []).map(s => `
+        <tr>
+          <td class="p-2.5 font-bold">${s.name}</td>
+          <td class="p-2.5 font-data-mono">${s.consumed.toLocaleString()}</td>
+          <td class="p-2.5 font-data-mono text-error">${(s.waste || 0).toLocaleString()}</td>
+          <td class="p-2.5 font-data-mono font-bold">${s.withdrawn.toLocaleString()}</td>
+          <td class="p-2.5 font-data-mono">${s.unitCost.toFixed(2)} EGP</td>
+          <td class="p-2.5 font-data-mono font-bold text-primary">${Math.round(s.consumedCost + (s.wasteCost || 0)).toLocaleString()} EGP</td>
+        </tr>
+      `).join('');
+
+      body.innerHTML = `
+        <div class="border border-outline-variant rounded-xl overflow-hidden">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/60 font-bold">
+              <tr><th class="p-2.5">المستلزم</th><th class="p-2.5">المستهلك</th><th class="p-2.5">الهالك</th><th class="p-2.5">المنصرف</th><th class="p-2.5">سعر الوحدة</th><th class="p-2.5">إجمالي التكلفة</th></tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40 font-data-mono">${rows || '<tr><td colspan="6" class="p-4 text-center">لا توجد مستلزمات</td></tr>'}</tbody>
+          </table>
+        </div>
+      `;
+    } else if (tab === 'attachments') {
+      const atts = op.attachments || [];
+      if (atts.length === 0) {
+        body.innerHTML = `<div class="p-8 text-center text-on-surface-variant">لا توجد مرفقات أو صور مرفوعة لهذه العملية</div>`;
+        return;
+      }
+      body.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          ${atts.map(a => `
+            <div class="p-3 bg-surface-variant/30 border border-outline-variant/60 rounded-xl flex items-center gap-3">
+              <span class="material-symbols-outlined text-2xl text-primary">image</span>
+              <div class="flex-1 overflow-hidden">
+                <strong class="text-xs text-primary block truncate font-sans">${a.fileName}</strong>
+                <span class="text-[10px] text-on-surface-variant font-mono">${a.size} • ${a.uploadedBy}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (tab === 'audit') {
+      const logs = op.audit || [];
+      body.innerHTML = `
+        <div class="space-y-3">
+          <h4 class="font-bold text-primary flex items-center gap-1.5"><span class="material-symbols-outlined text-base">history</span>سجل الأحداث والتدقيق (Traceability Log)</h4>
+          <div class="border border-outline-variant/60 rounded-xl divide-y divide-outline-variant/40 bg-surface">
+            ${logs.map(l => `
+              <div class="p-3 space-y-1">
+                <div class="flex justify-between items-center text-xs">
+                  <strong class="text-primary font-mono">${l.action}</strong>
+                  <span class="text-[11px] text-on-surface-variant font-mono">${l.at}</span>
+                </div>
+                <p class="text-xs text-on-surface">${l.summary}</p>
+                <span class="text-[10px] text-on-surface-variant font-sans">بواسطة: ${l.by}</span>
+              </div>
+            `).join('') || '<div class="p-4 text-center">لا توجد سجلات تدقيق</div>'}
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // =========================================================================
+  // ROLLBACK & LOCK ACTIONS
+  // =========================================================================
+  function toggleLockAction() {
+    if (!activeOp) return;
+    const res = ERPState.toggleOperationLock(activeOp.id);
+    if (res.success) {
+      showToast(res.message, "success");
+      openDetailsDrawer(activeOp.id);
+      renderAll();
+    } else {
+      showToast(res.message, "error");
+    }
+  }
+
+  function rollbackDeleteAction() {
+    if (!activeOp) return;
+    if (!confirm(`هل تريد بالتأكيد حذف العملية (${activeOp.id}) وعكس كامل حركة المخزن للوطات الخام والمستلزمات وشطب باتش المنتج التام؟`)) {
+      return;
+    }
+
+    const res = ERPState.deleteOperationWithRollback(activeOp.id);
+    if (res.success) {
+      closeDetailsDrawer();
+      renderAll();
+      showToast(res.message, "success");
+    } else {
+      showToast(res.message, "error");
+    }
+  }
+
+  function resetDataAction() {
+    if (confirm("هل تريد إعادة ضبط بيانات بروتوتايب التشغيل للقيم الافتراضية الموحدة؟")) {
+      ERPState.reset();
+      renderAll();
+      showToast("تمت استعادة البيانات الافتراضية الموحدة بنجاح", "info");
+    }
+  }
+
+  // =========================================================================
+  // RBAC USER SWITCHER MODAL
+  // =========================================================================
+  function openUserModal() {
+    const state = ERPState.load();
+    const current = ERPState.getCurrentUser();
+    const container = document.getElementById("usersListContainer");
+    container.innerHTML = "";
+
+    state.users.forEach(u => {
+      const isCurrent = u.id === current.id;
+      const card = document.createElement("div");
+      card.className = `p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${isCurrent ? 'bg-primary/10 border-primary' : 'bg-surface hover:bg-surface-variant/40 border-outline-variant'}`;
+      card.onclick = () => {
+        ERPState.setCurrentUser(u.id);
+        updateCurrentUserUI();
+        closeUserModal();
+        renderAll();
+        showToast(`تم تبديل المستخدم إلى: ${u.name} (${u.role})`, "info");
+      };
+
+      card.innerHTML = `
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">${u.avatar || '👤'}</span>
+          <div>
+            <strong class="text-xs text-primary block">${u.name}</strong>
+            <span class="text-[11px] text-on-surface-variant">${u.title}</span>
+          </div>
+        </div>
+        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${isCurrent ? 'bg-primary text-white' : 'bg-surface-variant text-on-surface'}">${u.role}</span>
+      `;
+      container.appendChild(card);
+    });
+
+    document.getElementById("userModal").classList.remove("hidden");
+  }
+
+  function closeUserModal() {
+    document.getElementById("userModal").classList.add("hidden");
+  }
+
+  // =========================================================================
+  // TOAST NOTIFICATIONS
+  // =========================================================================
+  function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+      toast.classList.add("opacity-0", "translate-y-2");
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initApp();
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("action") === "new" || urlParams.get("new") === "true" || urlParams.get("batchId")) {
+      setTimeout(openNewOpModal, 200);
+    }
+  });
+  </script>
+</body>
+</html>

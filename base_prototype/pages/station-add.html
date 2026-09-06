@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إضافة محطة جديدة - نظام الـ ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Header Banner -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">add_business</span>
+            إضافة محطة جديدة
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">إنشاء موقع معالجة تشغيلي</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">قم بإدخال البيانات الأساسية والمعدلات الافتراضية للمحطة (سيتم التنشيط الآلي للمخازن التابعة)</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="stations.html" class="bg-surface border border-outline-variant text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all">
+          إلغاء
+        </a>
+        <button onclick="submitNewStation(event)" class="bg-primary text-white hover:bg-primary-container px-5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">save</span>
+          حفظ وإنشاء المحطة
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="add-station-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="add-station-toast-msg">تم إنشاء المحطة والمخازن التابعة بنجاح!</span>
+    </div>
+
+    <!-- Automatic Warehouses Creation Information Banner -->
+    <div class="bg-emerald-50/70 border border-emerald-300 rounded-xl p-4 flex items-start gap-3 text-emerald-900 shadow-sm">
+      <span class="material-symbols-outlined text-[22px] text-emerald-700 shrink-0 mt-0.5">info</span>
+      <div class="space-y-1 text-xs">
+        <h4 class="font-bold text-emerald-950 text-sm">توضيح هيكل المخازن التلقائية للنظام:</h4>
+        <p class="text-emerald-800">
+          عند إنشاء هذه المحطة، سيقوم النظام تلقائياً بإنشاء وتفعيل المستودعين المستقلين التاليين دون الحاجة لأي إنشاء يدوي:
+          <br/>
+          • <strong>مخزن الخام التابع:</strong> <span id="preview-raw-wh" class="font-mono font-bold text-primary bg-white px-2 py-0.5 rounded border border-emerald-200">مخزن خام (اسم المحطة)</span>
+          <br/>
+          • <strong>مخزن المستلزمات التابع:</strong> <span id="preview-supplies-wh" class="font-mono font-bold text-secondary bg-white px-2 py-0.5 rounded border border-blue-200">مخزن مستلزمات (اسم المحطة)</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- FORM SECTIONS CONTAINER -->
+    <form id="new-station-form" onsubmit="submitNewStation(event)" class="space-y-6">
+      
+      <!-- SECTION 1: BASIC INFORMATION -->
+      <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <div class="border-b border-outline-variant/60 pb-3 flex justify-between items-center">
+          <h2 class="text-base font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">domain</span>
+            أ. البيانات الأساسية والموقع
+          </h2>
+          <span class="text-[11px] bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-bold">بيانات المحطة التشغيلية</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Station Name -->
+          <div class="flex flex-col gap-1 md:col-span-2">
+            <label class="text-xs font-semibold text-on-surface-variant">اسم المحطة التعريفي <span class="text-rose-600">*</span></label>
+            <input id="inp-station-name" type="text" required oninput="updateWhPreview(this.value)" placeholder="مثال: محطة الصفا للتجهيز والتجميد" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary"/>
+          </div>
+
+          <!-- Status -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-on-surface-variant">حالة تشغيل المحطة</label>
+            <select id="inp-station-status" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary">
+              <option value="ACTIVE" selected>نشطة (جاهزة للعمل والتوريد)</option>
+              <option value="MAINTENANCE">صيانة (موقوفة مؤقتاً)</option>
+              <option value="INACTIVE">غير نشطة</option>
+            </select>
+          </div>
+
+          <!-- Address / Location -->
+          <div class="flex flex-col gap-1 md:col-span-2">
+            <label class="text-xs font-semibold text-on-surface-variant">العنوان والموقع التفصيلي</label>
+            <input id="inp-station-address" type="text" placeholder="مثال: الإسماعيلية - طريق القصاصين - الكيلو 15" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary"/>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: OPERATIONAL DEFAULTS & CONTRACTOR RATES -->
+      <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <div class="border-b border-outline-variant/60 pb-3 flex justify-between items-center">
+          <div class="space-y-0.5">
+            <h2 class="text-base font-bold text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px]">payments</span>
+              ب. المعدلات التشغيلية الافتراضية للمحطة والمقاول
+            </h2>
+            <p class="text-[11px] text-on-surface-variant">تُستخدم هذه القيم كـ معدلات افتراضية عند إنشاء الشحنة دون التعديل على المعاملات التاريخية</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Contractor Selection -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-on-surface-variant">المقاول المباشر الافتراضي</label>
+            <select id="inp-contractor-select" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary">
+              <option value="مقاول محطة السلام (مصطفى العبادي)" selected>مقاول محطة السلام (مصطفى العبادي)</option>
+              <option value="شركة الأمل للمقاولات">شركة الأمل للمقاولات</option>
+              <option value="مؤسسة التوحيد">مؤسسة التوحيد</option>
+              <option value="داخلي">تشغيل عمالة داخلية</option>
+            </select>
+          </div>
+
+          <!-- Station Default Rate -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-on-surface-variant">معدل تشغيل المحطة الافتراضي (ج.م / KG)</label>
+            <div class="relative">
+              <input id="inp-station-rate" type="number" step="0.10" value="2.50" required placeholder="2.50" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 pl-14 font-mono font-bold text-xs focus:outline-none focus:border-primary"/>
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-outline">ج.م/كجم</span>
+            </div>
+          </div>
+
+          <!-- Contractor Default Rate -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-on-surface-variant">معدل أجرة المقاول الافتراضي (ج.م / KG)</label>
+            <div class="relative">
+              <input id="inp-contractor-rate" type="number" step="0.10" value="1.50" required placeholder="1.50" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 pl-14 font-mono font-bold text-xs focus:outline-none focus:border-primary"/>
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-outline">ج.م/كجم</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: NOTES -->
+      <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-primary flex items-center gap-2 border-b border-outline-variant/60 pb-3">
+          <span class="material-symbols-outlined text-[20px]">notes</span>
+          ج. ملاحظات تشغيلية وإدارية
+        </h2>
+        <textarea id="inp-notes" rows="3" placeholder="أدخل أي ملاحظات إدارية، قدرة الطاقة التخزينية، أو ساعات العمل التشغيلية..." class="w-full bg-surface border border-outline-variant rounded-lg p-3 text-xs text-on-surface font-semibold focus:outline-none focus:border-primary"></textarea>
+      </section>
+
+      <!-- SUBMIT ACTIONS BAR -->
+      <div class="flex justify-end gap-3 pt-2">
+        <a href="stations.html" class="px-5 py-2.5 bg-surface border border-outline-variant rounded-lg text-xs font-bold hover:bg-surface-variant transition-colors">إلغاء</a>
+        <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container transition-all shadow-md flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">check_circle</span>
+          حفظ وإنشاء المحطة والمخازن المرتبطة
+        </button>
+      </div>
+
+    </form>
+
+  </main>
+
+<script>
+function updateWhPreview(val) {
+  const name = val.trim() || 'اسم المحطة';
+  document.getElementById('preview-raw-wh').innerText = `مخزن خام (${name})`;
+  document.getElementById('preview-supplies-wh').innerText = `مخزن مستلزمات (${name})`;
+}
+
+function submitNewStation(e) {
+  e.preventDefault();
+  const name = document.getElementById('inp-station-name').value;
+  if (!name) {
+    alert('يرجى إدخال اسم المحطة التعريفي!');
+    return;
+  }
+
+  const toast = document.getElementById('add-station-toast');
+  document.getElementById('add-station-toast-msg').innerText = `تم إنشاء محطة "${name}" وتنشيط (مخزن الخام) و (مخزن المستلزمات) التابعين بنجاح!`;
+  toast.classList.remove('hidden');
+
+  setTimeout(() => {
+    window.location.href = 'stations.html';
+  }, 1200);
+}
+</script>
+</body>
+</html>

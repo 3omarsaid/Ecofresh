@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>عمليات التدوير - نظام تجميد للتصدير</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #c4c6cd; border-radius: 4px; }
+        .tab-active { border-bottom: 3px solid #041627; color: #041627; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+
+<!-- SideNavBar -->
+<nav class="fixed right-0 top-0 h-screen w-[280px] z-50 flex flex-col bg-primary text-on-primary shadow-xl border-l border-outline-variant/10">
+    <div class="h-toolbar-height flex flex-col justify-center px-6 border-b border-outline-variant/20 py-4 bg-primary shrink-0">
+        <h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">نظام تجميد للتصدير</h1>
+        <p class="font-label-sm text-label-sm text-primary-fixed-dim">Glacier Ledger ERP</p>
+    </div>
+    <div class="flex-1 overflow-y-auto py-3 px-3">
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>لوحة القيادة التنفيذية</span>
+                </a>
+            </li>
+            <li>
+                <a href="supplies.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>إدارة المستلزمات (Supplies)</span>
+                </a>
+            </li>
+            <li>
+                <a href="processing-operations.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold bg-secondary-container text-on-secondary-container border-r-4 border-surface-variant transition-all">
+                    <span class="material-symbols-outlined">autorenew</span>
+                    <span>عمليات التدوير (Processing)</span>
+                </a>
+            </li>
+            <li>
+                <a href="create-shipment.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>إنشاء شحنة تصدير</span>
+                </a>
+            </li>
+            <li>
+                <a href="client-orders.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>طلبات العملاء والاتفاقيات</span>
+                </a>
+            </li>
+            <li>
+                <a href="new-operation.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">conveyor_belt</span>
+                    <span>عملية تشغيل جديدة</span>
+                </a>
+            </li>
+            <li>
+                <a href="raw-materials.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>مخزون المواد الخام</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>الموردون</span>
+                </a>
+            </li>
+            <li>
+                <a href="treasury-payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات</span>
+                </a>
+            </li>
+            <li>
+                <a href="stations-management.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">factory</span>
+                    <span>إدارة المحطات</span>
+                </a>
+            </li>
+            <li>
+                <a href="exports-contractors.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>إدارة المقاولين والصادرات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="p-4 border-t border-outline-variant/20 shrink-0 bg-primary-container/30">
+        <div class="flex items-center gap-3 text-xs text-primary-fixed-dim">
+            <span class="material-symbols-outlined text-green-400 text-base">check_circle</span>
+            <span>نظام محاكاة متصل - Prototype</span>
+        </div>
+    </div>
+</nav>
+
+<!-- TopNavBar -->
+<header class="bg-surface fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding border-b border-outline-variant">
+    <div class="flex items-center gap-4">
+        <h2 class="font-title-sm text-title-sm font-black text-primary">نظام تجميد للتصدير - وحدة عمليات التدوير (Processing ERP)</h2>
+        <span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-xs font-bold font-data-mono">PROTOTYPE ONLY</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative hidden lg:block">
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input id="quickSearchInput" class="bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-4 pr-10 text-body-md font-body-md focus:outline-none focus:border-primary w-64 text-on-surface" placeholder="بحث برقم العملية أو المحطة..." type="text" onkeyup="filterOperationsTable()"/>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" title="التنبيهات">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" onclick="resetPrototypeData()" title="إعادة ضبط البيانات التجريبية">
+                <span class="material-symbols-outlined">restart_alt</span>
+            </button>
+        </div>
+        <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant shrink-0">
+            <img alt="صورة المستخدم" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByztzte-7HG582Cqe_OCtfzP-23PrUqNwLlLKTTX96RHPgxCDROx15p3gKfgy7bRsiZyRSy2CJKPAAoU4Ap_Jra0RLti2ZthCxcTyK472-hCGMhTug7bvSfpiuQQJJmpTgix3-ONAd5-2TDY04W1GHPZQla8t5urxJCFKTNJOzmSgZpWcD4ynve2FL4nv6CqOvLC5wEm8-Nnc1qpYBThQnSXMJfYQuQATCq16IC8ALWBY2xm5FkfaO"/>
+        </div>
+    </div>
+</header>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Main Content Area -->
+<main class="mr-[280px] pt-toolbar-height min-h-screen p-container-padding">
+    <div class="space-y-gutter max-w-[1440px] mx-auto">
+
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h1 class="font-display-lg text-display-lg text-primary flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">autorenew</span>
+                    <span>عمليات التدوير (Processing Operations)</span>
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-1">تتبع تحويل المواد الخام إلى منتجات نهائية وتخصيص الموردين واستخلاص الهالك والتكاليف الإجمالية لكل كجم</p>
+            </div>
+            <button onclick="openNewOperationModal()" class="bg-primary hover:bg-primary-container text-on-primary font-title-sm text-title-sm px-6 py-3 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                <span class="material-symbols-outlined">add_circle</span>
+                <span>+ عملية تدوير جديدة</span>
+            </button>
+        </div>
+
+        <!-- KPI Cards Grid (6 KPI Metrics) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+            <!-- KPI 1 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي العمليات</span>
+                    <span class="material-symbols-outlined text-primary text-xl">numbers</span>
+                </div>
+                <div id="kpiTotalOps" class="text-2xl font-bold text-on-surface font-data-mono">128</div>
+                <span class="text-[11px] text-on-surface-variant">عملية مسجلة</span>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي الخام الداخل</span>
+                    <span class="material-symbols-outlined text-primary text-xl">input</span>
+                </div>
+                <div id="kpiRawInput" class="text-xl font-bold text-on-surface font-data-mono">1,245,000</div>
+                <span class="text-[11px] text-on-surface-variant">كجم خام مسحوب</span>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">المنتج الجاهز</span>
+                    <span class="material-symbols-outlined text-green-600 text-xl">output</span>
+                </div>
+                <div id="kpiFinishedOutput" class="text-xl font-bold text-green-700 font-data-mono">982,500</div>
+                <span class="text-[11px] text-on-surface-variant">كجم منتج تام</span>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي الهالك</span>
+                    <span class="material-symbols-outlined text-error text-xl">delete_sweep</span>
+                </div>
+                <div id="kpiRawWaste" class="text-xl font-bold text-error font-data-mono">262,500</div>
+                <span class="text-[11px] text-on-surface-variant">كجم هالك خام</span>
+            </div>
+            <!-- KPI 5 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">متوسط Yield</span>
+                    <span class="material-symbols-outlined text-tertiary-container text-xl">percent</span>
+                </div>
+                <div id="kpiAvgYield" class="text-2xl font-bold text-tertiary-container font-data-mono">78.9%</div>
+                <span class="text-[11px] text-on-surface-variant">نسبة التصافي العامة</span>
+            </div>
+            <!-- KPI 6 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي التكلفة</span>
+                    <span class="material-symbols-outlined text-primary text-xl">payments</span>
+                </div>
+                <div id="kpiTotalCost" class="text-lg font-bold text-primary font-data-mono">34,850,000</div>
+                <span class="text-[11px] text-on-surface-variant">جنيه مصري</span>
+            </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input id="searchInput" type="text" onkeyup="filterOperationsTable()" placeholder="بحث برقم العملية أو المحطة..." class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 text-sm focus:outline-none focus:border-primary"/>
+                </div>
+                <div>
+                    <select id="filterStation" onchange="filterOperationsTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل المحطات</option>
+                        <option value="محطة النخيل">محطة النخيل</option>
+                        <option value="محطة السلام">محطة السلام</option>
+                        <option value="محطة المدينة">محطة المدينة</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="filterProduct" onchange="filterOperationsTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل المنتجات</option>
+                        <option value="فراولة">فراولة</option>
+                        <option value="مانجو">مانجو</option>
+                        <option value="بامية">بامية</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="filterStatus" onchange="filterOperationsTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل الحالات</option>
+                        <option value="مكتملة">مكتملة</option>
+                        <option value="قيد التنفيذ">قيد التنفيذ</option>
+                        <option value="مسودة">مسودة</option>
+                        <option value="ملغاة">ملغاة</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="filterOperationsTable()" class="px-4 py-2 border border-outline-variant rounded-lg hover:bg-surface-variant text-sm font-medium flex items-center gap-1">
+                    <span class="material-symbols-outlined text-base">refresh</span>
+                    <span>تحديث</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Processing Operations Data Table -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse whitespace-nowrap">
+                    <thead class="bg-surface-container border-b border-outline-variant font-label-sm text-on-surface-variant">
+                        <tr>
+                            <th class="py-3.5 px-4 font-bold">رقم العملية</th>
+                            <th class="py-3.5 px-4 font-bold">التاريخ</th>
+                            <th class="py-3.5 px-4 font-bold">المحطة</th>
+                            <th class="py-3.5 px-4 font-bold">المنتج الخام</th>
+                            <th class="py-3.5 px-4 font-bold">الخام الداخل</th>
+                            <th class="py-3.5 px-4 font-bold">المنتج الجاهز</th>
+                            <th class="py-3.5 px-4 font-bold">هالك الخام</th>
+                            <th class="py-3.5 px-4 font-bold">Yield</th>
+                            <th class="py-3.5 px-4 font-bold">المقاول</th>
+                            <th class="py-3.5 px-4 font-bold">إجمالي التكلفة</th>
+                            <th class="py-3.5 px-4 font-bold">تكلفة / KG</th>
+                            <th class="py-3.5 px-4 font-bold text-center">الحالة</th>
+                            <th class="py-3.5 px-4 font-bold text-left">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="operationsTableBody" class="divide-y divide-outline-variant/60 font-body-md">
+                        <!-- Rows rendered dynamically by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- CREATE NEW OPERATION FULL MODAL WIZARD -->
+<div id="newOperationModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="p-5 border-b border-outline-variant bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div>
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-tertiary-fixed">add_circle</span>
+                    <span>إنشاء عملية تدوير تشغيل جديدة (New Processing Operation)</span>
+                </h2>
+                <p class="text-xs text-primary-fixed-dim mt-0.5">خطوات التخصيص الكاملة وسحب الخام ومواد التعبئة والتكاليف الشاملة</p>
+            </div>
+            <button onclick="closeNewOperationModal()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Stepper Navigation -->
+        <div class="bg-surface-container border-b border-outline-variant px-6 py-3 shrink-0 overflow-x-auto">
+            <div class="flex items-center justify-between min-w-[700px]">
+                <button onclick="goToStep(1)" id="stepBtn-1" class="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm bg-primary text-on-primary">
+                    <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs">1</span>
+                    <span>بيانات العملية</span>
+                </button>
+                <span class="h-0.5 w-6 bg-outline-variant"></span>
+                <button onclick="goToStep(2)" id="stepBtn-2" class="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-on-surface-variant hover:bg-surface-variant">
+                    <span class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs">2</span>
+                    <span>سحب الخام والـ Supplier Allocation</span>
+                </button>
+                <span class="h-0.5 w-6 bg-outline-variant"></span>
+                <button onclick="goToStep(3)" id="stepBtn-3" class="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-on-surface-variant hover:bg-surface-variant">
+                    <span class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs">3</span>
+                    <span>المستلزمات والهالك</span>
+                </button>
+                <span class="h-0.5 w-6 bg-outline-variant"></span>
+                <button onclick="goToStep(4)" id="stepBtn-4" class="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-on-surface-variant hover:bg-surface-variant">
+                    <span class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs">4</span>
+                    <span>الإنتاج والتصافي (Yield)</span>
+                </button>
+                <span class="h-0.5 w-6 bg-outline-variant"></span>
+                <button onclick="goToStep(5)" id="stepBtn-5" class="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-on-surface-variant hover:bg-surface-variant">
+                    <span class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs">5</span>
+                    <span>التكاليف والإكراميات</span>
+                </button>
+                <span class="h-0.5 w-6 bg-outline-variant"></span>
+                <button onclick="goToStep(6)" id="stepBtn-6" class="flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-on-surface-variant hover:bg-surface-variant">
+                    <span class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs">6</span>
+                    <span>المراجعة والاعتماد</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Body (Step Containers) -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-6">
+            
+            <!-- STEP 1: Basic Information -->
+            <div id="stepContent-1" class="space-y-6">
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined">info</span>
+                    <span>الخطوة 1: البيانات الأساسية للعملية</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface mb-1">المحطة المستهدفة *</label>
+                        <select id="inputStation" onchange="onStationOrProductChange()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="محطة النخيل">محطة النخيل</option>
+                            <option value="محطة السلام">محطة السلام</option>
+                            <option value="محطة المدينة">محطة المدينة</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface mb-1">تاريخ التشغيل *</label>
+                        <input id="inputDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface mb-1">المنتج الخام *</label>
+                        <select id="inputRawProduct" onchange="onStationOrProductChange()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="فراولة">فراولة</option>
+                            <option value="مانجو">مانجو</option>
+                            <option value="بامية">بامية</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface mb-1">المنتج الجاهز المستهدف *</label>
+                        <select id="inputFinishedProduct" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="فراولة مجمدة IQF">فراولة مجمدة IQF</option>
+                            <option value="مانجو مكعبات مجمدة">مانجو مكعبات مجمدة</option>
+                            <option value="بامية مجمدة ممتاز">بامية مجمدة ممتاز</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface mb-1">المقاول المباشر *</label>
+                        <select id="inputContractor" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                            <option value="مقاول أحمد">مقاول أحمد</option>
+                            <option value="مقاول محمد">مقاول محمد</option>
+                            <option value="مقاول محمود">مقاول محمود</option>
+                        </select>
+                        <span class="text-[11px] text-on-surface-variant">المقاول غير دائم للمحطة ويتم ربطه بهذه العملية فقط</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface mb-1">ملاحظات العملية</label>
+                        <textarea id="inputNotes" rows="2" placeholder="أدخل أي ملاحظات إضافية حول التشغيل..." class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm focus:border-primary"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Raw Material Withdrawal & Supplier Allocation -->
+            <div id="stepContent-2" class="space-y-6 hidden">
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">inventory_2</span>
+                        <span>الخطوة 2: سحب الخام وتخصيص رصيد الموردين (Supplier Allocation)</span>
+                    </span>
+                    <span class="text-xs bg-primary-fixed text-primary px-3 py-1 rounded-full font-data-mono">مهم جداً</span>
+                </h3>
+
+                <div class="bg-surface-container-low border border-outline-variant p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface mb-1">إجمالي الكمية المطلوبة من الخام (كجم) *</label>
+                        <input id="requiredRawQty" type="number" value="10000" oninput="updateRawAllocationsCalculations()" class="w-48 bg-surface-bright border border-outline-variant rounded-lg p-2.5 font-bold font-data-mono text-base focus:border-primary"/>
+                    </div>
+                    <div class="flex gap-4 text-xs font-data-mono">
+                        <div class="bg-surface p-2.5 rounded-lg border border-outline-variant">
+                            <span class="text-on-surface-variant block">المطلوب سحبه:</span>
+                            <span id="displayRequiredRaw" class="font-bold text-primary text-base">10,000 KG</span>
+                        </div>
+                        <div class="bg-surface p-2.5 rounded-lg border border-outline-variant">
+                            <span class="text-on-surface-variant block">إجمالي المخصص:</span>
+                            <span id="displayAllocatedRaw" class="font-bold text-green-700 text-base">0 KG</span>
+                        </div>
+                        <div class="bg-surface p-2.5 rounded-lg border border-outline-variant">
+                            <span class="text-on-surface-variant block">المتبقي للتخصيص:</span>
+                            <span id="displayRemainingRaw" class="font-bold text-error text-base">10,000 KG</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Error Banner -->
+                <div id="rawValidationError" class="bg-error-container text-on-error-container p-3 rounded-lg border border-error/30 text-xs font-bold hidden flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <span id="rawValidationText">تنبيه: يجب تخصيص كامل الكمية المطلوبة دون تجاوز أصل رصيد كل مورد.</span>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs text-on-surface mb-2">أرصدة الموردين المتاحة بالثلاجة/المحطة للمنتج المحدد:</h4>
+                    <div class="border border-outline-variant rounded-xl overflow-hidden">
+                        <table class="w-full text-right text-sm">
+                            <thead class="bg-surface-container font-bold text-xs text-on-surface-variant border-b border-outline-variant">
+                                <tr>
+                                    <th class="p-3">اسم المورد</th>
+                                    <th class="p-3">الرصيد المتاح بالمخزن</th>
+                                    <th class="p-3">الكمية المسحوبة (كجم)</th>
+                                    <th class="p-3">السعر / كجم (EGP)</th>
+                                    <th class="p-3">إجمالي تكلفة الخام للمورد</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supplierAllocationTableBody" class="divide-y divide-outline-variant/50 font-data-mono">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-surface-container p-4 rounded-xl border border-outline-variant flex justify-between items-center text-xs font-data-mono">
+                    <span>إجمالي تكلفة الخام المسحوب: <strong id="totalRawCostDisplay" class="text-primary text-base">0 EGP</strong></span>
+                    <span>متوسط سعر كيلو الخام (Weighted Avg Raw Cost/KG): <strong id="weightedAvgRawCostDisplay" class="text-tertiary-container text-base">0 EGP/KG</strong></span>
+                </div>
+            </div>
+
+            <!-- STEP 3: Supplies & Packaging Consumption -->
+            <div id="stepContent-3" class="space-y-6 hidden">
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">box</span>
+                        <span>الخطوة 3: مستلزمات ومواد التعبئة والتغليف (Supplies & Packaging)</span>
+                    </span>
+                    <span class="text-xs text-on-surface-variant font-normal">حساب التكلفة والهالك التلقائي (Waste = Withdrawn - Consumed)</span>
+                </h3>
+
+                <!-- Validation Warning for Supplies -->
+                <div id="suppliesValidationError" class="bg-error-container text-on-error-container p-3 rounded-lg border border-error/30 text-xs font-bold hidden flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <span id="suppliesValidationText">تنبيه: الكمية المستخدمة لا يمكن أن تتجاوز المسحوبة، والمسحوبة لا تتجاوز الرصيد.</span>
+                </div>
+
+                <div class="border border-outline-variant rounded-xl overflow-hidden">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-surface-container font-bold text-on-surface-variant border-b border-outline-variant">
+                            <tr>
+                                <th class="p-3">المستلزم</th>
+                                <th class="p-3">النوع/المواصفة</th>
+                                <th class="p-3">الوحدة</th>
+                                <th class="p-3">الرصيد المتاح</th>
+                                <th class="p-3 w-24">المسحوب</th>
+                                <th class="p-3 w-24">المستخدم</th>
+                                <th class="p-3">الهالك التلقائي</th>
+                                <th class="p-3">سعر الوحدة</th>
+                                <th class="p-3">تكلفة المستخدم</th>
+                                <th class="p-3">تكلفة الهالك</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suppliesTableBody" class="divide-y divide-outline-variant/50 font-data-mono">
+                            <!-- Rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-surface p-4 rounded-xl border border-outline-variant flex justify-between items-center text-xs font-data-mono">
+                        <span>إجمالي تكلفة المستلزمات المستخدمة:</span>
+                        <strong id="totalSuppliesConsumedCostDisplay" class="text-primary text-base">0 EGP</strong>
+                    </div>
+                    <div class="bg-surface p-4 rounded-xl border border-outline-variant flex justify-between items-center text-xs font-data-mono">
+                        <span>إجمالي تكلفة هالك المستلزمات:</span>
+                        <strong id="totalSuppliesWasteCostDisplay" class="text-error text-base">0 EGP</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: Production Output & Yield -->
+            <div id="stepContent-4" class="space-y-6 hidden">
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined">output</span>
+                    <span>الخطوة 4: كميات الإنتاج التام والهالك ونسبة التصافي (Yield)</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-surface p-4 rounded-xl border border-outline-variant">
+                        <label class="block text-xs font-bold text-on-surface mb-1">كمية الخام الداخلة (كجم)</label>
+                        <input id="outputRawInput" type="number" readonly class="w-full bg-surface-container border border-outline-variant rounded-lg p-2.5 font-bold font-data-mono text-base"/>
+                        <span class="text-[11px] text-on-surface-variant">مأخوذة تلقائياً من إجمالي مسحوب الخام في الخطوة 2</span>
+                    </div>
+
+                    <div class="bg-surface p-4 rounded-xl border border-outline-variant">
+                        <label class="block text-xs font-bold text-on-surface mb-1">كمية المنتج الجاهز (كجم) *</label>
+                        <input id="outputFinishedQty" type="number" value="8000" oninput="calculateProductionYield()" class="w-full bg-surface-bright border border-outline-variant rounded-lg p-2.5 font-bold font-data-mono text-base focus:border-primary"/>
+                    </div>
+
+                    <div class="bg-surface p-4 rounded-xl border border-outline-variant">
+                        <label class="block text-xs font-bold text-on-surface mb-1">هالك الخام التلقائي (كجم)</label>
+                        <input id="outputRawWaste" type="number" readonly class="w-full bg-error-container text-on-error-container border border-error/30 rounded-lg p-2.5 font-bold font-data-mono text-base"/>
+                        <span class="text-[11px] text-on-surface-variant">الحساب: (الخام الداخل - المنتج الجاهز)</span>
+                    </div>
+                </div>
+
+                <!-- Output Validation Error -->
+                <div id="outputValidationError" class="bg-error-container text-on-error-container p-3 rounded-lg border border-error/30 text-xs font-bold hidden flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <span>خطأ: كمية المنتج الجاهز لا يمكن أن تتجاوز كمية الخام الداخلة.</span>
+                </div>
+
+                <!-- Yield Indicator Progress Bar -->
+                <div class="bg-surface-container-low border border-outline-variant p-6 rounded-xl space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm text-on-surface">مؤشر التصافي الفعلي (Production Yield Indicator):</span>
+                        <div class="flex items-center gap-4 font-data-mono text-sm font-bold">
+                            <span class="text-tertiary-container">Yield: <span id="yieldPercentDisplay">80%</span></span>
+                            <span class="text-error">Waste: <span id="wastePercentDisplay">20%</span></span>
+                        </div>
+                    </div>
+                    <div class="h-4 w-full bg-surface-variant rounded-full overflow-hidden flex">
+                        <div id="yieldProgressBar" class="h-full bg-tertiary-container transition-all duration-300" style="width: 80%"></div>
+                        <div id="wasteProgressBar" class="h-full bg-error transition-all duration-300" style="width: 20%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: Processing Costs Breakdown & Gratuities -->
+            <div id="stepContent-5" class="space-y-6 hidden">
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">payments</span>
+                        <span>الخطوة 5: تكاليف التشغيل الشاملة والإكراميات (Processing Costs Breakdown)</span>
+                    </span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Raw & Supplies Auto Costs -->
+                    <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-3 font-data-mono text-xs">
+                        <div class="flex justify-between items-center">
+                            <span>تكلفة الخام الإجمالية:</span>
+                            <strong id="costRawSummary" class="text-primary text-sm">304,500 EGP</strong>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>تكلفة المستلزمات المستخدمة:</span>
+                            <strong id="costSuppliesSummary" class="text-primary text-sm">20,920 EGP</strong>
+                        </div>
+                    </div>
+
+                    <!-- Direct Entered Costs -->
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-on-surface mb-1">حساب المقاول (Contractor Cost) *</label>
+                            <input id="inputContractorCost" type="number" value="20000" oninput="calculateTotalProcessingCosts()" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm font-data-mono font-bold focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-on-surface mb-1">مصاريف/أرضية المحطة (Station Cost) *</label>
+                            <input id="inputStationCost" type="number" value="10000" oninput="calculateTotalProcessingCosts()" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm font-data-mono font-bold focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-on-surface mb-1">مصاريف أخرى (كهرباء، تبريد، تحميل) *</label>
+                            <input id="inputOtherCost" type="number" value="5000" oninput="calculateTotalProcessingCosts()" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm font-data-mono font-bold focus:border-primary"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gratuities Section (الإكراميات) -->
+                <div class="border border-outline-variant rounded-xl p-4 bg-surface-container-lowest">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-xs text-on-surface flex items-center gap-1">
+                            <span class="material-symbols-outlined text-primary text-base">volunteer_activism</span>
+                            <span>الإكراميات المباشرة أثناء التشغيل (Gratuities Log):</span>
+                        </h4>
+                        <button type="button" onclick="addGratuityRow()" class="text-xs bg-surface border border-outline-variant hover:bg-surface-variant px-3 py-1 rounded-lg font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">add</span>
+                            <span>+ إضافة إكرامية</span>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-surface-container font-bold text-on-surface-variant border-b border-outline-variant">
+                                <tr>
+                                    <th class="p-2">الجهة / المستلم</th>
+                                    <th class="p-2 w-32">المبلغ (EGP)</th>
+                                    <th class="p-2">السبب / ملاحظات</th>
+                                    <th class="p-2 text-center w-24">الحالة</th>
+                                    <th class="p-2 text-center w-12">حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gratuitiesTableBody" class="divide-y divide-outline-variant/40 font-data-mono">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Comprehensive Cost Totals Summary -->
+                <div class="bg-primary text-on-primary rounded-xl p-5 shadow-lg grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-xs text-primary-fixed-dim block">إجمالي تكلفة التدوير الشاملة (Total Processing Cost):</span>
+                        <span id="grandTotalCostDisplay" class="text-3xl font-bold font-data-mono text-tertiary-fixed">361,420 EGP</span>
+                    </div>
+                    <div class="border-r md:border-r border-white/20 pr-4">
+                        <span class="text-xs text-primary-fixed-dim block">تكلفة الكيلو الجاهز النهائي (Cost per KG):</span>
+                        <span id="costPerKgDisplay" class="text-3xl font-bold font-data-mono text-white">45.18 EGP/KG</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 6: Review & Final Confirmation -->
+            <div id="stepContent-6" class="space-y-6 hidden">
+                <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-2 flex items-center gap-2">
+                    <span class="material-symbols-outlined">fact_check</span>
+                    <span>الخطوة 6: مراجعة واعتماد العملية الشاملة</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                    <!-- Summary Card 1 -->
+                    <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-2">
+                        <h4 class="font-bold text-sm text-primary border-b pb-1">البيانات والإنتاج</h4>
+                        <div class="flex justify-between"><span>المحطة:</span> <strong id="sumStation">-</strong></div>
+                        <div class="flex justify-between"><span>المنتج الخام:</span> <strong id="sumRawProduct">-</strong></div>
+                        <div class="flex justify-between"><span>المنتج الجاهز:</span> <strong id="sumFinishedProduct">-</strong></div>
+                        <div class="flex justify-between"><span>المقاول:</span> <strong id="sumContractor">-</strong></div>
+                        <div class="flex justify-between"><span>الخام الداخل:</span> <strong id="sumRawInput">-</strong></div>
+                        <div class="flex justify-between"><span>المنتج التام:</span> <strong id="sumFinishedOutput">-</strong></div>
+                        <div class="flex justify-between"><span>هالك الخام:</span> <strong id="sumRawWaste" class="text-error">-</strong></div>
+                        <div class="flex justify-between"><span>نسبة التصافي Yield:</span> <strong id="sumYield" class="text-tertiary-container">-</strong></div>
+                    </div>
+
+                    <!-- Summary Card 2 -->
+                    <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-2 font-data-mono">
+                        <h4 class="font-bold text-sm text-primary border-b pb-1 font-body-md">الملخص المالي والتكلفة</h4>
+                        <div class="flex justify-between"><span>تكلفة الخام:</span> <span id="sumCostRaw">-</span></div>
+                        <div class="flex justify-between"><span>تكلفة المستلزمات:</span> <span id="sumCostSupplies">-</span></div>
+                        <div class="flex justify-between"><span>حساب المقاول:</span> <span id="sumCostContractor">-</span></div>
+                        <div class="flex justify-between"><span>أرضية المحطة:</span> <span id="sumCostStation">-</span></div>
+                        <div class="flex justify-between"><span>مصاريف أخرى والإكراميات:</span> <span id="sumCostOther">-</span></div>
+                        <div class="border-t pt-2 flex justify-between text-sm font-bold text-primary"><span>إجمالي التكلفة:</span> <span id="sumGrandCost">-</span></div>
+                        <div class="flex justify-between text-sm font-bold text-tertiary-container"><span>تكلفة الكيلو (Cost/KG):</span> <span id="sumCostPerKg">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="p-4 border-t border-outline-variant bg-surface-container flex justify-between items-center shrink-0">
+            <button type="button" onclick="goToPrevStep()" id="prevStepBtn" class="px-5 py-2 rounded-xl border border-outline-variant hover:bg-surface-variant font-bold text-sm disabled:opacity-40" disabled>
+                السابق
+            </button>
+
+            <div class="flex gap-3">
+                <button type="button" onclick="saveOperationDraft()" class="px-5 py-2.5 rounded-xl border border-primary text-primary hover:bg-primary/5 font-bold text-sm">
+                    حفظ كمسودة
+                </button>
+                <button type="button" onclick="goToNextStep()" id="nextStepBtn" class="px-6 py-2.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container font-bold text-sm shadow-md">
+                    التالي
+                </button>
+                <button type="button" onclick="approveNewOperation()" id="approveOpBtn" class="px-6 py-2.5 rounded-xl bg-tertiary-container text-on-tertiary-container hover:bg-green-700 text-white font-bold text-sm shadow-md hidden">
+                    اعتماد العملية التام
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- OPERATION DETAILS DRAWER / MODAL -->
+<div id="operationDetailsDrawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end hidden">
+    <div class="bg-surface-container-lowest w-full max-w-3xl h-full flex flex-col shadow-2xl overflow-hidden border-r border-outline-variant">
+        
+        <!-- Drawer Header -->
+        <div class="p-5 bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div>
+                <h3 id="drawerOpId" class="text-xl font-bold font-data-mono">PR-0001</h3>
+                <p id="drawerOpSubtitle" class="text-xs text-primary-fixed-dim">تفاصيل عملية التدوير وحركة الأرصدة والتكاليف</p>
+            </div>
+            <button onclick="closeDetailsDrawer()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Drawer Content Tabs -->
+        <div class="bg-surface-container border-b border-outline-variant px-6 flex gap-4 text-xs font-bold shrink-0">
+            <button onclick="switchDrawerTab('overview')" id="dTab-overview" class="py-3 tab-active">نظرة عامة</button>
+            <button onclick="switchDrawerTab('suppliers')" id="dTab-suppliers" class="py-3 text-on-surface-variant">تخصيص الموردين</button>
+            <button onclick="switchDrawerTab('supplies')" id="dTab-supplies" class="py-3 text-on-surface-variant">المستلزمات والهالك</button>
+            <button onclick="switchDrawerTab('financial')" id="dTab-financial" class="py-3 text-on-surface-variant">التكاليف والذمم</button>
+            <button onclick="switchDrawerTab('audit')" id="dTab-audit" class="py-3 text-on-surface-variant">سجل التدقيق</button>
+        </div>
+
+        <!-- Drawer Body -->
+        <div id="drawerBody" class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+            <!-- Content filled dynamically by JS -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-outline-variant bg-surface-container flex justify-between items-center shrink-0">
+            <div id="drawerStatusBadge"></div>
+            <div id="drawerActions" class="flex gap-2">
+                <!-- Action buttons -->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- JAVASCRIPT STATE MANAGEMENT & PROTOTYPE LOGIC -->
+<script>
+// INITIAL MOCK DATA & STATE MANAGEMENT
+const DEFAULT_SUPPLIERS = [
+    { name: "شركة الخير للتوريدات", balance: 10000, price: 30 },
+    { name: "مؤسسة النور الزراعية", balance: 7000, price: 32 },
+    { name: "أحمد السيد (مزارع)", balance: 5000, price: 29 },
+    { name: "محمد حسن (مزارع)", balance: 8000, price: 31 }
+];
+
+const DEFAULT_SUPPLIES = [
+    { name: "كرتونة تصدير X", type: "كرتون مقوى", unit: "قطعة", stock: 5000, price: 12, withdrawn: 1050, consumed: 1000 },
+    { name: "كيس فراولة 1kg", type: "بولي إيثيلين", unit: "كيس", stock: 8000, price: 4, withdrawn: 2100, consumed: 2000 },
+    { name: "شريط لزق شفاف", type: "رول 50m", unit: "رول", stock: 100, price: 40, withdrawn: 25, consumed: 23 },
+    { name: "استيكر بيانات الشحنة", type: "ورقي ملصق", unit: "ملصق", stock: 10000, price: 1.5, withdrawn: 1020, consumed: 1000 }
+];
+
+const DEFAULT_OPERATIONS = [
+    {
+        id: "PR-0001",
+        date: "2026-08-20",
+        station: "محطة النخيل",
+        rawProduct: "فراولة",
+        finishedProduct: "فراولة مجمدة IQF",
+        contractor: "مقاول أحمد",
+        rawInput: 10000,
+        finishedOutput: 8000,
+        rawWaste: 2000,
+        yieldPercent: 80.0,
+        totalCost: 361420,
+        costPerKg: 45.18,
+        status: "مكتملة",
+        supplierAllocations: [
+            { name: "شركة الخير للتوريدات", qty: 4000, price: 30, total: 120000 },
+            { name: "مؤسسة النور الزراعية", qty: 3500, price: 32, total: 112000 },
+            { name: "أحمد السيد (مزارع)", qty: 2500, price: 29, total: 72500 }
+        ],
+        suppliesConsumption: [
+            { name: "كرتونة تصدير X", unit: "قطعة", withdrawn: 1050, consumed: 1000, waste: 50, price: 12, consumedCost: 12000, wasteCost: 600 },
+            { name: "كيس فراولة 1kg", unit: "كيس", withdrawn: 2100, consumed: 2000, waste: 100, price: 4, consumedCost: 8000, wasteCost: 400 },
+            { name: "شريط لزق شفاف", unit: "رول", withdrawn: 25, consumed: 23, waste: 2, price: 40, consumedCost: 920, wasteCost: 80 }
+        ],
+        costs: {
+            rawCost: 304500,
+            suppliesCost: 20920,
+            contractorCost: 20000,
+            stationCost: 10000,
+            otherCost: 5000,
+            gratuitiesCost: 1000
+        },
+        gratuities: [
+            { recipient: "عمال عتالة التحميل", amount: 500, reason: "إكرامية سرعة التفريغ", status: "مدفوعة" },
+            { recipient: "سائق الشاحنة", amount: 500, reason: "نولون طارئ", status: "مدفوعة" }
+        ],
+        notes: "تم التشغيل بجودة فائقة ونسبة تصافي 80%"
+    },
+    {
+        id: "PR-0002",
+        date: "2026-08-21",
+        station: "محطة السلام",
+        rawProduct: "مانجو",
+        finishedProduct: "مانجو مكعبات مجمدة",
+        contractor: "مقاول محمد",
+        rawInput: 15000,
+        finishedOutput: 11250,
+        rawWaste: 3750,
+        yieldPercent: 75.0,
+        totalCost: 520000,
+        costPerKg: 46.22,
+        status: "مكتملة",
+        supplierAllocations: [
+            { name: "شركة الخير للتوريدات", qty: 7000, price: 30, total: 210000 },
+            { name: "محمد حسن (مزارع)", qty: 8000, price: 31, total: 248000 }
+        ],
+        suppliesConsumption: [
+            { name: "كرتونة تصدير X", unit: "قطعة", withdrawn: 1500, consumed: 1450, waste: 50, price: 12, consumedCost: 17400, wasteCost: 600 }
+        ],
+        costs: { rawCost: 458000, suppliesCost: 17400, contractorCost: 25000, stationCost: 12000, otherCost: 6000, gratuitiesCost: 1600 },
+        gratuities: [{ recipient: "مشرف التجميد", amount: 1600, reason: "ساعات عمل إضافية", status: "غير مدفوعة" }],
+        notes: "مانجو صنف سكري ممتازة"
+    },
+    {
+        id: "PR-0003",
+        date: "2026-08-22",
+        station: "محطة المدينة",
+        rawProduct: "بامية",
+        finishedProduct: "بامية مجمدة ممتاز",
+        contractor: "مقاول محمود",
+        rawInput: 8000,
+        finishedOutput: 6800,
+        rawWaste: 1200,
+        yieldPercent: 85.0,
+        totalCost: 295000,
+        costPerKg: 43.38,
+        status: "قيد التنفيذ",
+        supplierAllocations: [
+            { name: "مؤسسة النور الزراعية", qty: 5000, price: 32, total: 160000 },
+            { name: "أحمد السيد (مزارع)", qty: 3000, price: 29, total: 87000 }
+        ],
+        suppliesConsumption: [],
+        costs: { rawCost: 247000, suppliesCost: 15000, contractorCost: 18000, stationCost: 10000, otherCost: 4000, gratuitiesCost: 1000 },
+        gratuities: [],
+        notes: "جاري استكمال قمع البامية والتجميد"
+    },
+    {
+        id: "PR-0004",
+        date: "2026-08-23",
+        station: "محطة النخيل",
+        rawProduct: "فراولة",
+        finishedProduct: "فراولة مجمدة IQF",
+        contractor: "مقاول أحمد",
+        rawInput: 5000,
+        finishedOutput: 4000,
+        rawWaste: 1000,
+        yieldPercent: 80.0,
+        totalCost: 185000,
+        costPerKg: 46.25,
+        status: "مسودة",
+        supplierAllocations: [],
+        suppliesConsumption: [],
+        costs: { rawCost: 150000, suppliesCost: 10000, contractorCost: 12000, stationCost: 8000, otherCost: 4000, gratuitiesCost: 1000 },
+        gratuities: [],
+        notes: "مسودة عملية قادمة غداً"
+    }
+];
+
+let appState = {
+    suppliers: [],
+    supplies: [],
+    operations: []
+};
+
+// INITIALIZE STATE
+function initPrototypeState() {
+    const saved = localStorage.getItem("stitch_frozex_processing_state");
+    if (saved) {
+        try {
+            appState = JSON.parse(saved);
+        } catch(e) {
+            loadDefaultState();
+        }
+    } else {
+        loadDefaultState();
+    }
+    renderOperationsTable();
+    updateKpis();
+}
+
+function loadDefaultState() {
+    appState = {
+        suppliers: JSON.parse(JSON.stringify(DEFAULT_SUPPLIERS)),
+        supplies: JSON.parse(JSON.stringify(DEFAULT_SUPPLIES)),
+        operations: JSON.parse(JSON.stringify(DEFAULT_OPERATIONS))
+    };
+    saveState();
+}
+
+function saveState() {
+    localStorage.setItem("stitch_frozex_processing_state", JSON.stringify(appState));
+}
+
+function resetPrototypeData() {
+    if (confirm("هل تريد إعادة ضبط بيانات عمليات التدوير إلى الوضع الافتراضي؟")) {
+        loadDefaultState();
+        renderOperationsTable();
+        updateKpis();
+        showToast("تم إعادة ضبط البيانات التجريبية بنجاح", "info");
+    }
+}
+
+// RENDER OPERATIONS TABLE
+function renderOperationsTable() {
+    const tbody = document.getElementById("operationsTableBody");
+    tbody.innerHTML = "";
+
+    const filterText = (document.getElementById("searchInput")?.value || "").toLowerCase();
+    const filterStation = document.getElementById("filterStation")?.value || "";
+    const filterProduct = document.getElementById("filterProduct")?.value || "";
+    const filterStatus = document.getElementById("filterStatus")?.value || "";
+
+    const filtered = appState.operations.filter(op => {
+        const matchesText = op.id.toLowerCase().includes(filterText) ||
+                            op.station.toLowerCase().includes(filterText) ||
+                            op.rawProduct.toLowerCase().includes(filterText) ||
+                            op.contractor.toLowerCase().includes(filterText);
+        const matchesStation = !filterStation || op.station === filterStation;
+        const matchesProduct = !filterProduct || op.rawProduct === filterProduct;
+        const matchesStatus = !filterStatus || op.status === filterStatus;
+        return matchesText && matchesStation && matchesProduct && matchesStatus;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="13" class="p-8 text-center text-on-surface-variant font-medium">لا توجد عمليات تدوير مطابقة للبحث</td></tr>`;
+        return;
+    }
+
+    filtered.forEach(op => {
+        let badgeStyle = "bg-surface-variant text-on-surface-variant";
+        if (op.status === "مكتملة") badgeStyle = "bg-tertiary-fixed-dim text-on-tertiary-container font-bold";
+        else if (op.status === "قيد التنفيذ") badgeStyle = "bg-secondary-container text-on-secondary-container font-bold";
+        else if (op.status === "مسودة") badgeStyle = "bg-surface-container-high text-on-surface-variant";
+        else if (op.status === "ملغاة") badgeStyle = "bg-error-container text-on-error-container font-bold";
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-surface-container-low transition-colors cursor-pointer";
+        tr.onclick = (e) => {
+            if (!e.target.closest("button")) {
+                openDetailsDrawer(op.id);
+            }
+        };
+
+        tr.innerHTML = `
+            <td class="py-3.5 px-4 font-bold font-data-mono text-primary">${op.id}</td>
+            <td class="py-3.5 px-4 text-xs">${op.date}</td>
+            <td class="py-3.5 px-4 font-medium">${op.station}</td>
+            <td class="py-3.5 px-4">${op.rawProduct}</td>
+            <td class="py-3.5 px-4 font-data-mono">${op.rawInput.toLocaleString()} KG</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-green-700">${op.finishedOutput.toLocaleString()} KG</td>
+            <td class="py-3.5 px-4 font-data-mono text-error">${op.rawWaste.toLocaleString()} KG</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-tertiary-container">${op.yieldPercent}%</td>
+            <td class="py-3.5 px-4">${op.contractor}</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-primary">${op.totalCost.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-on-surface">${op.costPerKg} EGP</td>
+            <td class="py-3.5 px-4 text-center">
+                <span class="inline-block px-2.5 py-1 rounded-full text-xs ${badgeStyle}">${op.status}</span>
+            </td>
+            <td class="py-3.5 px-4 text-left">
+                <div class="flex items-center gap-1 justify-end">
+                    <button onclick="openDetailsDrawer('${op.id}')" class="p-1.5 rounded hover:bg-surface-variant text-primary" title="عرض التفاصيل الكاملة">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                    ${op.status === 'مسودة' ? `
+                    <button onclick="approveOperationDirectly('${op.id}')" class="p-1.5 rounded hover:bg-green-100 text-green-700" title="اعتماد العملية فوراً">
+                        <span class="material-symbols-outlined text-lg">check_circle</span>
+                    </button>` : ''}
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function filterOperationsTable() {
+    renderOperationsTable();
+}
+
+// UPDATE KPIS
+function updateKpis() {
+    const ops = appState.operations;
+    const totalOps = ops.length;
+    const totalRaw = ops.reduce((acc, curr) => acc + (curr.rawInput || 0), 0);
+    const totalFinished = ops.reduce((acc, curr) => acc + (curr.finishedOutput || 0), 0);
+    const totalWaste = ops.reduce((acc, curr) => acc + (curr.rawWaste || 0), 0);
+    const avgYield = totalRaw > 0 ? ((totalFinished / totalRaw) * 100).toFixed(1) : "0.0";
+    const totalCost = ops.reduce((acc, curr) => acc + (curr.totalCost || 0), 0);
+
+    document.getElementById("kpiTotalOps").innerText = totalOps;
+    document.getElementById("kpiRawInput").innerText = totalRaw.toLocaleString();
+    document.getElementById("kpiFinishedOutput").innerText = totalFinished.toLocaleString();
+    document.getElementById("kpiRawWaste").innerText = totalWaste.toLocaleString();
+    document.getElementById("kpiAvgYield").innerText = avgYield + "%";
+    document.getElementById("kpiTotalCost").innerText = totalCost.toLocaleString();
+}
+
+// STEPPER & MODAL WIZARD LOGIC
+let currentStep = 1;
+let activeGratuities = [
+    { recipient: "عمال عتالة التحميل", amount: 500, reason: "إكرامية سرعة التفريغ", status: "مدفوعة" },
+    { recipient: "سائق الشاحنة", amount: 500, reason: "نولون طارئ", status: "مدفوعة" }
+];
+
+function openNewOperationModal() {
+    currentStep = 1;
+    activeGratuities = [
+        { recipient: "عمال عتالة التحميل", amount: 500, reason: "إكرامية سرعة التفريغ", status: "مدفوعة" },
+        { recipient: "سائق الشاحنة", amount: 500, reason: "نولون طارئ", status: "مدفوعة" }
+    ];
+    onStationOrProductChange();
+    renderSuppliesTable();
+    renderGratuitiesTable();
+    goToStep(1);
+    document.getElementById("newOperationModal").classList.remove("hidden");
+}
+
+function closeNewOperationModal() {
+    document.getElementById("newOperationModal").classList.add("hidden");
+}
+
+function goToStep(stepNum) {
+    if (stepNum > currentStep) {
+        if (!validateStep(currentStep)) return;
+    }
+
+    currentStep = stepNum;
+    for (let i = 1; i <= 6; i++) {
+        const content = document.getElementById(`stepContent-${i}`);
+        const btn = document.getElementById(`stepBtn-${i}`);
+        if (i === stepNum) {
+            content.classList.remove("hidden");
+            btn.className = "flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm bg-primary text-on-primary";
+        } else {
+            content.classList.add("hidden");
+            btn.className = "flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-sm text-on-surface-variant hover:bg-surface-variant";
+        }
+    }
+
+    document.getElementById("prevStepBtn").disabled = (stepNum === 1);
+    
+    if (stepNum === 6) {
+        document.getElementById("nextStepBtn").classList.add("hidden");
+        document.getElementById("approveOpBtn").classList.remove("hidden");
+        renderReviewStepSummary();
+    } else {
+        document.getElementById("nextStepBtn").classList.remove("hidden");
+        document.getElementById("approveOpBtn").classList.add("hidden");
+    }
+}
+
+function goToNextStep() {
+    if (currentStep < 6) {
+        goToStep(currentStep + 1);
+    }
+}
+
+function goToPrevStep() {
+    if (currentStep > 1) {
+        goToStep(currentStep - 1);
+    }
+}
+
+function validateStep(stepNum) {
+    if (stepNum === 1) {
+        const rawProd = document.getElementById("inputRawProduct").value;
+        const finProd = document.getElementById("inputFinishedProduct").value;
+        if (!rawProd || !finProd) {
+            showToast("يرجى تحديد المنتج الخام والمنتج الجاهز", "error");
+            return false;
+        }
+        return true;
+    }
+    if (stepNum === 2) {
+        const required = parseFloat(document.getElementById("requiredRawQty").value) || 0;
+        let allocated = 0;
+        let isValid = true;
+
+        appState.suppliers.forEach((s, idx) => {
+            const val = parseFloat(document.getElementById(`supplierAllocInput_${idx}`)?.value) || 0;
+            if (val > s.balance) {
+                isValid = false;
+            }
+            allocated += val;
+        });
+
+        if (!isValid) {
+            showToast("خطأ: الكمية المطلوبة تتجاوز رصيد المورد المتاح", "error");
+            return false;
+        }
+        if (allocated !== required) {
+            showToast(`خطأ: متبقي ${(required - allocated).toLocaleString()} KG لم يتم تخصيصها للموردين`, "error");
+            return false;
+        }
+        return true;
+    }
+    if (stepNum === 3) {
+        let isValid = true;
+        appState.supplies.forEach((sup, idx) => {
+            const withdrawn = parseFloat(document.getElementById(`supWithdrawn_${idx}`)?.value) || 0;
+            const consumed = parseFloat(document.getElementById(`supConsumed_${idx}`)?.value) || 0;
+            if (consumed > withdrawn || withdrawn > sup.stock) {
+                isValid = false;
+            }
+        });
+        if (!isValid) {
+            showToast("خطأ في كميات المستلزمات: المستخدم يتجاوز المسحوب أو المسحوب يتجاوز الرصيد", "error");
+            return false;
+        }
+        return true;
+    }
+    if (stepNum === 4) {
+        const rawInput = parseFloat(document.getElementById("outputRawInput").value) || 0;
+        const finished = parseFloat(document.getElementById("outputFinishedQty").value) || 0;
+        if (finished > rawInput) {
+            showToast("خطأ: كمية المنتج الجاهز لا يمكن أن تتجاوز كمية الخام الداخلة", "error");
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+// STEP 2: SUPPLIER ALLOCATION LOGIC
+function onStationOrProductChange() {
+    renderSupplierAllocationTable();
+    updateRawAllocationsCalculations();
+}
+
+function renderSupplierAllocationTable() {
+    const tbody = document.getElementById("supplierAllocationTableBody");
+    tbody.innerHTML = "";
+
+    appState.suppliers.forEach((s, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-3 font-bold font-body-md text-on-surface">${s.name}</td>
+            <td class="p-3 font-bold text-primary">${s.balance.toLocaleString()} KG</td>
+            <td class="p-3">
+                <input type="number" id="supplierAllocInput_${idx}" value="0" min="0" max="${s.balance}" oninput="updateRawAllocationsCalculations()" class="w-32 bg-surface-bright border border-outline-variant rounded p-1.5 font-bold focus:border-primary text-sm"/>
+            </td>
+            <td class="p-3">${s.price} EGP</td>
+            <td class="p-3 font-bold text-on-surface" id="supplierAllocTotal_${idx}">0 EGP</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateRawAllocationsCalculations() {
+    const required = parseFloat(document.getElementById("requiredRawQty").value) || 0;
+    let allocatedTotal = 0;
+    let rawCostTotal = 0;
+    let hasOverflow = false;
+
+    appState.suppliers.forEach((s, idx) => {
+        const inputElem = document.getElementById(`supplierAllocInput_${idx}`);
+        const val = parseFloat(inputElem?.value) || 0;
+        
+        if (val > s.balance) {
+            hasOverflow = true;
+            inputElem.classList.add("border-error", "bg-error-container");
+        } else {
+            inputElem?.classList.remove("border-error", "bg-error-container");
+        }
+
+        const cost = val * s.price;
+        document.getElementById(`supplierAllocTotal_${idx}`).innerText = cost.toLocaleString() + " EGP";
+        allocatedTotal += val;
+        rawCostTotal += cost;
+    });
+
+    const remaining = required - allocatedTotal;
+    document.getElementById("displayRequiredRaw").innerText = required.toLocaleString() + " KG";
+    document.getElementById("displayAllocatedRaw").innerText = allocatedTotal.toLocaleString() + " KG";
+    document.getElementById("displayRemainingRaw").innerText = remaining.toLocaleString() + " KG";
+
+    const errBanner = document.getElementById("rawValidationError");
+    const errText = document.getElementById("rawValidationText");
+    if (hasOverflow) {
+        errBanner.classList.remove("hidden");
+        errText.innerText = "خطأ: إحدى الكميات المخصصة تتجاوز رصيد المورد المتاح!";
+    } else if (remaining !== 0) {
+        errBanner.classList.remove("hidden");
+        errText.innerText = remaining > 0 ? `تنبيه: متبقي ${remaining.toLocaleString()} KG لم يتم تخصيصها للموردين.` : `تنبيه: تم تجاوز الكمية المطلوبة بمقدار ${Math.abs(remaining).toLocaleString()} KG!`;
+    } else {
+        errBanner.classList.add("hidden");
+    }
+
+    document.getElementById("totalRawCostDisplay").innerText = rawCostTotal.toLocaleString() + " EGP";
+    const weightedAvg = allocatedTotal > 0 ? (rawCostTotal / allocatedTotal).toFixed(2) : "0.00";
+    document.getElementById("weightedAvgRawCostDisplay").innerText = weightedAvg + " EGP/KG";
+
+    // Auto update Step 4 raw input
+    document.getElementById("outputRawInput").value = allocatedTotal;
+    calculateProductionYield();
+    calculateTotalProcessingCosts();
+}
+
+// STEP 3: SUPPLIES LOGIC
+function renderSuppliesTable() {
+    const tbody = document.getElementById("suppliesTableBody");
+    tbody.innerHTML = "";
+
+    appState.supplies.forEach((sup, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-3 font-bold font-body-md text-on-surface">${sup.name}</td>
+            <td class="p-3 text-on-surface-variant">${sup.type}</td>
+            <td class="p-3">${sup.unit}</td>
+            <td class="p-3 font-bold text-primary">${sup.stock.toLocaleString()}</td>
+            <td class="p-3">
+                <input type="number" id="supWithdrawn_${idx}" value="${sup.withdrawn}" min="0" oninput="updateSuppliesCalculations()" class="w-20 bg-surface-bright border border-outline-variant rounded p-1 font-bold text-xs"/>
+            </td>
+            <td class="p-3">
+                <input type="number" id="supConsumed_${idx}" value="${sup.consumed}" min="0" oninput="updateSuppliesCalculations()" class="w-20 bg-surface-bright border border-outline-variant rounded p-1 font-bold text-xs"/>
+            </td>
+            <td class="p-3 font-bold text-error" id="supWaste_${idx}">0</td>
+            <td class="p-3">${sup.price} EGP</td>
+            <td class="p-3 font-bold text-on-surface" id="supConsumedCost_${idx}">0 EGP</td>
+            <td class="p-3 font-bold text-error" id="supWasteCost_${idx}">0 EGP</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    updateSuppliesCalculations();
+}
+
+function updateSuppliesCalculations() {
+    let totalConsumedCost = 0;
+    let totalWasteCost = 0;
+    let hasErr = false;
+
+    appState.supplies.forEach((sup, idx) => {
+        const withdrawnElem = document.getElementById(`supWithdrawn_${idx}`);
+        const consumedElem = document.getElementById(`supConsumed_${idx}`);
+        const withdrawn = parseFloat(withdrawnElem?.value) || 0;
+        const consumed = parseFloat(consumedElem?.value) || 0;
+
+        const waste = withdrawn - consumed;
+        if (consumed > withdrawn || withdrawn > sup.stock) {
+            hasErr = true;
+            consumedElem?.classList.add("border-error", "bg-error-container");
+        } else {
+            consumedElem?.classList.remove("border-error", "bg-error-container");
+        }
+
+        const consumedCost = consumed * sup.price;
+        const wasteCost = Math.max(0, waste) * sup.price;
+
+        document.getElementById(`supWaste_${idx}`).innerText = waste >= 0 ? waste.toLocaleString() : "خطأ";
+        document.getElementById(`supConsumedCost_${idx}`).innerText = consumedCost.toLocaleString() + " EGP";
+        document.getElementById(`supWasteCost_${idx}`).innerText = wasteCost.toLocaleString() + " EGP";
+
+        totalConsumedCost += consumedCost;
+        totalWasteCost += wasteCost;
+    });
+
+    const errBanner = document.getElementById("suppliesValidationError");
+    if (hasErr) errBanner.classList.remove("hidden");
+    else errBanner.classList.add("hidden");
+
+    document.getElementById("totalSuppliesConsumedCostDisplay").innerText = totalConsumedCost.toLocaleString() + " EGP";
+    document.getElementById("totalSuppliesWasteCostDisplay").innerText = totalWasteCost.toLocaleString() + " EGP";
+
+    calculateTotalProcessingCosts();
+}
+
+// STEP 4: PRODUCTION & YIELD LOGIC
+function calculateProductionYield() {
+    const rawInput = parseFloat(document.getElementById("outputRawInput").value) || 0;
+    const finishedOutput = parseFloat(document.getElementById("outputFinishedQty").value) || 0;
+
+    const waste = rawInput - finishedOutput;
+    document.getElementById("outputRawWaste").value = waste >= 0 ? waste : 0;
+
+    const errBanner = document.getElementById("outputValidationError");
+    if (finishedOutput > rawInput) {
+        errBanner.classList.remove("hidden");
+    } else {
+        errBanner.classList.add("hidden");
+    }
+
+    const yieldPct = rawInput > 0 ? ((finishedOutput / rawInput) * 100).toFixed(1) : 0;
+    const wastePct = (100 - yieldPct).toFixed(1);
+
+    document.getElementById("yieldPercentDisplay").innerText = yieldPct + "%";
+    document.getElementById("wastePercentDisplay").innerText = wastePct + "%";
+
+    document.getElementById("yieldProgressBar").style.width = Math.min(100, Math.max(0, yieldPct)) + "%";
+    document.getElementById("wasteProgressBar").style.width = Math.min(100, Math.max(0, wastePct)) + "%";
+
+    calculateTotalProcessingCosts();
+}
+
+// STEP 5: GRATUITIES & COSTS LOGIC
+function renderGratuitiesTable() {
+    const tbody = document.getElementById("gratuitiesTableBody");
+    tbody.innerHTML = "";
+
+    activeGratuities.forEach((g, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-2">
+                <input type="text" value="${g.recipient}" onchange="activeGratuities[${idx}].recipient = this.value" class="w-full bg-surface border border-outline-variant rounded p-1 text-xs"/>
+            </td>
+            <td class="p-2">
+                <input type="number" value="${g.amount}" oninput="activeGratuities[${idx}].amount = parseFloat(this.value)||0; calculateTotalProcessingCosts()" class="w-full bg-surface border border-outline-variant rounded p-1 font-bold text-xs"/>
+            </td>
+            <td class="p-2">
+                <input type="text" value="${g.reason}" onchange="activeGratuities[${idx}].reason = this.value" class="w-full bg-surface border border-outline-variant rounded p-1 text-xs"/>
+            </td>
+            <td class="p-2 text-center">
+                <select onchange="activeGratuities[${idx}].status = this.value" class="bg-surface border border-outline-variant rounded p-1 text-xs">
+                    <option value="مدفوعة" ${g.status==='مدفوعة'?'selected':''}>مدفوعة</option>
+                    <option value="غير مدفوعة" ${g.status==='غير مدفوعة'?'selected':''}>غير مدفوعة</option>
+                </select>
+            </td>
+            <td class="p-2 text-center">
+                <button type="button" onclick="removeGratuityRow(${idx})" class="text-error hover:text-red-700"><span class="material-symbols-outlined text-base">delete</span></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function addGratuityRow() {
+    activeGratuities.push({ recipient: "مستلم جديد", amount: 200, reason: "مصاريف إضافية", status: "مدفوعة" });
+    renderGratuitiesTable();
+    calculateTotalProcessingCosts();
+}
+
+function removeGratuityRow(idx) {
+    activeGratuities.splice(idx, 1);
+    renderGratuitiesTable();
+    calculateTotalProcessingCosts();
+}
+
+function calculateTotalProcessingCosts() {
+    let rawCost = 0;
+    appState.suppliers.forEach((s, idx) => {
+        const val = parseFloat(document.getElementById(`supplierAllocInput_${idx}`)?.value) || 0;
+        rawCost += val * s.price;
+    });
+
+    let suppliesCost = 0;
+    appState.supplies.forEach((sup, idx) => {
+        const consumed = parseFloat(document.getElementById(`supConsumed_${idx}`)?.value) || 0;
+        suppliesCost += consumed * sup.price;
+    });
+
+    const contractorCost = parseFloat(document.getElementById("inputContractorCost")?.value) || 0;
+    const stationCost = parseFloat(document.getElementById("inputStationCost")?.value) || 0;
+    const otherCost = parseFloat(document.getElementById("inputOtherCost")?.value) || 0;
+    const gratuitiesCost = activeGratuities.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+    const grandTotal = rawCost + suppliesCost + contractorCost + stationCost + otherCost + gratuitiesCost;
+    const finishedQty = parseFloat(document.getElementById("outputFinishedQty")?.value) || 1;
+    const costPerKg = finishedQty > 0 ? (grandTotal / finishedQty).toFixed(2) : "0.00";
+
+    document.getElementById("costRawSummary").innerText = rawCost.toLocaleString() + " EGP";
+    document.getElementById("costSuppliesSummary").innerText = suppliesCost.toLocaleString() + " EGP";
+    document.getElementById("grandTotalCostDisplay").innerText = grandTotal.toLocaleString() + " EGP";
+    document.getElementById("costPerKgDisplay").innerText = costPerKg + " EGP/KG";
+}
+
+// STEP 6: REVIEW SUMMARY
+function renderReviewStepSummary() {
+    document.getElementById("sumStation").innerText = document.getElementById("inputStation").value;
+    document.getElementById("sumRawProduct").innerText = document.getElementById("inputRawProduct").value;
+    document.getElementById("sumFinishedProduct").innerText = document.getElementById("inputFinishedProduct").value;
+    document.getElementById("sumContractor").innerText = document.getElementById("inputContractor").value;
+
+    const rawInput = document.getElementById("outputRawInput").value;
+    const finishedOutput = document.getElementById("outputFinishedQty").value;
+    const rawWaste = document.getElementById("outputRawWaste").value;
+    const yieldPct = document.getElementById("yieldPercentDisplay").innerText;
+
+    document.getElementById("sumRawInput").innerText = parseFloat(rawInput).toLocaleString() + " KG";
+    document.getElementById("sumFinishedOutput").innerText = parseFloat(finishedOutput).toLocaleString() + " KG";
+    document.getElementById("sumRawWaste").innerText = parseFloat(rawWaste).toLocaleString() + " KG";
+    document.getElementById("sumYield").innerText = yieldPct;
+
+    document.getElementById("sumCostRaw").innerText = document.getElementById("costRawSummary").innerText;
+    document.getElementById("sumCostSupplies").innerText = document.getElementById("costSuppliesSummary").innerText;
+    document.getElementById("sumCostContractor").innerText = parseFloat(document.getElementById("inputContractorCost").value || 0).toLocaleString() + " EGP";
+    document.getElementById("sumCostStation").innerText = parseFloat(document.getElementById("inputStationCost").value || 0).toLocaleString() + " EGP";
+    document.getElementById("sumCostOther").innerText = (parseFloat(document.getElementById("inputOtherCost").value || 0) + activeGratuities.reduce((a,c)=>a+c.amount,0)).toLocaleString() + " EGP";
+
+    document.getElementById("sumGrandCost").innerText = document.getElementById("grandTotalCostDisplay").innerText;
+    document.getElementById("sumCostPerKg").innerText = document.getElementById("costPerKgDisplay").innerText;
+}
+
+// SAVE DRAFT OPERATION
+function saveOperationDraft() {
+    const newOp = constructOperationObject("مسودة");
+    appState.operations.unshift(newOp);
+    saveState();
+    renderOperationsTable();
+    updateKpis();
+    closeNewOperationModal();
+    showToast(`تم حفظ مسودة العملية ${newOp.id} بنجاح`, "success");
+}
+
+// APPROVE NEW OPERATION
+function approveNewOperation() {
+    if (!validateStep(1) || !validateStep(2) || !validateStep(3) || !validateStep(4)) return;
+
+    const newOp = constructOperationObject("مكتملة");
+
+    // DEDUCT SUPPLIER RAW BALANCES
+    newOp.supplierAllocations.forEach(alloc => {
+        const supplierObj = appState.suppliers.find(s => s.name === alloc.name);
+        if (supplierObj) {
+            supplierObj.balance = Math.max(0, supplierObj.balance - alloc.qty);
+        }
+    });
+
+    // DEDUCT SUPPLIES STOCK
+    newOp.suppliesConsumption.forEach(sup => {
+        const supplyObj = appState.supplies.find(s => s.name === sup.name);
+        if (supplyObj) {
+            supplyObj.stock = Math.max(0, supplyObj.stock - sup.withdrawn);
+        }
+    });
+
+    appState.operations.unshift(newOp);
+    saveState();
+    renderOperationsTable();
+    updateKpis();
+    closeNewOperationModal();
+    showToast(`تم اعتماد عملية التدوير ${newOp.id} وتحديث الأرصدة والذمم بنجاح!`, "success");
+}
+
+function approveOperationDirectly(opId) {
+    const op = appState.operations.find(o => o.id === opId);
+    if (!op) return;
+
+    if (confirm(`هل تريد تأكيد اعتماد عملية التدوير ${opId} وتحديث كافة المخازن؟`)) {
+        op.status = "مكتملة";
+        saveState();
+        renderOperationsTable();
+        updateKpis();
+        showToast(`تم اعتماد العملية ${opId} بنجاح`, "success");
+    }
+}
+
+function constructOperationObject(status) {
+    const opId = "PR-00" + Math.floor(100 + Math.random() * 900);
+    const station = document.getElementById("inputStation").value;
+    const date = document.getElementById("inputDate").value;
+    const rawProduct = document.getElementById("inputRawProduct").value;
+    const finishedProduct = document.getElementById("inputFinishedProduct").value;
+    const contractor = document.getElementById("inputContractor").value;
+
+    const rawInput = parseFloat(document.getElementById("outputRawInput").value) || 0;
+    const finishedOutput = parseFloat(document.getElementById("outputFinishedQty").value) || 0;
+    const rawWaste = parseFloat(document.getElementById("outputRawWaste").value) || 0;
+    const yieldPercent = rawInput > 0 ? parseFloat(((finishedOutput / rawInput) * 100).toFixed(1)) : 0;
+
+    const supplierAllocations = [];
+    appState.suppliers.forEach((s, idx) => {
+        const qty = parseFloat(document.getElementById(`supplierAllocInput_${idx}`)?.value) || 0;
+        if (qty > 0) {
+            supplierAllocations.push({
+                name: s.name,
+                qty: qty,
+                price: s.price,
+                total: qty * s.price
+            });
+        }
+    });
+
+    const suppliesConsumption = [];
+    appState.supplies.forEach((sup, idx) => {
+        const withdrawn = parseFloat(document.getElementById(`supWithdrawn_${idx}`)?.value) || 0;
+        const consumed = parseFloat(document.getElementById(`supConsumed_${idx}`)?.value) || 0;
+        if (withdrawn > 0 || consumed > 0) {
+            const waste = Math.max(0, withdrawn - consumed);
+            suppliesConsumption.push({
+                name: sup.name,
+                unit: sup.unit,
+                withdrawn: withdrawn,
+                consumed: consumed,
+                waste: waste,
+                price: sup.price,
+                consumedCost: consumed * sup.price,
+                wasteCost: waste * sup.price
+            });
+        }
+    });
+
+    let rawCost = supplierAllocations.reduce((a, c) => a + c.total, 0);
+    let suppliesCost = suppliesConsumption.reduce((a, c) => a + c.consumedCost, 0);
+    const contractorCost = parseFloat(document.getElementById("inputContractorCost").value) || 0;
+    const stationCost = parseFloat(document.getElementById("inputStationCost").value) || 0;
+    const otherCost = parseFloat(document.getElementById("inputOtherCost").value) || 0;
+    const gratuitiesCost = activeGratuities.reduce((a, c) => a + c.amount, 0);
+
+    const totalCost = rawCost + suppliesCost + contractorCost + stationCost + otherCost + gratuitiesCost;
+    const costPerKg = finishedOutput > 0 ? parseFloat((totalCost / finishedOutput).toFixed(2)) : 0;
+
+    return {
+        id: opId,
+        date: date,
+        station: station,
+        rawProduct: rawProduct,
+        finishedProduct: finishedProduct,
+        contractor: contractor,
+        rawInput: rawInput,
+        finishedOutput: finishedOutput,
+        rawWaste: rawWaste,
+        yieldPercent: yieldPercent,
+        totalCost: totalCost,
+        costPerKg: costPerKg,
+        status: status,
+        supplierAllocations: supplierAllocations,
+        suppliesConsumption: suppliesConsumption,
+        costs: {
+            rawCost: rawCost,
+            suppliesCost: suppliesCost,
+            contractorCost: contractorCost,
+            stationCost: stationCost,
+            otherCost: otherCost,
+            gratuitiesCost: gratuitiesCost
+        },
+        gratuities: [...activeGratuities],
+        notes: document.getElementById("inputNotes").value || ""
+    };
+}
+
+// DETAILS DRAWER LOGIC
+let activeDrawerOp = null;
+
+function openDetailsDrawer(opId) {
+    activeDrawerOp = appState.operations.find(o => o.id === opId);
+    if (!activeDrawerOp) return;
+
+    document.getElementById("drawerOpId").innerText = activeDrawerOp.id;
+    document.getElementById("drawerOpSubtitle").innerText = `${activeDrawerOp.station} • ${activeDrawerOp.rawProduct} ← ${activeDrawerOp.finishedProduct} (${activeDrawerOp.date})`;
+
+    const badgeDiv = document.getElementById("drawerStatusBadge");
+    let badgeStyle = "bg-surface-variant text-on-surface-variant";
+    if (activeDrawerOp.status === "مكتملة") badgeStyle = "bg-tertiary-fixed-dim text-on-tertiary-container font-bold";
+    else if (activeDrawerOp.status === "مسودة") badgeStyle = "bg-surface-container-high text-on-surface-variant";
+    badgeDiv.innerHTML = `<span class="px-3 py-1 rounded-full text-xs ${badgeStyle}">الحالة: ${activeDrawerOp.status}</span>`;
+
+    const actionsDiv = document.getElementById("drawerActions");
+    actionsDiv.innerHTML = "";
+    if (activeDrawerOp.status === "مسودة") {
+        actionsDiv.innerHTML = `
+            <button onclick="approveOperationDirectly('${activeDrawerOp.id}'); closeDetailsDrawer();" class="px-4 py-2 bg-tertiary-container text-white font-bold text-xs rounded-lg hover:bg-green-700">
+                اعتماد العملية الان
+            </button>
+        `;
+    }
+
+    switchDrawerTab('overview');
+    document.getElementById("operationDetailsDrawer").classList.remove("hidden");
+}
+
+function closeDetailsDrawer() {
+    document.getElementById("operationDetailsDrawer").classList.add("hidden");
+}
+
+function switchDrawerTab(tabName) {
+    const tabs = ['overview', 'suppliers', 'supplies', 'financial', 'audit'];
+    tabs.forEach(t => {
+        const btn = document.getElementById(`dTab-${t}`);
+        if (t === tabName) btn.className = "py-3 tab-active";
+        else btn.className = "py-3 text-on-surface-variant";
+    });
+
+    const body = document.getElementById("drawerBody");
+    const op = activeDrawerOp;
+    if (!op) return;
+
+    if (tabName === 'overview') {
+        body.innerHTML = `
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-surface p-3 rounded-lg border">
+                    <span class="text-xs text-on-surface-variant block">الخام الداخل:</span>
+                    <strong class="text-base font-data-mono">${op.rawInput.toLocaleString()} KG</strong>
+                </div>
+                <div class="bg-surface p-3 rounded-lg border">
+                    <span class="text-xs text-on-surface-variant block">المنتج الجاهز:</span>
+                    <strong class="text-base font-data-mono text-green-700">${op.finishedOutput.toLocaleString()} KG</strong>
+                </div>
+                <div class="bg-surface p-3 rounded-lg border">
+                    <span class="text-xs text-on-surface-variant block">هالك الخام:</span>
+                    <strong class="text-base font-data-mono text-error">${op.rawWaste.toLocaleString()} KG</strong>
+                </div>
+                <div class="bg-surface p-3 rounded-lg border">
+                    <span class="text-xs text-on-surface-variant block">نسبة التصافي Yield:</span>
+                    <strong class="text-base font-data-mono text-tertiary-container">${op.yieldPercent}%</strong>
+                </div>
+            </div>
+            <div class="bg-primary text-on-primary p-4 rounded-xl font-data-mono space-y-2">
+                <div class="flex justify-between"><span>إجمالي التكلفة:</span><strong class="text-tertiary-fixed text-lg">${op.totalCost.toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between"><span>تكلفة الكيلو التام:</span><strong class="text-white text-lg">${op.costPerKg} EGP/KG</strong></div>
+            </div>
+            ${op.notes ? `<div class="bg-surface-container p-3 rounded-lg text-xs"><strong>ملاحظات:</strong> ${op.notes}</div>` : ''}
+        `;
+    } else if (tabName === 'suppliers') {
+        let rows = (op.supplierAllocations || []).map(s => `
+            <tr>
+                <td class="p-2.5 font-bold">${s.name}</td>
+                <td class="p-2.5 font-data-mono">${s.qty.toLocaleString()} KG</td>
+                <td class="p-2.5 font-data-mono">${s.price} EGP</td>
+                <td class="p-2.5 font-data-mono font-bold">${s.total.toLocaleString()} EGP</td>
+            </tr>
+        `).join('');
+
+        body.innerHTML = `
+            <h4 class="font-bold text-xs text-primary mb-2">سحب الخام وتخصيص الموردين (Supplier Allocations):</h4>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold">
+                        <tr><th class="p-2">المورد</th><th class="p-2">الكمية المسحوبة</th><th class="p-2">السعر</th><th class="p-2">التكلفة</th></tr>
+                    </thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="4" class="p-4 text-center">لا توجد بيانات تخصيص</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (tabName === 'supplies') {
+        let rows = (op.suppliesConsumption || []).map(sup => `
+            <tr>
+                <td class="p-2.5 font-bold">${sup.name}</td>
+                <td class="p-2.5 font-data-mono">${sup.withdrawn} ${sup.unit}</td>
+                <td class="p-2.5 font-data-mono">${sup.consumed} ${sup.unit}</td>
+                <td class="p-2.5 font-data-mono text-error font-bold">${sup.waste}</td>
+                <td class="p-2.5 font-data-mono">${sup.consumedCost.toLocaleString()} EGP</td>
+            </tr>
+        `).join('');
+
+        body.innerHTML = `
+            <h4 class="font-bold text-xs text-primary mb-2">استهلاك مستلزمات التعبئة والتغليف والهالك:</h4>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold">
+                        <tr><th class="p-2">المستلزم</th><th class="p-2">المسحوب</th><th class="p-2">المستخدم</th><th class="p-2">الهالك</th><th class="p-2">تكلفة الاستهلاك</th></tr>
+                    </thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="5" class="p-4 text-center">لم يتم تسجيل استهلاك مستلزمات</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (tabName === 'financial') {
+        body.innerHTML = `
+            <div class="space-y-3 font-data-mono text-xs">
+                <div class="flex justify-between border-b pb-2"><span>تكلفة الخام المسحوب:</span><strong>${(op.costs?.rawCost||0).toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between border-b pb-2"><span>تكلفة مستلزمات التعبئة:</span><strong>${(op.costs?.suppliesCost||0).toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between border-b pb-2"><span>حساب المقاول (${op.contractor}):</span><strong>${(op.costs?.contractorCost||0).toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between border-b pb-2"><span>أرضية/مصاريف المحطة (${op.station}):</span><strong>${(op.costs?.stationCost||0).toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between border-b pb-2"><span>مصاريف أخرى وإكراميات:</span><strong>${((op.costs?.otherCost||0)+(op.costs?.gratuitiesCost||0)).toLocaleString()} EGP</strong></div>
+                <div class="flex justify-between text-sm font-bold text-primary pt-2"><span>إجمالي تكلفة العملية:</span><strong>${op.totalCost.toLocaleString()} EGP</strong></div>
+            </div>
+        `;
+    } else if (tabName === 'audit') {
+        body.innerHTML = `
+            <div class="space-y-4 border-r-2 border-primary/20 pr-4 text-xs">
+                <div>
+                    <span class="font-bold text-primary block">أنشئت العملية</span>
+                    <span class="text-on-surface-variant">${op.date} - بواسطة مسؤول التشغيل</span>
+                </div>
+                <div>
+                    <span class="font-bold text-primary block">تخصيص أرصدة الموردين</span>
+                    <span class="text-on-surface-variant">تمت خصم الكميات من حسابات الموردين بالمحطة</span>
+                </div>
+                <div>
+                    <span class="font-bold text-primary block">خصم مستلزمات التغليف</span>
+                    <span class="text-on-surface-variant">خصم مواد التعبئة المسحوبة وتوثيق الهالك</span>
+                </div>
+                <div>
+                    <span class="font-bold text-primary block">إضافة المنتج التام لمخزن النهائي</span>
+                    <span class="text-on-surface-variant">إدخال ${op.finishedOutput.toLocaleString()} KG إلى مخزن المنتج النهائي</span>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// TOAST NOTIFICATIONS HELPER
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.remove("translate-y-2", "opacity-0");
+    }, 50);
+
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// INITIALIZE ON DOM READY
+document.addEventListener("DOMContentLoaded", () => {
+    initPrototypeState();
+});
+</script>
+
+</body>
+</html>

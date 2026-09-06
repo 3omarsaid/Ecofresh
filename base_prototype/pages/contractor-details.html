@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>البروفايل التشغيلي للمقاول - مقاولات محمد للتجهيز والعمالة</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Navigation Breadcrumb -->
+    <div class="flex items-center justify-between">
+      <a href="contractors.html" class="inline-flex items-center gap-1 text-xs text-secondary font-bold hover:underline">
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        العودة لقائمة المقاولين
+      </a>
+      <span class="text-xs text-outline font-mono">البروفايل التشغيلي والمالي للمقاول</span>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="cont-detail-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="cont-detail-toast-msg">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- HEADER SECTION -->
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-outline-variant/60 pb-4">
+        
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-800 font-bold text-lg shrink-0 border border-emerald-300">
+            محمد
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-3 flex-wrap">
+              <h1 class="text-xl font-bold text-primary">مقاولات محمد للتجهيز والعمالة</h1>
+              <span class="font-mono text-xs font-bold bg-surface-variant text-primary px-2.5 py-0.5 rounded border border-outline-variant">CONT-001</span>
+              <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">● نشط</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-on-surface-variant flex-wrap pt-0.5">
+              <span>الشخص المسؤول: <strong class="text-primary font-bold">أ. محمد عبد العزيز</strong></span>
+              <span>• الهاتف: <strong class="font-mono text-primary font-bold" dir="ltr">+20 100 123 4567</strong></span>
+              <span>• طريقة الاحتساب: <strong class="text-on-surface font-bold">سعر لكل KG (بالكيلو)</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS BAR -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="window.showToast('فتح نموذج تعديل البيانات الأساسية للمقاول', 'info')" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3.5 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/60 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">edit</span>
+            تعديل المقاول
+          </button>
+          <a href="payments-collections.html?party=CONT-001" class="bg-primary text-white hover:bg-primary-container px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">payments</span>
+            تسجيل دفعة
+          </a>
+          <a href="financial-statements.html?party=CONT-001" class="bg-secondary text-white hover:bg-secondary-container px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">receipt_long</span>
+            عرض كشف الحساب
+          </a>
+        </div>
+      </div>
+
+      <!-- FINANCIAL SUMMARY CARDS (4 CARDS) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-xs text-outline font-semibold">السعر الافتراضي لكل كجم</span>
+          <div class="text-xl font-bold text-emerald-800 font-mono">2.50 <span class="text-xs font-normal">ج.م / KG</span></div>
+          <span class="text-[10px] text-emerald-700">معدل الاحتساب القياسي</span>
+        </div>
+
+        <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-xs text-outline font-semibold">إجمالي الكمية المنفذة</span>
+          <div class="text-xl font-bold text-primary font-mono">18,500 <span class="text-xs font-normal">KG</span></div>
+          <span class="text-[10px] text-primary">تجهيز ومعالجة لكافة المحطات</span>
+        </div>
+
+        <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-xs text-outline font-semibold">إجمالي المستحق والمدفوع</span>
+          <div class="text-lg font-bold text-primary font-mono">46,250.00 <span class="text-xs font-normal">ج.م</span></div>
+          <span class="text-[10px] text-emerald-700">مدفوع: 30,000.00 ج.م</span>
+        </div>
+
+        <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-xs text-outline font-semibold">الرصيد المتبقي المستحق</span>
+          <div class="text-xl font-bold text-rose-600 font-mono">16,250.00 <span class="text-xs font-normal">ج.م</span></div>
+          <span class="text-[10px] text-rose-600">مستحقات قيد السداد</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS CONTAINER (3 TABS) -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden space-y-5 p-5">
+      
+      <!-- Tab Controls Bar -->
+      <div class="flex items-center gap-2 border-b border-outline-variant/60 pb-3 overflow-x-auto">
+        <button onclick="switchTab('history-tab', this)" class="tab-btn active bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">history</span>
+          1. سجل العمليات والشحنات المنفذة
+        </button>
+        <button onclick="switchTab('statement-tab', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">receipt_long</span>
+          2. كشف حساب المقاول
+        </button>
+        <button onclick="switchTab('stations-tab', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">domain</span>
+          3. المحطات التي عمل بها
+        </button>
+      </div>
+
+      <!-- TAB 1: WORK HISTORY TAB (سجل العمليات والشحنات) -->
+      <div id="tab-content-history-tab" class="tab-pane space-y-4">
+        <div class="flex justify-between items-center border-b border-outline-variant/60 pb-2">
+          <div>
+            <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-secondary">history</span>
+              سجل كافة عمليات التجهيز المنفذة بواسطة المقاول عبر المحطات المختلفة
+            </h3>
+            <p class="text-[10px] text-on-surface-variant">المرونة التشغيلية: تظهر العمليات تنفيذ المقاول لعمليات في أكثر من محطة وسعر الكيلو لكل عملية</p>
+          </div>
+          <span class="text-xs font-mono font-bold text-primary">3 عمليات منفذة</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">رقم الشحنة</th>
+                <th class="p-3">المحطة (موقع التنفيذ)</th>
+                <th class="p-3">المنتج المصنع</th>
+                <th class="p-3 font-mono">الكمية الصافية (KG)</th>
+                <th class="p-3 font-mono">سعر المقاول / KG</th>
+                <th class="p-3 font-mono">تكلفة المقاول المستحقة</th>
+                <th class="p-3 text-center">الحالة</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              
+              <!-- Operation 1: Station A (محطة النور) -->
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono text-on-surface-variant">14/08/2026</td>
+                <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html?id=SHP-0024" class="hover:underline">SHP-0024</a></td>
+                <td class="p-3"><span class="bg-emerald-50 text-emerald-900 border border-emerald-200 px-2 py-0.5 rounded font-bold text-[11px]">محطة النور</span></td>
+                <td class="p-3 font-bold text-primary">فراولة مجمدة</td>
+                <td class="p-3 font-mono font-bold text-emerald-800">3,700 KG</td>
+                <td class="p-3 font-mono font-bold text-emerald-700">2.50 ج.م / KG</td>
+                <td class="p-3 font-mono font-bold text-primary text-sm">9,250.00 ج.م</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">مستحق</span></td>
+              </tr>
+
+              <!-- Operation 2: Station B (محطة الخير) - Rate Overridden to 2.75 to prove snapshot logic! -->
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono text-on-surface-variant">15/08/2026</td>
+                <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html?id=SHP-0027" class="hover:underline">SHP-0027</a></td>
+                <td class="p-3"><span class="bg-purple-50 text-purple-900 border border-purple-200 px-2 py-0.5 rounded font-bold text-[11px]">محطة الخير</span></td>
+                <td class="p-3 font-bold text-primary">مانجو مجمدة</td>
+                <td class="p-3 font-mono font-bold text-emerald-800">4,200 KG</td>
+                <td class="p-3 font-mono font-bold text-purple-700">2.75 ج.م / KG <span class="text-[9px] font-normal text-outline">(تعديل لقطة)</span></td>
+                <td class="p-3 font-mono font-bold text-primary text-sm">11,550.00 ج.م</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">مستحق</span></td>
+              </tr>
+
+              <!-- Operation 3: Station C (محطة السلام) -->
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono text-on-surface-variant">18/08/2026</td>
+                <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html?id=SHP-0030" class="hover:underline">SHP-0030</a></td>
+                <td class="p-3"><span class="bg-blue-50 text-blue-900 border border-blue-200 px-2 py-0.5 rounded font-bold text-[11px]">محطة السلام</span></td>
+                <td class="p-3 font-bold text-primary">فاصوليا خضراء</td>
+                <td class="p-3 font-mono font-bold text-emerald-800">5,000 KG</td>
+                <td class="p-3 font-mono font-bold text-emerald-700">2.50 ج.م / KG</td>
+                <td class="p-3 font-mono font-bold text-primary text-sm">12,500.00 ج.م</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">مستحق</span></td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: CONTRACTOR STATEMENT TAB (كشف حساب المقاول) -->
+      <div id="tab-content-statement-tab" class="tab-pane hidden space-y-4">
+        <div class="flex justify-between items-center border-b border-outline-variant/60 pb-2">
+          <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-secondary">receipt_long</span>
+            كشف حساب المستحقات والمدفوعات للمقاول
+          </h3>
+          <a href="financial-statements.html?party=CONT-001" class="bg-secondary text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-secondary-container transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">open_in_new</span> فتح كشف الحساب المالي الكامل
+          </a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">المرجع</th>
+                <th class="p-3">البيان والشرح</th>
+                <th class="p-3 font-mono text-rose-700">مستحق للمقاول (+)</th>
+                <th class="p-3 font-mono text-emerald-700">مدفوع للمقاول (-)</th>
+                <th class="p-3 font-mono">الرصيد المتبقي المستحق</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono text-on-surface-variant">14/08/2026</td>
+                <td class="p-3 font-mono font-bold text-primary">SHP-0024</td>
+                <td class="p-3 font-bold">أجور تشغيل وتجهيز شحنة بمحطة النور (3,700 KG × 2.50 ج.م)</td>
+                <td class="p-3 font-mono font-bold text-rose-700">9,250.00 ج.م</td>
+                <td class="p-3 font-mono text-outline">0.00</td>
+                <td class="p-3 font-mono font-bold text-rose-600">9,250.00 ج.م</td>
+              </tr>
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono text-on-surface-variant">15/08/2026</td>
+                <td class="p-3 font-mono font-bold text-primary">SHP-0027</td>
+                <td class="p-3 font-bold">أجور تشغيل شحنة بمحطة الخير (4,200 KG × 2.75 ج.م)</td>
+                <td class="p-3 font-mono font-bold text-rose-700">11,550.00 ج.م</td>
+                <td class="p-3 font-mono text-outline">0.00</td>
+                <td class="p-3 font-mono font-bold text-rose-600">20,800.00 ج.م</td>
+              </tr>
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono text-on-surface-variant">20/08/2026</td>
+                <td class="p-3 font-mono font-bold text-primary">PAY-0031</td>
+                <td class="p-3 font-bold text-emerald-800">سداد دفعة أجور عمالة نقداً من الخزينة الرئيسية</td>
+                <td class="p-3 font-mono text-outline">0.00</td>
+                <td class="p-3 font-mono font-bold text-emerald-700">30,000.00 ج.م</td>
+                <td class="p-3 font-mono font-bold text-rose-600">16,250.00 ج.م</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: STATIONS WORKED AT TAB (المحطات التي عمل بها) -->
+      <div id="tab-content-stations-tab" class="tab-pane hidden space-y-4">
+        <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 text-xs text-emerald-900 font-medium flex items-center gap-3">
+          <span class="material-symbols-outlined text-[24px] text-emerald-700 shrink-0">info</span>
+          <div>
+            <strong>تنبيه توضيحي:</strong> القائمة التالية تمثل <strong>سجلاً تاريخياً ناتجاً عن حركات التشغيل الفعلية</strong> التي نفذ بها المقاول عمليات في المواقع المختلفة، ولا تعبر عن تبعية أو ملكية دائمية لأي محطة.
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-primary text-sm">1. محطة النور</span>
+              <span class="bg-emerald-100 text-emerald-900 text-[10px] px-2 py-0.5 rounded font-bold">1 عملية</span>
+            </div>
+            <span class="text-[11px] text-on-surface-variant block">الكمية المنفذة: <strong>3,700 KG</strong></span>
+            <span class="text-[11px] text-on-surface-variant block">آخر تشغيل: <strong>14/08/2026</strong></span>
+          </div>
+
+          <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-primary text-sm">2. محطة الخير</span>
+              <span class="bg-purple-100 text-purple-900 text-[10px] px-2 py-0.5 rounded font-bold">1 عملية</span>
+            </div>
+            <span class="text-[11px] text-on-surface-variant block">الكمية المنفذة: <strong>4,200 KG</strong></span>
+            <span class="text-[11px] text-on-surface-variant block">آخر تشغيل: <strong>15/08/2026</strong></span>
+          </div>
+
+          <div class="bg-surface p-4 rounded-xl border border-outline-variant space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-primary text-sm">3. محطة السلام</span>
+              <span class="bg-blue-100 text-blue-900 text-[10px] px-2 py-0.5 rounded font-bold">1 عملية</span>
+            </div>
+            <span class="text-[11px] text-on-surface-variant block">الكمية المنفذة: <strong>5,000 KG</strong></span>
+            <span class="text-[11px] text-on-surface-variant block">آخر تشغيل: <strong>18/08/2026</strong></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+<script>
+function switchTab(tabKey, btnElement) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('bg-primary', 'text-white');
+    b.classList.add('bg-surface-variant/60', 'text-on-surface');
+  });
+
+  const contentEl = document.getElementById(`tab-content-${tabKey}`);
+  if (contentEl) contentEl.classList.remove('hidden');
+
+  if (btnElement) {
+    btnElement.classList.remove('bg-surface-variant/60', 'text-on-surface');
+    btnElement.classList.add('bg-primary', 'text-white');
+  }
+}
+</script>
+</body>
+</html>

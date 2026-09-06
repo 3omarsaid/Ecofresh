@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>بروفايل العميل والاتفاقيات التجارية - شركة سما للتجارة</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Navigation Breadcrumb -->
+    <div class="flex items-center justify-between">
+      <a href="customers.html" class="inline-flex items-center gap-1 text-xs text-secondary font-bold hover:underline">
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        العودة لقائمة العملاء والاتفاقيات
+      </a>
+      <span class="text-xs text-outline font-mono">البروفايل التجاري الشامل للعميل</span>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="cust-detail-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="cust-detail-toast-msg">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- HEADER SECTION -->
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-outline-variant/60 pb-4">
+        
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-800 font-bold text-lg shrink-0 border border-emerald-300">
+            سما
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-3 flex-wrap">
+              <h1 class="text-xl font-bold text-primary">شركة سما للتجارة والتصدير</h1>
+              <span class="font-mono text-xs font-bold bg-surface-variant text-primary px-2.5 py-0.5 rounded border border-outline-variant">CUST-001</span>
+              <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">● نشط</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-on-surface-variant flex-wrap pt-0.5">
+              <span>الشخص المسؤول: <strong class="text-primary font-bold">أ. أسامة محمود (مدير المشتريات)</strong></span>
+              <span>• الهاتف: <strong class="font-mono text-primary font-bold" dir="ltr">+20 100 987 6543</strong></span>
+              <span>• البريد: <strong class="font-mono text-primary font-bold" dir="ltr">info@samaexport.com</strong></span>
+              <span>• العنوان: <strong class="text-on-surface font-semibold">التجمع الخامس، القاهرة</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS BAR -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="window.showToast('فتح نموذج تعديل البيانات الأساسية للعميل', 'info')" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3.5 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/60 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">edit</span>
+            تعديل العميل
+          </button>
+          <button onclick="openAgreementModal()" class="bg-primary text-white hover:bg-primary-container px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">add_circle</span>
+            + إضافة اتفاقية
+          </button>
+          <a href="financial-statements.html?customer=CUST-001" class="bg-secondary text-white hover:bg-secondary-container px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">receipt_long</span>
+            عرض كشف الحساب
+          </a>
+        </div>
+      </div>
+
+      <!-- FINANCIAL SUMMARY CARDS (3 CARDS) -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-xs text-outline font-semibold">إجمالي المبيعات الشاملة</span>
+          <div class="text-xl font-bold text-primary font-mono">2,450,000.00 <span class="text-xs font-normal">ج.م</span></div>
+          <span class="text-[10px] text-emerald-700">12 شحنة صادرة مكتملة</span>
+        </div>
+
+        <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-xs text-outline font-semibold">إجمالي المقبوضات المحصلة</span>
+          <div class="text-xl font-bold text-emerald-800 font-mono">1,900,000.00 <span class="text-xs font-normal">ج.م</span></div>
+          <span class="text-[10px] text-emerald-700">77.55% نسبة التحصيل الفعلي</span>
+        </div>
+
+        <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-xs text-outline font-semibold">الرصيد المتبقي المستحق</span>
+          <div class="text-xl font-bold text-rose-600 font-mono">550,000.00 <span class="text-xs font-normal">ج.م</span></div>
+          <span class="text-[10px] text-rose-600">ذمة العميل القائمة للتحصيل</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS CONTAINER (4 TABS WITH DEFAULT = OVERVIEW) -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden space-y-5 p-5">
+      
+      <!-- Tab Controls Bar -->
+      <div class="flex items-center gap-2 border-b border-outline-variant/60 pb-3 overflow-x-auto">
+        <button onclick="switchTab('overview-tab', this)" class="tab-btn active bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">dashboard</span>
+          1. نظرة عامة
+        </button>
+        <button onclick="switchTab('agreements-tab', this)" id="btn-tab-agreements" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">handshake</span>
+          2. المنتجات والأسعار
+        </button>
+        <button onclick="switchTab('shipments-tab', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+          3. الشحنات
+        </button>
+        <button onclick="switchTab('statement-tab', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">receipt_long</span>
+          4. كشف الحساب
+        </button>
+      </div>
+
+      <!-- TAB 1: OVERVIEW TAB (نظرة عامة) -->
+      <div id="tab-content-overview-tab" class="tab-pane space-y-6">
+        
+        <!-- Top Overview Summary Cards & Quick Actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Active Agreements Summary (7 Cols) -->
+          <div class="lg:col-span-7 bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-3">
+            <div class="flex justify-between items-center border-b border-outline-variant/60 pb-2">
+              <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px] text-secondary">handshake</span>
+                ملخص الاتفاقيات التجارية النشطة مع العميل
+              </h3>
+              <button onclick="switchTab('agreements-tab', document.getElementById('btn-tab-agreements'))" class="text-xs text-secondary font-bold hover:underline">عرض الكل (3 اتفاقيات) ←</button>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between items-center bg-surface p-2.5 rounded-lg border border-outline-variant/40">
+                <div class="flex flex-col">
+                  <span class="font-bold text-primary">فراولة مجمدة</span>
+                  <span class="text-[10px] text-on-surface-variant">مستلزم التعبئة: كرتونة سما 10 KG (فئة كراتين)</span>
+                </div>
+                <span class="font-mono font-bold text-emerald-700 text-sm">52.00 ج.م / KG</span>
+              </div>
+
+              <div class="flex justify-between items-center bg-surface p-2.5 rounded-lg border border-outline-variant/40">
+                <div class="flex flex-col">
+                  <span class="font-bold text-primary">فراولة مجمدة</span>
+                  <span class="text-[10px] text-on-surface-variant">مستلزم التعبئة: كرتونة سما 5 KG (فئة كراتين)</span>
+                </div>
+                <span class="font-mono font-bold text-emerald-700 text-sm">55.00 ج.م / KG</span>
+              </div>
+
+              <div class="flex justify-between items-center bg-surface p-2.5 rounded-lg border border-outline-variant/40">
+                <div class="flex flex-col">
+                  <span class="font-bold text-primary">مانجو مجمدة</span>
+                  <span class="text-[10px] text-on-surface-variant">مستلزم التعبئة: كرتونة تصدير 10 KG (فئة كراتين)</span>
+                </div>
+                <span class="font-mono font-bold text-emerald-700 text-sm">68.00 ج.م / KG</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Balance Summary Panel (5 Cols) -->
+          <div class="lg:col-span-5 bg-surface p-4 rounded-xl border border-outline-variant space-y-4">
+            <h3 class="font-bold text-primary text-xs border-b border-outline-variant/60 pb-2 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-primary">flash_on</span>
+              إجراءات سريعة وملخص الحساب
+            </h3>
+
+            <div class="bg-rose-50 p-3 rounded-lg border border-rose-200 text-xs space-y-1">
+              <span class="text-rose-900 font-bold block">الرصيد المستحق بذمة العميل:</span>
+              <div class="text-xl font-bold text-rose-700 font-mono">550,000.00 <span class="text-xs font-normal">ج.م</span></div>
+              <span class="text-[10px] text-rose-600 block">آخر دفعة مقبوضة: 100,000 ج.م بتاريخ 15/08/2026</span>
+            </div>
+
+            <div class="space-y-2 pt-1">
+              <button onclick="openAgreementModal()" class="w-full bg-primary text-white hover:bg-primary-container py-2 rounded-lg text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                + إضافة اتفاقية تجارية جديدة
+              </button>
+              <a href="shipment-create.html?customer=CUST-001" class="w-full bg-secondary text-white hover:bg-secondary-container py-2 rounded-lg text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                إنشاء شحنة جديدة للعميل
+              </a>
+              <a href="financial-statements.html?customer=CUST-001" class="w-full bg-surface-variant text-on-surface hover:bg-outline-variant border border-outline-variant/60 py-2 rounded-lg text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">receipt_long</span>
+                عرض كشف الحساب المالي الكامل
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 2: PRODUCTS & PRICES TAB (المنتجات والأسعار) -->
+      <div id="tab-content-agreements-tab" class="tab-pane hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div class="space-y-0.5">
+            <h3 class="font-bold text-primary text-base flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary">handshake</span>
+              جدول المنتجات والأسعار المعتمدة (Agreements Table)
+            </h3>
+            <p class="text-xs text-on-surface-variant">الربط التشغيلي التجاري: العميل ← المنتج ← مستلزم التعبئة المحدّد ← سعر البيع</p>
+          </div>
+
+          <button onclick="openAgreementModal()" class="bg-primary text-white hover:bg-primary-container px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            + إضافة اتفاقية
+          </button>
+        </div>
+
+        <!-- Master Business Relationship Alert -->
+        <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3 text-xs text-emerald-900 font-medium flex items-center gap-3">
+          <span class="material-symbols-outlined text-[24px] text-emerald-700 shrink-0">check_circle</span>
+          <div>
+            <strong>مرونة اتفاقيات التسعير:</strong> يمكن لنفس العميل شراء نفس المنتج (مثل <strong>فراولة مجمدة</strong>) بمواصفات تعبئة مختلفة وأسعار بيع مختلفة. تحديد الاتفاقية يربط آلياً سعر البيع بشاشة إنشاء الشحنة دون الحاجة لإعادة إدخاله.
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">المنتج الرئيسي</th>
+                <th class="p-3">فئة المستلزم</th>
+                <th class="p-3">صنف ومواصفة التعبئة (Packaging Supply Item)</th>
+                <th class="p-3 font-mono">سعر البيع المتفق عليه</th>
+                <th class="p-3">الوحدة</th>
+                <th class="p-3 text-center">الحالة</th>
+                <th class="p-3 text-center">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="agreements-table-body" class="divide-y divide-outline-variant/40">
+              
+              <!-- Agreement 1 -->
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-bold text-primary text-sm">فراولة مجمدة</td>
+                <td class="p-3"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">كراتين</span></td>
+                <td class="p-3 font-bold text-on-surface">كرتونة سما 10 KG</td>
+                <td class="p-3 font-mono font-bold text-emerald-700 text-base">52.00 ج.م</td>
+                <td class="p-3 font-bold text-on-surface-variant">كجم</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">نشط</span></td>
+                <td class="p-3 text-center">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="editAgreement('فراولة مجمدة', 'كراتين', 'كرتونة سما 10 KG', 52.00)" class="text-secondary hover:underline font-bold text-xs">تعديل</button>
+                    <span class="text-outline">|</span>
+                    <button onclick="toggleAgreementStatus(this)" class="text-rose-600 hover:underline font-bold text-xs">تعطيل</button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Agreement 2 -->
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-bold text-primary text-sm">فراولة مجمدة</td>
+                <td class="p-3"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">كراتين</span></td>
+                <td class="p-3 font-bold text-on-surface">كرتونة سما 5 KG</td>
+                <td class="p-3 font-mono font-bold text-emerald-700 text-base">55.00 ج.م</td>
+                <td class="p-3 font-bold text-on-surface-variant">كجم</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">نشط</span></td>
+                <td class="p-3 text-center">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="editAgreement('فراولة مجمدة', 'كراتين', 'كرتونة سما 5 KG', 55.00)" class="text-secondary hover:underline font-bold text-xs">تعديل</button>
+                    <span class="text-outline">|</span>
+                    <button onclick="toggleAgreementStatus(this)" class="text-rose-600 hover:underline font-bold text-xs">تعطيل</button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Agreement 3 -->
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-bold text-primary text-sm">مانجو مجمدة</td>
+                <td class="p-3"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">كراتين</span></td>
+                <td class="p-3 font-bold text-on-surface">كرتونة تصدير 10 KG</td>
+                <td class="p-3 font-mono font-bold text-emerald-700 text-base">68.00 ج.م</td>
+                <td class="p-3 font-bold text-on-surface-variant">كجم</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">نشط</span></td>
+                <td class="p-3 text-center">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="editAgreement('مانجو مجمدة', 'كراتين', 'كرتونة تصدير 10 KG', 68.00)" class="text-secondary hover:underline font-bold text-xs">تعديل</button>
+                    <span class="text-outline">|</span>
+                    <button onclick="toggleAgreementStatus(this)" class="text-rose-600 hover:underline font-bold text-xs">تعطيل</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: SHIPMENTS TAB (الشحنات) -->
+      <div id="tab-content-shipments-tab" class="tab-pane hidden space-y-4">
+        <div class="flex justify-between items-center border-b border-outline-variant/60 pb-2">
+          <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-secondary">local_shipping</span>
+            سجل شحنات العميل الصادرة
+          </h3>
+          <a href="shipment-create.html?customer=CUST-001" class="bg-primary text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-primary-container transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">add</span> إنشاء شحنة جديدة
+          </a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">رقم الشحنة</th>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">المنتج</th>
+                <th class="p-3">صنف التعبئة</th>
+                <th class="p-3 font-mono">الوزن الصافي</th>
+                <th class="p-3 font-mono">سعر البيع (من الاتفاقية)</th>
+                <th class="p-3 font-mono">إجمالي القيمة</th>
+                <th class="p-3 text-center">الحالة</th>
+                <th class="p-3 text-center">الإجراء</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono font-bold text-primary">SHP-0024</td>
+                <td class="p-3 font-mono text-on-surface-variant">14/08/2026</td>
+                <td class="p-3 font-bold text-primary">فراولة مجمدة</td>
+                <td class="p-3 font-bold">كرتونة سما 10 KG</td>
+                <td class="p-3 font-mono font-bold text-emerald-800">3,700 KG</td>
+                <td class="p-3 font-mono text-emerald-700 font-bold">52.00 ج.م / KG</td>
+                <td class="p-3 font-mono font-bold text-primary text-sm">192,400.00 ج.م</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">مكتملة</span></td>
+                <td class="p-3 text-center">
+                  <a href="shipment-details.html?id=SHP-0024" class="text-secondary hover:underline font-bold text-xs">عرض الشحنة</a>
+                </td>
+              </tr>
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono font-bold text-primary">SHP-0018</td>
+                <td class="p-3 font-mono text-on-surface-variant">01/08/2026</td>
+                <td class="p-3 font-bold text-primary">فراولة مجمدة</td>
+                <td class="p-3 font-bold">كرتونة سما 5 KG</td>
+                <td class="p-3 font-mono font-bold text-emerald-800">2,000 KG</td>
+                <td class="p-3 font-mono text-emerald-700 font-bold">55.00 ج.م / KG</td>
+                <td class="p-3 font-mono font-bold text-primary text-sm">110,000.00 ج.م</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold">مكتملة</span></td>
+                <td class="p-3 text-center">
+                  <a href="shipment-details.html?id=SHP-0018" class="text-secondary hover:underline font-bold text-xs">عرض الشحنة</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: STATEMENT TAB (كشف الحساب) -->
+      <div id="tab-content-statement-tab" class="tab-pane hidden space-y-4">
+        <div class="flex justify-between items-center border-b border-outline-variant/60 pb-2">
+          <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-secondary">receipt_long</span>
+            كشف حساب العميل المختصر
+          </h3>
+          <a href="financial-statements.html?customer=CUST-001" class="bg-secondary text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-secondary-container transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">open_in_new</span> فتح كشف الحساب الكامل
+          </a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">المرجع</th>
+                <th class="p-3">البيان</th>
+                <th class="p-3 font-mono text-rose-700">مدين (+)</th>
+                <th class="p-3 font-mono text-emerald-700">دائن (-)</th>
+                <th class="p-3 font-mono">الرصيد المتبقي</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono text-on-surface-variant">14/08/2026</td>
+                <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html" class="hover:underline">SHP-0024</a></td>
+                <td class="p-3 font-bold">شحنة فراولة مجمدة (3,700 KG × 52.00 ج.م)</td>
+                <td class="p-3 font-mono font-bold text-rose-700">192,400.00 ج.م</td>
+                <td class="p-3 font-mono text-outline">0.00</td>
+                <td class="p-3 font-mono font-bold text-rose-600">650,000.00 ج.م</td>
+              </tr>
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono text-on-surface-variant">15/08/2026</td>
+                <td class="p-3 font-mono font-bold text-primary">REC-0041</td>
+                <td class="p-3 font-bold text-emerald-800">تحصيل دفعة تحويل بنكي تحت الحساب</td>
+                <td class="p-3 font-mono text-outline">0.00</td>
+                <td class="p-3 font-mono font-bold text-emerald-700">100,000.00 ج.م</td>
+                <td class="p-3 font-mono font-bold text-rose-600">550,000.00 ج.م</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ADD / EDIT AGREEMENT MODAL -->
+  <div id="agreement-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-2xl max-w-lg w-full p-6 space-y-4 relative">
+      <div class="flex justify-between items-center border-b border-outline-variant pb-3">
+        <h3 class="font-bold text-primary text-base flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary">handshake</span>
+          <span id="modal-title">+ إضافة اتفاقية سعر وتعبئة جديدة</span>
+        </h3>
+        <button onclick="closeAgreementModal()" class="text-on-surface-variant hover:text-error">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="saveModalAgreement(event)" class="space-y-3.5 text-xs">
+        <div class="space-y-1">
+          <label class="font-bold text-on-surface-variant block">العميل</label>
+          <input readonly type="text" value="شركة سما للتجارة والتصدير (CUST-001)" class="w-full rounded-lg border border-outline-variant bg-surface-variant/50 p-2.5 font-bold text-primary cursor-not-allowed"/>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-on-surface-variant block">المنتج الرئيسي (من ماستر المنتجات) *</label>
+          <select id="modal-product" required class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-primary">
+            <option value="فراولة مجمدة" selected>فراولة مجمدة (Frozen Strawberry)</option>
+            <option value="مانجو مجمدة">مانجو مجمدة (Frozen Mango)</option>
+            <option value="فاصوليا خضراء">فاصوليا خضراء (Green Beans)</option>
+            <option value="بازلاء مجمدة">بازلاء مجمدة (Frozen Peas)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">فئة المستلزم *</label>
+            <select id="modal-category" onchange="onModalCategoryChange()" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-on-surface">
+              <option value="كراتين" selected>كراتين</option>
+              <option value="أكياس">أكياس</option>
+              <option value="لزق">لزق</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">صنف ومواصفة التعبئة *</label>
+            <select id="modal-item" required class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-on-surface">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">سعر البيع المتفق عليه (ج.م/كجم) *</label>
+            <input id="modal-price" type="number" step="0.5" required placeholder="52.00" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-emerald-700 font-mono text-sm"/>
+          </div>
+          <div class="space-y-1">
+            <label class="font-bold text-on-surface-variant block">الوحدة *</label>
+            <input readonly type="text" value="كجم" class="w-full rounded-lg border border-outline-variant bg-surface-variant/50 p-2.5 font-bold text-on-surface cursor-not-allowed"/>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-on-surface-variant block">حالة الاتفاقية</label>
+          <select id="modal-status" class="w-full rounded-lg border border-outline-variant bg-surface p-2.5 font-bold text-primary">
+            <option value="نشط" selected>نشط (Active)</option>
+            <option value="غير نشط">غير نشط (Inactive)</option>
+          </select>
+        </div>
+
+        <div class="pt-3 border-t border-outline-variant flex justify-end gap-2">
+          <button type="button" onclick="closeAgreementModal()" class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface font-bold hover:bg-surface-variant">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-primary text-white font-bold hover:bg-primary-container flex items-center gap-1 shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">save</span>
+            حفظ الاتفاقية
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+const suppliesMasterMap = {
+  "كراتين": ["كرتونة سما 10 KG", "كرتونة سما 5 KG", "كرتونة تصدير 10 KG", "كرتونة سادة 10 KG"],
+  "أكياس": ["كيس سما 10 كجم", "كيس بوليثين 5 KG", "كيس شفاف 1 KG"],
+  "لزق": ["لزق أزرق عريض", "لزق أبيض 50 مم"],
+  "أخرى": ["شريط تربيط بالتات"]
+};
+
+function onModalCategoryChange() {
+  const cat = document.getElementById('modal-category').value;
+  const itemSelect = document.getElementById('modal-item');
+  itemSelect.innerHTML = '';
+  const items = suppliesMasterMap[cat] || suppliesMasterMap['كراتين'];
+  items.forEach(it => {
+    itemSelect.innerHTML += `<option value="${it}">${it}</option>`;
+  });
+}
+
+function switchTab(tabKey, btnElement) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('bg-primary', 'text-white');
+    b.classList.add('bg-surface-variant/60', 'text-on-surface');
+  });
+
+  const contentEl = document.getElementById(`tab-content-${tabKey}`);
+  if (contentEl) contentEl.classList.remove('hidden');
+
+  if (btnElement) {
+    btnElement.classList.remove('bg-surface-variant/60', 'text-on-surface');
+    btnElement.classList.add('bg-primary', 'text-white');
+  }
+}
+
+function openAgreementModal() {
+  document.getElementById('modal-title').innerText = '+ إضافة اتفاقية سعر وتعبئة جديدة';
+  document.getElementById('modal-price').value = '52.00';
+  onModalCategoryChange();
+  document.getElementById('agreement-modal').classList.remove('hidden');
+}
+
+function closeAgreementModal() {
+  document.getElementById('agreement-modal').classList.add('hidden');
+}
+
+function editAgreement(prod, cat, item, price) {
+  document.getElementById('modal-title').innerText = `تعديل اتفاقية سعر: ${prod} (${item})`;
+  document.getElementById('modal-product').value = prod;
+  document.getElementById('modal-category').value = cat;
+  onModalCategoryChange();
+  document.getElementById('modal-item').value = item;
+  document.getElementById('modal-price').value = price;
+  document.getElementById('agreement-modal').classList.remove('hidden');
+}
+
+function toggleAgreementStatus(btn) {
+  const tr = btn.closest('tr');
+  const badge = tr.querySelector('td:nth-child(6) span');
+  if (badge.innerText.includes('نشط')) {
+    badge.innerText = 'غير نشط';
+    badge.className = 'bg-surface-variant text-on-surface-variant text-[10px] px-2.5 py-0.5 rounded-full font-bold';
+    document.getElementById('cust-detail-toast-msg').innerText = 'تم تعطيل اتفاقية السعر (تظل محفوظة تاريخياً للشحنات القديمة)';
+    document.getElementById('cust-detail-toast').classList.remove('hidden');
+  } else {
+    badge.innerText = 'نشط';
+    badge.className = 'bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]';
+    document.getElementById('cust-detail-toast-msg').innerText = 'تمت إعادة تفعيل اتفاقية السعر بنجاح!';
+    document.getElementById('cust-detail-toast').classList.remove('hidden');
+  }
+}
+
+function saveModalAgreement(e) {
+  e.preventDefault();
+  const prod = document.getElementById('modal-product').value;
+  const item = document.getElementById('modal-item').value;
+  const price = document.getElementById('modal-price').value;
+
+  document.getElementById('cust-detail-toast-msg').innerText = `تم حفظ الاتفاقية (${prod} + ${item} بسعر ${price} ج.م/كجم) بنجاح!`;
+  document.getElementById('cust-detail-toast').classList.remove('hidden');
+  closeAgreementModal();
+  switchTab('agreements-tab', document.getElementById('btn-tab-agreements'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  onModalCategoryChange();
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get('tab');
+  if (tabParam === 'agreements') {
+    switchTab('agreements-tab', document.getElementById('btn-tab-agreements'));
+  }
+});
+</script>
+</body>
+</html>

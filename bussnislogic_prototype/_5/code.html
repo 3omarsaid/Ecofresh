@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مخزون المواد الخام - نظام تصدير</title>
+<!-- Google Fonts: IBM Plex Sans Arabic -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    },
+                    "fontSize": {
+                        "data-mono": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "title-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "40px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for clean look in lists */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden">
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding bg-surface dark:bg-on-surface border-b border-outline-variant dark:border-on-secondary-fixed-variant">
+<div class="flex items-center gap-4">
+<!-- Search Bar placeholder from JSON -->
+<div class="relative hidden md:block w-64">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pr-10 pl-4 font-body-md text-body-md text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary focus:outline-none h-10" placeholder="بحث في النظام..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">settings</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">help</span>
+</button>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-3">
+<img alt="صورة الملف الشخصي للمستخدم" class="h-9 w-9 rounded-full object-cover border border-outline-variant" data-alt="Professional corporate headshot of an Egyptian logistics manager in a modern office, bright natural lighting, professional attire, looking slightly off-camera, 8k resolution, photorealistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBhy5WRI7FnFvS0UXmBydk8r5Mtgku89eqDnHSY9GfKdRGvDBPLXoSINw7-spgXCAvUqvaSdsoihai4blWdQhcRgfxOIDBasMtImHWqkqOzI9HOyA1_GWkZhDmKDMa_fJKgC8cPtexge-nU8aR9v-ncG6fEsbEFek1f2FajgmrKK7-uJg1ctYISHKq8nDTPFVSMzD5tQGOlPy4IK_NlXuHZnYrFmoyXC6dxgvdxFz_qJ-JVz7tySmZ"/>
+<div class="flex flex-col">
+<span class="font-title-sm text-[14px] leading-tight text-on-surface">أحمد محمود</span>
+<span class="font-label-sm text-on-surface-variant">مدير المخازن</span>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed right-0 top-0 h-screen w-sidebar-width z-50 flex flex-col bg-primary dark:bg-primary-container border-l border-primary-fixed-dim">
+<div class="h-toolbar-height flex items-center px-6 border-b border-on-primary-fixed-variant border-opacity-30">
+<div class="flex flex-col justify-center">
+<h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">إدارة الصادرات</h1>
+<span class="font-label-sm text-label-sm text-primary-fixed-dim opacity-80">نظام إدارة موارد المؤسسة</span>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1 no-scrollbar">
+<!-- 0: لوحة القيادة -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="font-title-sm text-title-sm text-[15px]">لوحة القيادة</span>
+</a>
+<!-- 1: العمليات -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">conveyor_belt</span>
+<span class="font-title-sm text-title-sm text-[15px]">العمليات</span>
+</a>
+<!-- 2: المخزون (ACTIVE STATE) -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary border-r-4 border-surface-variant scale-[0.98] transition-transform shadow-inner" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-title-sm text-title-sm text-[15px] font-bold">المخزون</span>
+</a>
+<!-- 3: المشتريات -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">shopping_cart</span>
+<span class="font-title-sm text-title-sm text-[15px]">المشتريات</span>
+</a>
+<!-- 4: المبيعات -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
+<span class="font-title-sm text-title-sm text-[15px]">المبيعات</span>
+</a>
+<!-- 5: المالية -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">account_balance</span>
+<span class="font-title-sm text-title-sm text-[15px]">المالية</span>
+</a>
+<!-- 6: المقاولون -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">handshake</span>
+<span class="font-title-sm text-title-sm text-[15px]">المقاولون</span>
+</a>
+<!-- 7: المحطات -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">factory</span>
+<span class="font-title-sm text-title-sm text-[15px]">المحطات</span>
+</a>
+<!-- 8: الموظفون -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">badge</span>
+<span class="font-title-sm text-title-sm text-[15px]">الموظفون</span>
+</a>
+<!-- 9: التقارير -->
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-on-primary dark:text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">analytics</span>
+<span class="font-title-sm text-title-sm text-[15px]">التقارير</span>
+</a>
+</nav>
+<div class="p-4 border-t border-on-primary-fixed-variant border-opacity-30">
+<div class="bg-primary-container p-3 rounded-lg flex items-center justify-between border border-outline-variant opacity-80">
+<div class="flex items-center gap-2 text-surface-container-lowest">
+<span class="material-symbols-outlined text-[18px]">currency_exchange</span>
+<span class="font-data-mono text-data-mono font-bold">USD</span>
+</div>
+<div class="text-surface-container-lowest font-data-mono text-data-mono">48.25 EGP</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-[64px] pr-[280px] h-screen overflow-y-auto bg-surface-container-low">
+<div class="p-container-padding max-w-[1600px] mx-auto flex flex-col gap-gutter">
+<!-- Page Header Section -->
+<div class="flex justify-between items-end mb-2">
+<div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[16px]">home</span>
+<span class="material-symbols-outlined text-[14px]">chevron_left</span>
+<span class="font-label-sm text-label-sm">المخزون</span>
+<span class="material-symbols-outlined text-[14px]">chevron_left</span>
+<span class="font-label-sm text-label-sm font-bold text-primary">المواد الخام</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-3">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 1;">eco</span>
+                        مخزون المواد الخام
+                    </h2>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant hover:bg-surface-variant px-4 py-2 rounded-lg font-title-sm text-[14px] transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        تصدير التقرير
+                    </button>
+<button class="bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container px-4 py-2 rounded-lg font-title-sm text-[14px] transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        إضافة إيصال استلام
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- RIGHT COLUMN: Inventory List (Span 8) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+<!-- Filter/Search Bar -->
+<div class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant shadow-sm flex items-center justify-between">
+<div class="relative w-1/2">
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all" placeholder="البحث برقم التشغيلة أو الصنف..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-3 py-2 bg-surface text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors text-[13px] font-title-sm">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                                تصفية
+                            </button>
+<button class="flex items-center gap-2 px-3 py-2 bg-surface text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors text-[13px] font-title-sm">
+<span class="material-symbols-outlined text-[18px]">sort</span>
+                                ترتيب
+                            </button>
+</div>
+</div>
+<!-- Inventory Master List (Expandable) -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<!-- Header Row -->
+<div class="grid grid-cols-12 gap-4 p-4 bg-surface-variant bg-opacity-40 border-b border-outline-variant text-on-surface-variant font-title-sm text-[13px]">
+<div class="col-span-5">الصنف / المادة الخام</div>
+<div class="col-span-3 text-left">الكمية الإجمالية (كجم)</div>
+<div class="col-span-3 text-left">عدد الموردين</div>
+<div class="col-span-1 text-center"></div>
+</div>
+<!-- Item 1: Strawberry (Expanded State) -->
+<div class="border-b border-outline-variant bg-surface-container-low">
+<!-- Main Row -->
+<div class="grid grid-cols-12 gap-4 p-4 items-center cursor-pointer hover:bg-surface-variant transition-colors border-l-4 border-primary">
+<div class="col-span-5 flex items-center gap-3">
+<div class="h-10 w-10 rounded bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined">grass</span>
+</div>
+<div>
+<div class="font-title-sm text-on-surface">فراولة مجمدة صنف A</div>
+<div class="font-label-sm text-on-surface-variant mt-0.5">كود: RAW-STW-001</div>
+</div>
+</div>
+<div class="col-span-3 text-left font-data-mono text-[16px] font-bold text-on-surface">19,500</div>
+<div class="col-span-3 text-left">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface border border-outline-variant text-on-surface-variant font-data-mono text-[12px]">
+                                        3 موردين
+                                    </span>
+</div>
+<div class="col-span-1 flex justify-center text-primary">
+<span class="material-symbols-outlined">expand_less</span>
+</div>
+</div>
+<!-- Expanded Detail Pane (Ownership Breakdown) -->
+<div class="p-4 bg-surface-container-lowest border-t border-outline-variant mx-4 mb-4 rounded-b-lg shadow-inner">
+<h4 class="font-title-sm text-[13px] text-on-surface-variant mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">pie_chart</span>
+                                    توزيع الملكية حسب المورد
+                                </h4>
+<div class="flex flex-col gap-3">
+<!-- Supplier A -->
+<div class="flex items-center justify-between p-2 rounded hover:bg-surface transition-colors">
+<div class="flex items-center gap-3 w-1/3">
+<div class="h-8 w-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-title-sm text-[12px]">مأ</div>
+<span class="font-title-sm text-[14px] text-on-surface">المورد أ (مزارع النيل)</span>
+</div>
+<div class="flex-1 px-6">
+<div class="w-full bg-surface-variant rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 51%"></div>
+</div>
+</div>
+<div class="w-1/4 text-left font-data-mono font-bold text-on-surface">10,000 كجم</div>
+</div>
+<!-- Supplier B -->
+<div class="flex items-center justify-between p-2 rounded hover:bg-surface transition-colors">
+<div class="flex items-center gap-3 w-1/3">
+<div class="h-8 w-8 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-title-sm text-[12px]">مب</div>
+<span class="font-title-sm text-[14px] text-on-surface">المورد ب (الشركة الزراعية)</span>
+</div>
+<div class="flex-1 px-6">
+<div class="w-full bg-surface-variant rounded-full h-2">
+<div class="bg-secondary h-2 rounded-full" style="width: 36%"></div>
+</div>
+</div>
+<div class="w-1/4 text-left font-data-mono font-bold text-on-surface">7,000 كجم</div>
+</div>
+<!-- Supplier C -->
+<div class="flex items-center justify-between p-2 rounded hover:bg-surface transition-colors">
+<div class="flex items-center gap-3 w-1/3">
+<div class="h-8 w-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center font-title-sm text-[12px]">مج</div>
+<span class="font-title-sm text-[14px] text-on-surface">المورد ج (محصول الوادي)</span>
+</div>
+<div class="flex-1 px-6">
+<div class="w-full bg-surface-variant rounded-full h-2">
+<div class="bg-tertiary h-2 rounded-full" style="width: 13%"></div>
+</div>
+</div>
+<div class="w-1/4 text-left font-data-mono font-bold text-on-surface">2,500 كجم</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2: Mango (Collapsed State) -->
+<div class="border-b border-outline-variant bg-surface-container-lowest">
+<div class="grid grid-cols-12 gap-4 p-4 items-center cursor-pointer hover:bg-surface-variant transition-colors">
+<div class="col-span-5 flex items-center gap-3">
+<div class="h-10 w-10 rounded bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined">nature</span>
+</div>
+<div>
+<div class="font-title-sm text-on-surface">مانجو كيت للفرز</div>
+<div class="font-label-sm text-on-surface-variant mt-0.5">كود: RAW-MNG-042</div>
+</div>
+</div>
+<div class="col-span-3 text-left font-data-mono text-[16px] font-bold text-on-surface">8,200</div>
+<div class="col-span-3 text-left">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface border border-outline-variant text-on-surface-variant font-data-mono text-[12px]">
+                                        1 مورد
+                                    </span>
+</div>
+<div class="col-span-1 flex justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Item 3: Pomegranate (Collapsed State) -->
+<div class="bg-surface-container-lowest">
+<div class="grid grid-cols-12 gap-4 p-4 items-center cursor-pointer hover:bg-surface-variant transition-colors">
+<div class="col-span-5 flex items-center gap-3">
+<div class="h-10 w-10 rounded bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined">local_florist</span>
+</div>
+<div>
+<div class="font-title-sm text-on-surface">رمان عالي الجودة</div>
+<div class="font-label-sm text-on-surface-variant mt-0.5">كود: RAW-PMG-011</div>
+</div>
+</div>
+<div class="col-span-3 text-left font-data-mono text-[16px] font-bold text-on-surface">12,000</div>
+<div class="col-span-3 text-left">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface border border-outline-variant text-on-surface-variant font-data-mono text-[12px]">
+                                        2 موردين
+                                    </span>
+</div>
+<div class="col-span-1 flex justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- LEFT COLUMN: Withdraw Form & Allocation Widget (Span 4) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<!-- Withdraw Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg flex flex-col relative overflow-hidden">
+<!-- Card Header -->
+<div class="p-4 bg-primary text-surface-container-lowest flex items-center gap-3">
+<span class="material-symbols-outlined text-[24px]">outbound</span>
+<h3 class="font-title-sm text-[16px]">سحب مواد خام للتشغيل</h3>
+</div>
+<div class="p-5 flex flex-col gap-5">
+<!-- Main Form -->
+<div class="flex flex-col gap-4">
+<!-- Station Select -->
+<div class="flex flex-col gap-1.5">
+<label class="font-title-sm text-[13px] text-on-surface">محطة التشغيل (الوجهة)</label>
+<div class="relative">
+<select class="w-full bg-surface border border-outline-variant rounded-lg py-2.5 px-3 font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary appearance-none pr-3 pl-10">
+<option disabled="" value="">اختر المحطة...</option>
+<option selected="" value="1">محطة الفرز والتعبئة - خط 1</option>
+<option value="2">وحدة التجميد السريع IQF</option>
+</select>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">precision_manufacturing</span>
+</div>
+</div>
+<!-- Product Select -->
+<div class="flex flex-col gap-1.5">
+<label class="font-title-sm text-[13px] text-on-surface">الصنف المراد سحبه</label>
+<div class="relative">
+<select class="w-full bg-surface border border-outline-variant rounded-lg py-2.5 px-3 font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary appearance-none pr-3 pl-10">
+<option disabled="" value="">اختر الصنف...</option>
+<option selected="" value="RAW-STW-001">فراولة مجمدة صنف A</option>
+<option value="RAW-MNG-042">مانجو كيت للفرز</option>
+</select>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">inventory_2</span>
+</div>
+</div>
+<!-- Quantity Input -->
+<div class="flex flex-col gap-1.5">
+<label class="font-title-sm text-[13px] text-on-surface flex justify-between">
+<span>الكمية الإجمالية المطلوبة (كجم)</span>
+<span class="text-primary font-data-mono">المتاح: 19,500</span>
+</label>
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant rounded-lg py-2.5 px-3 font-data-mono text-[16px] font-bold text-on-surface focus:ring-2 focus:ring-primary focus:border-primary text-left" dir="ltr" type="number" value="5000"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-title-sm text-[12px]">KG</span>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant border-dashed"/>
+<!-- Allocation Widget -->
+<div class="flex flex-col gap-3 bg-surface-container py-4 px-3 rounded-lg border border-outline-variant border-opacity-50">
+<h4 class="font-title-sm text-[14px] text-primary flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+                                    تخصيص السحب من أرصدة الموردين
+                                </h4>
+<!-- Supplier Allocation Row 1 -->
+<div class="flex items-center gap-2 bg-surface-container-lowest p-2 rounded border border-outline-variant shadow-sm">
+<div class="flex-1 flex flex-col">
+<span class="font-title-sm text-[13px] text-on-surface truncate">المورد أ (مزارع النيل)</span>
+<span class="font-data-mono text-[11px] text-on-surface-variant">متاح: 10,000 كجم</span>
+</div>
+<div class="w-28 relative">
+<input class="w-full h-8 bg-surface border-none rounded bg-surface-container-low text-center font-data-mono text-[14px] font-bold text-on-surface focus:ring-1 focus:ring-primary" type="number" value="3000"/>
+</div>
+</div>
+<!-- Supplier Allocation Row 2 -->
+<div class="flex items-center gap-2 bg-surface-container-lowest p-2 rounded border border-outline-variant shadow-sm">
+<div class="flex-1 flex flex-col">
+<span class="font-title-sm text-[13px] text-on-surface truncate">المورد ب (الشركة الزراعية)</span>
+<span class="font-data-mono text-[11px] text-on-surface-variant">متاح: 7,000 كجم</span>
+</div>
+<div class="w-28 relative">
+<input class="w-full h-8 bg-surface border-none rounded bg-surface-container-low text-center font-data-mono text-[14px] font-bold text-on-surface focus:ring-1 focus:ring-primary" type="number" value="2000"/>
+</div>
+</div>
+<!-- Supplier Allocation Row 3 (Unallocated) -->
+<div class="flex items-center gap-2 bg-surface-container-lowest p-2 rounded border border-outline-variant opacity-60">
+<div class="flex-1 flex flex-col">
+<span class="font-title-sm text-[13px] text-on-surface truncate">المورد ج (محصول الوادي)</span>
+<span class="font-data-mono text-[11px] text-on-surface-variant">متاح: 2,500 كجم</span>
+</div>
+<div class="w-28 relative">
+<input class="w-full h-8 bg-surface border-none rounded bg-surface-container-low text-center font-data-mono text-[14px] text-on-surface focus:ring-1 focus:ring-primary opacity-50" placeholder="0" type="number"/>
+</div>
+</div>
+<!-- Allocation Summary -->
+<div class="mt-2 pt-2 border-t border-outline-variant flex justify-between items-center px-1">
+<span class="font-title-sm text-[13px] text-on-surface-variant">إجمالي المخصص:</span>
+<div class="flex items-center gap-2">
+<span class="font-data-mono text-[16px] font-bold text-on-tertiary-container bg-tertiary-fixed px-2 py-0.5 rounded">5,000</span>
+<span class="text-on-surface-variant font-data-mono text-[12px]">/ 5,000</span>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container py-3 rounded-lg font-title-sm text-[15px] font-bold transition-all shadow-md flex justify-center items-center gap-2 mt-2">
+<span class="material-symbols-outlined">check_circle</span>
+                                تأكيد إذن السحب
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

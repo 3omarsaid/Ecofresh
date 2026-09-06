@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>نظام التصدير التنفيذي - الرئيسية</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d9dadb",
+                        "inverse-surface": "#2e3132",
+                        "secondary": "#0054cd",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#b8cac9",
+                        "primary-fixed": "#c1ecd4",
+                        "on-background": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "outline-variant": "#c1c8c2",
+                        "tertiary-container": "#2f3f3f",
+                        "on-tertiary-fixed-variant": "#3a4a49",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed": "#001847",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#316ee9",
+                        "tertiary": "#192929",
+                        "on-surface": "#191c1d",
+                        "on-primary-fixed-variant": "#274e3d",
+                        "on-primary-container": "#86af99",
+                        "on-secondary-fixed-variant": "#0040a1",
+                        "inverse-primary": "#a5d0b9",
+                        "surface-container-high": "#e7e8e9",
+                        "primary": "#012d1d",
+                        "surface-bright": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#b2c5ff",
+                        "secondary-fixed": "#dae2ff",
+                        "primary-fixed-dim": "#a5d0b9",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-tint": "#3f6653",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "outline": "#717973",
+                        "on-tertiary-fixed": "#0e1e1e",
+                        "on-secondary-container": "#fefcff",
+                        "primary-container": "#1b4332",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary-container": "#99aaa9",
+                        "on-surface-variant": "#414844",
+                        "surface": "#f8f9fa",
+                        "on-primary-fixed": "#002114",
+                        "surface-container": "#edeeef",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#d4e6e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "density-high": "8px",
+                        "container-padding": "24px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "density-medium": "16px",
+                        "sidebar-width": "260px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["IBM Plex Sans Arabic"],
+                        "body-lg": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "data-tabular": ["IBM Plex Sans"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-sm": ["IBM Plex Sans Arabic"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["32px", { "lineHeight": "48px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "data-tabular": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .data-tabular { font-family: 'IBM Plex Sans', sans-serif; }
+    </style>
+
+<link rel="stylesheet" href="./css/global.css" />
+<link rel="stylesheet" href="./css/custom.css" />
+<script src="./js/navigation.js" defer></script>
+<script src="./js/interactions.js" defer></script>
+<script src="./js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+<!-- TopNavBar -->
+<!-- Main Container -->
+<!-- SideNavBar (Right RTL) -->
+<aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+<!-- Content Area -->
+<main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+<!-- Main Grid -->
+<div class="flex-1 flex flex-col gap-gutter">
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-gutter">
+<!-- KPI 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">إجمالي المبيعات</span>
+<div class="font-display-lg text-display-lg text-secondary data-tabular">2.5M <span class="text-sm">ج.م</span></div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">إجمالي التكاليف</span>
+<div class="font-display-lg text-display-lg text-on-surface data-tabular">1.8M <span class="text-sm">ج.م</span></div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">صافي الربح</span>
+<div class="font-display-lg text-display-lg text-primary data-tabular">700k <span class="text-sm">ج.م</span></div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">المخزون الخام</span>
+<div class="font-display-lg text-display-lg text-on-surface data-tabular">45 <span class="text-sm">طن</span></div>
+</div>
+<!-- KPI 5 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">نسبة الهالك</span>
+<div class="font-display-lg text-display-lg text-error data-tabular">6.2%</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter h-80">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col">
+<h2 class="font-headline-sm text-headline-sm mb-4">المبيعات مقابل التكاليف</h2>
+<div class="flex-1 relative">
+<canvas id="salesCostsChart"></canvas>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col">
+<h2 class="font-headline-sm text-headline-sm mb-4">الهالك لكل محطة</h2>
+<div class="flex-1 relative">
+<canvas id="wasteChart"></canvas>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg flex flex-col overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-lowest sticky top-0">
+<h2 class="font-headline-sm text-headline-sm">أحدث العمليات</h2>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-right border-collapse">
+<thead>
+<tr class="bg-surface-container-high border-b border-outline-variant text-on-surface-variant font-label-sm text-label-sm">
+<th class="py-2 px-4 sticky top-0">التاريخ</th>
+<th class="py-2 px-4 sticky top-0">العملية</th>
+<th class="py-2 px-4 sticky top-0">الكيان</th>
+<th class="py-2 px-4 sticky top-0">القيمة / الكمية</th>
+<th class="py-2 px-4 sticky top-0">المستخدم</th>
+<th class="py-2 px-4 sticky top-0">الحالة</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md data-tabular">
+<tr class="border-b border-outline-variant bg-surface-container-lowest hover:bg-surface-container transition-colors">
+<td class="py-density-high px-4">2023-10-27</td>
+<td class="py-density-high px-4 font-body-md">شحنة جديدة</td>
+<td class="py-density-high px-4">محطة النور</td>
+<td class="py-density-high px-4">12 طن</td>
+<td class="py-density-high px-4">أحمد محمود</td>
+<td class="py-density-high px-4">
+<span class="inline-block px-2 py-1 rounded bg-primary-container text-on-primary-container text-xs font-medium">مكتمل</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant bg-[#f0f4f8] hover:bg-surface-container transition-colors">
+<td class="py-density-high px-4">2023-10-26</td>
+<td class="py-density-high px-4 font-body-md">تسجيل منصرف</td>
+<td class="py-density-high px-4">الخط أ</td>
+<td class="py-density-high px-4">500 كجم</td>
+<td class="py-density-high px-4">سارة علي</td>
+<td class="py-density-high px-4">
+<span class="inline-block px-2 py-1 rounded bg-surface-variant text-on-surface-variant text-xs font-medium">قيد المعالجة</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant bg-surface-container-lowest hover:bg-surface-container transition-colors">
+<td class="py-density-high px-4">2023-10-25</td>
+<td class="py-density-high px-4 font-body-md">اعتماد فاتورة</td>
+<td class="py-density-high px-4">المورد س</td>
+<td class="py-density-high px-4">150,000 ج.م</td>
+<td class="py-density-high px-4">مدير مالي</td>
+<td class="py-density-high px-4">
+<span class="inline-block px-2 py-1 rounded bg-primary-container text-on-primary-container text-xs font-medium">مكتمل</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Alerts Sidebar -->
+<div class="w-[300px] flex flex-col gap-gutter">
+<div class="bg-error-container border border-error-container rounded-lg p-4 flex flex-col gap-4">
+<div class="flex items-center gap-2 text-on-error-container font-headline-sm text-headline-sm">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+                        تنبيهات حرجة
+                    </div>
+<div class="flex flex-col gap-3">
+<div class="bg-surface-container-lowest p-3 rounded border-l-4 border-error shadow-sm">
+<p class="font-body-sm text-sm text-on-surface font-semibold mb-1">نقص مخزون: فراولة</p>
+<p class="font-body-sm text-xs text-on-surface-variant">الكمية: 25/30 طن — محطة النور</p>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded border-l-4 border-error shadow-sm">
+<p class="font-body-sm text-sm text-on-surface font-semibold mb-1">تنبيه ارتفاع نسبة الهالك</p>
+<p class="font-body-sm text-xs text-on-surface-variant">الخط ب تجاوز النسبة المسموحة (8%)</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Chart.js initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Colors from theme
+            const primaryColor = '#012d1d';
+            const secondaryColor = '#0054cd';
+            const surfaceVariant = '#e1e3e4';
+
+            // Sales vs Costs Line Chart
+            const ctxSales = document.getElementById('salesCostsChart').getContext('2d');
+            new Chart(ctxSales, {
+                type: 'line',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                    datasets: [
+                        {
+                            label: 'المبيعات',
+                            data: [1.2, 1.5, 1.8, 2.0, 2.2, 2.5],
+                            borderColor: secondaryColor,
+                            backgroundColor: 'rgba(0, 84, 205, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'التكاليف',
+                            data: [0.9, 1.1, 1.3, 1.4, 1.6, 1.8],
+                            borderColor: primaryColor,
+                            borderWidth: 2,
+                            tension: 0.4,
+                            borderDash: [5, 5]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', rtl: true, labels: { font: { family: 'IBM Plex Sans Arabic' } } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: surfaceVariant } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Waste per Station Bar Chart
+            const ctxWaste = document.getElementById('wasteChart').getContext('2d');
+            new Chart(ctxWaste, {
+                type: 'bar',
+                data: {
+                    labels: ['محطة النور', 'محطة الأمل', 'محطة الصفوة', 'محطة السلام'],
+                    datasets: [{
+                        label: 'نسبة الهالك %',
+                        data: [4.5, 6.2, 3.8, 5.1],
+                        backgroundColor: '#ba1a1a', // Error color
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: surfaceVariant } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        });
+    </script>
+</body></html>

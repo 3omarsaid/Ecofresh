@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>كشف حساب تفصيلي — شركة الخير</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+<!-- Top Navigation Bar -->
+<!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    <!-- Header Banner -->
+    <div class="bg-surface p-6 rounded-lg border border-outline-variant shadow-sm flex justify-between items-center">
+      <div>
+        <div class="flex items-center gap-3">
+          <h2 class="text-2xl font-bold text-primary">شركة الخير للزراعة (مورد)</h2>
+          <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">كشف حساب مستمر</span>
+        </div>
+        <p class="text-sm text-on-surface-variant mt-1">الفترة من: <span class="font-mono">01/01/2026</span> إلى: <span class="font-mono">11/08/2026</span></p>
+      </div>
+      <div class="flex flex-col items-end">
+        <span class="text-xs text-on-surface-variant font-medium">الرصيد النهائي المستحق (Running Balance)</span>
+        <span class="text-2xl font-bold text-rose-600 font-mono">300,000.00 <span class="text-sm font-normal">جنيه (مستحق للمورد)</span></span>
+      </div>
+    </div>
+
+    <!-- Statement Table -->
+    <div class="bg-surface rounded-lg border border-outline-variant shadow-sm overflow-hidden p-6 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-primary text-lg">سجل العمليات المالية التراكمي</h3>
+        <a href="add-transaction.html" class="bg-secondary text-white px-3 py-1.5 rounded text-xs font-semibold">إضافة سداد جديد</a>
+      </div>
+
+      <table class="w-full text-right text-sm">
+        <thead class="bg-surface-variant text-xs text-on-surface-variant font-bold border-b border-outline-variant">
+          <tr>
+            <th class="p-3">التاريخ</th>
+            <th class="p-3">بيان الحركة</th>
+            <th class="p-3">المرجع</th>
+            <th class="p-3">مدين (سداد له)</th>
+            <th class="p-3">دائن (استلام منه)</th>
+            <th class="p-3">الرصيد المتراكم</th>
+            <th class="p-3">المستند المرتبط</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant">
+          <tr class="hover:bg-surface-variant/50">
+            <td class="p-3 font-mono">01/01/2026</td>
+            <td class="p-3 font-bold text-primary">فاتورة توريد خام (10,000 كجم × 50 ج)</td>
+            <td class="p-3 font-mono">PUR-2026-001</td>
+            <td class="p-3 font-mono">0.00</td>
+            <td class="p-3 font-mono font-bold text-emerald-700">500,000.00</td>
+            <td class="p-3 font-mono font-bold text-rose-600">500,000.00 دائن</td>
+            <td class="p-3 font-mono"><a href="raw-purchase-details.html" class="hover:underline">PUR-2026-001</a></td>
+          </tr>
+          <tr class="hover:bg-surface-variant/50">
+            <td class="p-3 font-mono">03/01/2026</td>
+            <td class="p-3 font-bold text-primary">دفعة مسددة للمورد (تحويل بنكي)</td>
+            <td class="p-3 font-mono">PAY-2026-001</td>
+            <td class="p-3 font-mono font-bold text-rose-600">200,000.00</td>
+            <td class="p-3 font-mono">0.00</td>
+            <td class="p-3 font-mono font-bold text-rose-600">300,000.00 دائن</td>
+            <td class="p-3 font-mono"><a href="payments-collections.html" class="hover:underline">PAY-2026-001</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+</body>
+</html>

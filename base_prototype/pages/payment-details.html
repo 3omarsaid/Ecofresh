@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>تفاصيل الحركة المالية - PAY-2026-001</title>
+<script src="https://cdn.tailwindcss.com?plugins=plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Navigation Breadcrumb -->
+    <div class="flex items-center justify-between">
+      <a href="payments-collections.html" class="inline-flex items-center gap-1 text-xs text-secondary font-bold hover:underline">
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        العودة لسجل المدفوعات والتحصيلات
+      </a>
+      <span class="text-xs text-outline font-mono">المرجع المالي والدفتر السندي للحركة المالية</span>
+    </div>
+
+    <!-- PAGE HEADER BANNER -->
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-outline-variant/60 pb-4">
+        
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 bg-rose-100 rounded-xl flex items-center justify-center text-rose-800 font-bold text-lg shrink-0 border border-rose-300">
+            سداد
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-3 flex-wrap">
+              <h1 class="text-2xl font-bold text-primary font-mono">حركة سداد #PAY-2026-001</h1>
+              <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">● مؤكد ومسوى بالخزينة</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-on-surface-variant flex-wrap pt-0.5">
+              <span>الهدف: <strong class="text-primary font-bold">دفع لمورد</strong></span>
+              <span>• المستفيد: <a href="supplier-details.html" class="text-primary font-bold hover:underline">شركة الخير للتنمية الزراعية</a></span>
+              <span>• المحطة التابعة: <strong class="text-on-surface font-semibold">محطة النور</strong></span>
+              <span>• تاريخ الحركة: <strong class="font-mono text-primary font-bold">14/08/2026 10:30</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS BAR -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="window.print()" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3.5 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/60 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">print</span>
+            طباعة الإيصال
+          </button>
+          <a href="financial-statements.html?supplier=SUP-001" class="bg-primary text-white hover:bg-primary-container px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">receipt_long</span>
+            عرض كشف حساب المورد
+          </a>
+        </div>
+      </div>
+
+      <!-- TRANSACTION SUMMARY CARDS -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[11px] text-outline font-semibold">مبلغ الحركة المالية</span>
+          <div class="text-xl font-bold text-rose-700 font-mono">200,000.00 <span class="text-xs font-normal">ج.م</span></div>
+        </div>
+
+        <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[11px] text-outline font-semibold">طريقة الدفع والمرجع</span>
+          <div class="text-sm font-bold text-primary">تحويل بنكي مباشر</div>
+          <span class="text-[10px] text-on-surface-variant font-mono block">إيصال: REF-884910</span>
+        </div>
+
+        <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[11px] text-outline font-semibold">الخزينة / الحساب المستخدم</span>
+          <div class="text-sm font-bold text-primary">البنك الأهلي - حساب التصدير</div>
+          <span class="text-[10px] text-emerald-800 font-mono block">خصم مباشر من الرصيد</span>
+        </div>
+
+        <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[11px] text-outline font-semibold">منفذ الحركة والاعتماد</span>
+          <div class="text-sm font-bold text-primary">أحمد محمود - المدير المالي</div>
+          <span class="text-[10px] text-outline block">تم الاعتماد الإلكتروني</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN TRANSACTION DETAILS GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- LEFT COLUMN: PARTY CONTEXT & LINKED DOCUMENTS (8 COLS) -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- PARTY BALANCE IMPACT & HISTORICAL SNAPSHOT -->
+        <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+          <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+            <h2 class="text-base font-bold text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-secondary">person_outline</span>
+              1. أثر الحركة المالية على حساب الطرف (Party Ledger Balance Impact)
+            </h2>
+            <span class="bg-emerald-50 text-emerald-900 border border-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+              🔒 لقطة تاريخية مثبتة وقت تنفيذ الحركة
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/40 space-y-1">
+              <span class="text-outline text-[11px] font-semibold">مستحق المورد قبل الحركة</span>
+              <div class="font-mono font-bold text-rose-700 text-base">520,000.00 ج.م</div>
+              <span class="text-[10px] text-on-surface-variant">رصيد الذمة السابق</span>
+            </div>
+
+            <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-300 space-y-1">
+              <span class="text-emerald-950 text-[11px] font-bold">المبلغ المسدد في هذه الحركة</span>
+              <div class="font-mono font-bold text-emerald-800 text-base">-200,000.00 ج.م</div>
+              <span class="text-[10px] text-emerald-700 font-bold">سداد إلكتروني مثبت</span>
+            </div>
+
+            <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/40 space-y-1">
+              <span class="text-outline text-[11px] font-semibold">مستحق المورد بعد السداد</span>
+              <div class="font-mono font-bold text-primary text-base">320,000.00 ج.م</div>
+              <span class="text-[10px] text-emerald-800 font-bold">تحديث آلي لكشف الحساب</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- LINKED DOCUMENTS ALLOCATION TABLE -->
+        <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+          <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+            <h2 class="text-base font-bold text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-secondary">link</span>
+              2. تخصيص المبلغ على مستندات وإذونات التوريد المستحقة (Document Allocations)
+            </h2>
+            <span class="text-xs font-mono font-bold text-primary bg-surface-variant border border-outline-variant px-2.5 py-1 rounded">
+              توزيع مسوى: 200,000.00 ج.م
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+                <tr>
+                  <th class="p-3 font-mono">رقم إذن التوريد / الشحنة</th>
+                  <th class="p-3 font-mono">تاريخ المستند</th>
+                  <th class="p-3 font-mono">إجمالي قيمة المستند</th>
+                  <th class="p-3 font-mono">المسدد في هذه الحركة</th>
+                  <th class="p-3 font-mono">المتبقي على المستند</th>
+                  <th class="p-3 text-center">حالة المستند</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/40">
+                <tr class="hover:bg-surface-variant/40 transition-colors">
+                  <td class="p-3 font-mono font-bold text-secondary">
+                    <a href="raw-purchase-details.html?id=REC-2026-0001" class="hover:underline">REC-2026-0001</a>
+                  </td>
+                  <td class="p-3 font-mono text-on-surface-variant">10/08/2026</td>
+                  <td class="p-3 font-mono font-bold text-primary">300,000.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-emerald-800 text-sm">120,000.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-rose-600">180,000.00 ج.م</td>
+                  <td class="p-3 text-center">
+                    <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-bold">مسدد جزئياً</span>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-variant/40 transition-colors">
+                  <td class="p-3 font-mono font-bold text-secondary">
+                    <a href="raw-purchase-details.html?id=REC-2026-0002" class="hover:underline">REC-2026-0002</a>
+                  </td>
+                  <td class="p-3 font-mono text-on-surface-variant">12/08/2026</td>
+                  <td class="p-3 font-mono font-bold text-primary">220,000.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-emerald-800 text-sm">80,000.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-rose-600">140,000.00 ج.م</td>
+                  <td class="p-3 text-center">
+                    <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-bold">مسدد جزئياً</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN: TREASURY IMPACT & AUDIT TRAIL (4 COLS) -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- TREASURY IMPACT SUMMARY -->
+        <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+          <h3 class="font-bold text-primary text-sm border-b border-outline-variant/60 pb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px] text-emerald-700">account_balance</span>
+            أثر السيولة على الخزينة / البنك
+          </h3>
+
+          <div class="space-y-3 text-xs">
+            <div class="flex justify-between items-center p-2.5 bg-surface-variant/30 rounded border border-outline-variant/40">
+              <span class="text-on-surface font-semibold">رصيد البنك قبل الحركة:</span>
+              <strong class="font-mono text-primary">1,450,000.00 ج.م</strong>
+            </div>
+
+            <div class="flex justify-between items-center p-2.5 bg-rose-50 border border-rose-200 rounded">
+              <span class="text-rose-900 font-bold">قيمة الخصم البنكي:</span>
+              <strong class="font-mono text-rose-700 font-bold">-200,000.00 ج.م</strong>
+            </div>
+
+            <div class="flex justify-between items-center p-2.5 bg-emerald-50 border border-emerald-300 rounded">
+              <span class="text-emerald-950 font-bold">رصيد البنك الحقيقي المحدث:</span>
+              <strong class="font-mono text-emerald-800 text-base font-bold">1,250,000.00 ج.م</strong>
+            </div>
+          </div>
+        </section>
+
+        <!-- AUDIT TRAIL & LEDGER LINKS -->
+        <section class="bg-primary text-white rounded-xl p-5 shadow-md space-y-4 text-xs">
+          <h3 class="font-bold text-white text-sm border-b border-white/20 pb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-emerald-300">verified</span>
+            سجل التوثيق والاعتماد المالي
+          </h3>
+
+          <div class="space-y-2 text-white/90">
+            <p>• تم تنفيذ السداد خصماً من البنك الأهلي المصري بموجب تحويل بنكي رسمي.</p>
+            <p>• انخفاض تلقائي في كشف حساب المورد شركة الخير بمقدار 200,000.00 ج.م.</p>
+            <p>• تحديث آلي لأرصدة أذونات الاستلام المستحقة REC-2026-0001 و REC-2026-0002.</p>
+          </div>
+
+          <div class="pt-2 border-t border-white/20">
+            <a href="financial-statements.html?supplier=SUP-001" class="bg-white/20 hover:bg-white/30 text-white p-2.5 rounded-lg text-center font-bold transition-all block">
+              فتح كشف حساب المورد بالتفصيل ←
+            </a>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+
+  </main>
+</body>
+</html>

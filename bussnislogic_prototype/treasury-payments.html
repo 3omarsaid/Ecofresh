@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>الخزينة والمدفوعات والحركات المالية - نظام تجميد للتصدير</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #c4c6cd; border-radius: 4px; }
+        .tab-active { border-bottom: 3px solid #041627; color: #041627; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+
+<!-- SideNavBar Navigation -->
+<nav class="fixed right-0 top-0 h-screen w-[280px] z-50 flex flex-col bg-primary text-on-primary shadow-xl border-l border-outline-variant/10">
+    <div class="h-toolbar-height flex flex-col justify-center px-6 border-b border-outline-variant/20 py-4 bg-primary shrink-0">
+        <h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">نظام تجميد للتصدير</h1>
+        <p class="font-label-sm text-label-sm text-primary-fixed-dim">Glacier Ledger ERP</p>
+    </div>
+    <div class="flex-1 overflow-y-auto py-3 px-3">
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>لوحة القيادة التنفيذية</span>
+                </a>
+            </li>
+            <li>
+                <a href="supplies.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>إدارة المستلزمات (Supplies)</span>
+                </a>
+            </li>
+            <li>
+                <a href="treasury-payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold bg-secondary-container text-on-secondary-container border-r-4 border-surface-variant transition-all">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات (Treasury ERP)</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>الموردون والتوريدات</span>
+                </a>
+            </li>
+            <li>
+                <a href="raw-materials.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>مخزن المواد الخام (Raw Inventory)</span>
+                </a>
+            </li>
+            <li>
+                <a href="processing-operations.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">autorenew</span>
+                    <span>عمليات التدوير (Processing)</span>
+                </a>
+            </li>
+            <li>
+                <a href="finished-goods.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory</span>
+                    <span>مخزن المنتج الجاهز (Finished Goods)</span>
+                </a>
+            </li>
+            <li>
+                <a href="employees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">badge</span>
+                    <span>إدارة الموظفين (Employees)</span>
+                </a>
+            </li>
+            <li>
+                <a href="create-shipment.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>إنشاء شحنة تصدير</span>
+                </a>
+            </li>
+            <li>
+                <a href="client-orders.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>طلبات العملاء والاتفاقيات</span>
+                </a>
+            </li>
+            <li>
+                <a href="new-operation.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">conveyor_belt</span>
+                    <span>عملية تشغيل جديدة</span>
+                </a>
+            </li>
+            <li>
+                <a href="stations-management.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">factory</span>
+                    <span>إدارة المحطات</span>
+                </a>
+            </li>
+            <li>
+                <a href="exports-contractors.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>إدارة المقاولين والصادرات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="p-4 border-t border-outline-variant/20 shrink-0 bg-primary-container/30">
+        <div class="flex items-center gap-3 text-xs text-primary-fixed-dim">
+            <span class="material-symbols-outlined text-green-400 text-base">check_circle</span>
+            <span>الفصل بين الاستحقاق والسيولة active</span>
+        </div>
+    </div>
+</nav>
+
+<!-- TopNavBar -->
+<header class="bg-surface fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding border-b border-outline-variant">
+    <div class="flex items-center gap-4">
+        <h2 class="font-title-sm text-title-sm font-black text-primary">نظام تجميد للتصدير - الخزينة والمدفوعات والحركات المالية (Finance ERP)</h2>
+        <span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-xs font-bold font-data-mono">PROTOTYPE ONLY</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative hidden lg:block">
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input id="topSearchInput" class="bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-4 pr-10 text-body-md font-body-md focus:outline-none focus:border-primary w-64 text-on-surface" placeholder="بحث بالحركة أو الجهة..." type="text" onkeyup="filterTreasuryTable()"/>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" title="التنبيهات">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" onclick="resetTreasuryPrototypeData()" title="إعادة ضبط بيانات الخزينة التجريبية">
+                <span class="material-symbols-outlined">restart_alt</span>
+            </button>
+        </div>
+        <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant shrink-0">
+            <img alt="صورة المستخدم" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByztzte-7HG582Cqe_OCtfzP-23PrUqNwLlLKTTX96RHPgxCDROx15p3gKfgy7bRsiZyRSy2CJKPAAoU4Ap_Jra0RLti2ZthCxcTyK472-hCGMhTug7bvSfpiuQQJJmpTgix3-ONAd5-2TDY04W1GHPZQla8t5urxJCFKTNJOzmSgZpWcD4ynve2FL4nv6CqOvLC5wEm8-Nnc1qpYBThQnSXMJfYQuQATCq16IC8ALWBY2xm5FkfaO"/>
+        </div>
+    </div>
+</header>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Main Content Canvas -->
+<main class="mr-[280px] pt-toolbar-height min-h-screen p-container-padding">
+    <div class="space-y-gutter max-w-[1440px] mx-auto">
+
+        <!-- Page Header & Actions -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h1 class="font-display-lg text-display-lg text-primary flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات والحركات المالية (Treasury & Finance)</span>
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-1">متابعة أرصدة الخزائن والبنوك، تسجيل التحصيلات والمدفوعات، التحويل الداخلي، ومراجعة دفتر الأستاذ العام</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openPaymentModal('PAY')" class="bg-red-700 hover:bg-red-800 text-white font-title-sm text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">output</span>
+                    <span>- تسجيل دفعة (صرف)</span>
+                </button>
+                <button onclick="openPaymentModal('COL')" class="bg-tertiary-container hover:bg-primary text-on-tertiary-container hover:text-white font-title-sm text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">download</span>
+                    <span>+ تسجيل تحصيل (قبض)</span>
+                </button>
+                <button onclick="openTransferModal()" class="bg-surface border border-outline-variant hover:bg-surface-variant font-title-sm text-title-sm px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition-all">
+                    <span class="material-symbols-outlined">swap_horiz</span>
+                    <span>تحويل بين الخزائن</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Business Context Clarification Banner -->
+        <div class="bg-surface-container-low border border-outline-variant p-4 rounded-2xl flex items-center justify-between gap-4 text-xs text-on-surface mb-6">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-xl">payments</span>
+                <div>
+                    <strong>قاعدة ERP المالي الصارمة:</strong> هناك فرق بين <strong>الاستحقاق المالي</strong> (الذي ينشأ من التوريد أو الشحنة) و <strong>حركة السيولة الفعطية الخزنية</strong> (التي تخصم أو تزيد نقدية الخزينة آلياً مع التحقق من كفاية الرصيد).
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Summary Cards (6 Metrics) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+            <!-- KPI 1 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي النقدية</span>
+                    <span class="material-symbols-outlined text-primary text-xl">account_balance_wallet</span>
+                </div>
+                <div id="kpiTotalCash" class="text-xl font-bold text-primary font-data-mono">1,250,000</div>
+                <span class="text-[11px] text-on-surface-variant">جنيه مصري في الخزائن والبنوك</span>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">الخزينة الرئيسية</span>
+                    <span class="material-symbols-outlined text-green-600 text-xl">store</span>
+                </div>
+                <div id="kpiMainCash" class="text-xl font-bold text-green-700 font-data-mono">750,000</div>
+                <span class="text-[11px] text-on-surface-variant">الخزينة المركزية</span>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">خزينة محطة النخيل</span>
+                    <span class="material-symbols-outlined text-primary text-xl">factory</span>
+                </div>
+                <div id="kpiNakheelCash" class="text-xl font-bold text-on-surface font-data-mono">200,000</div>
+                <span class="text-[11px] text-on-surface-variant">خزينة تشغيل عاجلة</span>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">خزينة محطة السلام</span>
+                    <span class="material-symbols-outlined text-primary text-xl">factory</span>
+                </div>
+                <div id="kpiSalamCash" class="text-xl font-bold text-on-surface font-data-mono">150,000</div>
+                <span class="text-[11px] text-on-surface-variant">خزينة تشغيل عاجلة</span>
+            </div>
+            <!-- KPI 5 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">الحسابات البنكية</span>
+                    <span class="material-symbols-outlined text-tertiary-container text-xl">account_balance</span>
+                </div>
+                <div id="kpiBankCash" class="text-xl font-bold text-tertiary-container font-data-mono">150,000</div>
+                <span class="text-[11px] text-on-surface-variant">البنك الأهلي وبنك مصر</span>
+            </div>
+            <!-- KPI 6 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">صافي حركة اليوم</span>
+                    <span class="material-symbols-outlined text-green-700 text-xl">trending_up</span>
+                </div>
+                <div id="kpiTodayNetCash" class="text-xl font-bold text-green-700 font-data-mono">+85,000</div>
+                <span class="text-[11px] text-on-surface-variant">تحصيلات - مدفوعات اليوم</span>
+            </div>
+        </div>
+
+        <!-- Filter & Navigation Tabs Panel -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <!-- 4 Main Navigation Tabs -->
+            <div class="flex items-center gap-2 border-b md:border-b-0 pb-2 md:pb-0 w-full md:w-auto overflow-x-auto">
+                <button onclick="switchTreasuryTab('treasuries')" id="tabBtn-treasuries" class="px-4 py-2 rounded-xl text-xs font-bold bg-primary text-on-primary shadow-sm flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">account_balance_wallet</span>
+                    <span>1. الخزائن والحسابات</span>
+                </button>
+                <button onclick="switchTreasuryTab('operations')" id="tabBtn-operations" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">swap_calls</span>
+                    <span>2. المدفوعات والتحصيلات</span>
+                </button>
+                <button onclick="switchTreasuryTab('ledger')" id="tabBtn-ledger" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">menu_book</span>
+                    <span>3. دفتر الحركات المالية العامة</span>
+                </button>
+                <button onclick="switchTreasuryTab('statements')" id="tabBtn-statements" class="px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">receipt</span>
+                    <span>4. كشوف الحسابات</span>
+                </button>
+            </div>
+
+            <!-- Search Input -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input id="trSearchInput" type="text" onkeyup="filterTreasuryTable()" placeholder="بحث بالحركة، الرقم المرجعي، الجهة..." class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 text-sm focus:outline-none focus:border-primary"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+        <div id="mainTreasuryContainer">
+            <!-- Rendered dynamically depending on active tab -->
+        </div>
+
+    </div>
+</main>
+
+<!-- RECORD PAYMENT / COLLECTION MODAL -->
+<div id="paymentModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div id="paymentModalHeader" class="p-4 text-white flex justify-between items-center">
+            <div>
+                <h3 id="paymentModalTitle" class="font-bold text-base flex items-center gap-2">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span>تسجيل حركة نقدية</span>
+                </h3>
+            </div>
+            <button onclick="closePaymentModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">نوع الحركة المالية *</label>
+                    <select id="pmTxType" onchange="onPaymentTxTypeChanged()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary">
+                        <option value="PAY">صرف دفعة (Money OUT)</option>
+                        <option value="COL">تحصيل نقدية (Money IN)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">نوع الجهة المتعاملة *</label>
+                    <select id="pmEntityType" onchange="updateEntityNameDropdown()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="مورد">مورد (Raw Material Supplier)</option>
+                        <option value="عميل">عميل مستورد (Customer)</option>
+                        <option value="مقاول">مقاول تصنيع وصادرات (Contractor)</option>
+                        <option value="موظف">موظف / سلفة / راتب (Employee)</option>
+                        <option value="مصروف">مصروفات وتشغيل (Operating Expense)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اسم الجهة *</label>
+                    <select id="pmEntityName" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold focus:border-primary">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الخزينة / الحساب البنكي *</label>
+                    <select id="pmTreasuryAccount" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-data-mono focus:border-primary">
+                        <option value="الخزينة الرئيسية">الخزينة الرئيسية (رصيد متاح: 750,000 EGP)</option>
+                        <option value="خزينة محطة النخيل">خزينة محطة النخيل (رصيد متاح: 200,000 EGP)</option>
+                        <option value="خزينة محطة السلام">خزينة محطة السلام (رصيد متاح: 150,000 EGP)</option>
+                        <option value="حساب البنك الرئيسي">حساب البنك الرئيسي (رصيد متاح: 150,000 EGP)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface font-body-md">المبلغ (EGP) *</label>
+                    <input id="pmAmount" type="number" value="100000" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-base font-bold font-data-mono text-primary focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">طريقة الدفع / التحصيل *</label>
+                    <select id="pmMethod" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="نقدي">نقدي (Cash)</option>
+                        <option value="تحويل بنكي">تحويل بنكي (Bank Transfer)</option>
+                        <option value="شيك">شيك بنكي (Cheque)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ المعاملة *</label>
+                    <input id="pmDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">الرقم المرجعي الإذن / الإيصال *</label>
+                    <input id="pmReference" type="text" value="REC-2026-0025" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">مرتبط بمستند ERP (اختياري)</label>
+                    <input id="pmRelatedDoc" type="text" placeholder="مثال: SUPPLY-0025 أو SHP-2026-0025" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">البيان / سبب المعاملة *</label>
+                <input id="pmDescription" type="text" value="دفعة حساب نقدي تحت التسوية" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closePaymentModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSavePaymentAction()" id="pmSubmitBtn" class="px-6 py-2.5 bg-primary text-on-primary font-bold text-xs rounded-xl shadow-md hover:bg-primary-container transition-all">تأكيد واعتمد الحركة</button>
+        </div>
+    </div>
+</div>
+
+<!-- TREASURY TRANSFER MODAL -->
+<div id="transferModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-md flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-tertiary-fixed">swap_horiz</span>
+                <span>تحويل داخلي بين الخزائن والحسابات</span>
+            </h3>
+            <button onclick="closeTransferModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 space-y-4 text-xs">
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">من الخزينة (المحول منها) *</label>
+                <select id="trFromAcc" class="w-full bg-surface border rounded-lg p-2 text-sm font-data-mono font-bold">
+                    <option value="الخزينة الرئيسية">الخزينة الرئيسية (750,000 EGP)</option>
+                    <option value="حساب البنك الرئيسي">حساب البنك الرئيسي (150,000 EGP)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">إلى الخزينة (المحول إليها) *</label>
+                <select id="trToAcc" class="w-full bg-surface border rounded-lg p-2 text-sm font-data-mono font-bold">
+                    <option value="خزينة محطة النخيل">خزينة محطة النخيل (200,000 EGP)</option>
+                    <option value="خزينة محطة السلام">خزينة محطة السلام (150,000 EGP)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">المبلغ المراد تحويله (EGP) *</label>
+                <input id="trAmount" type="number" value="50000" class="w-full bg-surface border rounded-lg p-2 text-base font-bold font-data-mono text-primary"/>
+            </div>
+            <div class="p-3 bg-amber-50 text-amber-900 rounded-xl text-[11px] font-bold">
+                تنبيه: التحويل الداخلي لا يُحسب كـ إيراد أو مصروف؛ بل يُعيد توزيع السيولة بين الحسابات.
+            </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closeTransferModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmTreasuryTransfer()" class="px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">تنفيذ التحويل</button>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT MOCK STATE & LOGIC -->
+<script>
+const DEFAULT_TREASURY_ACCOUNTS = [
+    { id: "ACC-01", name: "الخزينة الرئيسية", type: "Cash", openingBal: 500000, totalIn: 1000000, totalOut: 750000, currentBal: 750000, status: "نشطة" },
+    { id: "ACC-02", name: "خزينة محطة النخيل", type: "Cash", openingBal: 100000, totalIn: 300000, totalOut: 200000, currentBal: 200000, status: "نشطة" },
+    { id: "ACC-03", name: "خزينة محطة السلام", type: "Cash", openingBal: 50000, totalIn: 250000, totalOut: 150000, currentBal: 150000, status: "نشطة" },
+    { id: "ACC-04", name: "حساب البنك الرئيسي", type: "Bank", openingBal: 100000, totalIn: 500000, totalOut: 450000, currentBal: 150000, status: "نشطة" }
+];
+
+const DEFAULT_FINANCIAL_TRANSACTIONS = [
+    {
+        finId: "FIN-0025",
+        date: "2026-08-23",
+        type: "توريد خام",
+        entity: "شركة الخير للتوريدات",
+        description: "استلام 10,000 كجم فراولة (إعادة تخصيص ذمة المورد)",
+        debit: 300000,
+        credit: 0,
+        treasury: "-",
+        reference: "SUPPLY-0025",
+        status: "معتمدة"
+    },
+    {
+        finId: "FIN-0026",
+        date: "2026-08-23",
+        type: "شحنة تصدير",
+        entity: "شركة ABC للتجارة الدولية",
+        description: "مستحق فاتورة شحنة تصدير SHP-2026-0025",
+        debit: 0,
+        credit: 325000,
+        treasury: "-",
+        reference: "SHP-2026-0025",
+        status: "معتمدة"
+    },
+    {
+        finId: "FIN-0027",
+        date: "2026-08-23",
+        type: "تحصيل عميل",
+        entity: "شركة ABC للتجارة الدولية",
+        description: "تحصيل دفعة نقداً لحساب الشحنة",
+        debit: 100000,
+        credit: 0,
+        treasury: "الخزينة الرئيسية",
+        reference: "COL-0025",
+        status: "معتمدة"
+    },
+    {
+        finId: "FIN-0028",
+        date: "2026-08-22",
+        type: "دفع مورد",
+        entity: "شركة الخير للتوريدات",
+        description: "صرف دفعة تحت حساب توريدات الفراولة",
+        debit: 0,
+        credit: 100000,
+        treasury: "الخزينة الرئيسية",
+        reference: "PAY-0025",
+        status: "معتمدة"
+    }
+];
+
+let treasuryState = [];
+let transactionsState = [];
+let activeTreasuryTab = 'treasuries';
+
+function initTreasuryPrototype() {
+    const savedTr = localStorage.getItem("stitch_frozex_treasuries");
+    const savedTx = localStorage.getItem("stitch_frozex_fin_txs");
+
+    if (savedTr) { try { treasuryState = JSON.parse(savedTr); } catch(e) { loadDefaultTreasuryData(); } } else { loadDefaultTreasuryData(); }
+    if (savedTx) { try { transactionsState = JSON.parse(savedTx); } catch(e) { transactionsState = DEFAULT_FINANCIAL_TRANSACTIONS; } } else { transactionsState = DEFAULT_FINANCIAL_TRANSACTIONS; }
+
+    renderMainContent();
+    updateTreasuryKpis();
+}
+
+function loadDefaultTreasuryData() {
+    treasuryState = JSON.parse(JSON.stringify(DEFAULT_TREASURY_ACCOUNTS));
+    transactionsState = JSON.parse(JSON.stringify(DEFAULT_FINANCIAL_TRANSACTIONS));
+    saveTreasuryState();
+}
+
+function saveTreasuryState() {
+    localStorage.setItem("stitch_frozex_treasuries", JSON.stringify(treasuryState));
+    localStorage.setItem("stitch_frozex_fin_txs", JSON.stringify(transactionsState));
+}
+
+function resetTreasuryPrototypeData() {
+    if (confirm("إعادة ضبط بيانات الخزينة والحركات المالية للوضع الافتراضي؟")) {
+        loadDefaultTreasuryData();
+        renderMainContent();
+        updateTreasuryKpis();
+        showToast("تم إعادة ضبط بيانات الخزينة بنجاح", "info");
+    }
+}
+
+function updateTreasuryKpis() {
+    const totalCash = treasuryState.reduce((acc, curr) => acc + curr.currentBal, 0);
+    const mainAcc = treasuryState.find(a => a.name === "الخزينة الرئيسية")?.currentBal || 750000;
+    const nakheelAcc = treasuryState.find(a => a.name === "خزينة محطة النخيل")?.currentBal || 200000;
+    const salamAcc = treasuryState.find(a => a.name === "خزينة محطة السلام")?.currentBal || 150000;
+    const bankAcc = treasuryState.find(a => a.name === "حساب البنك الرئيسي")?.currentBal || 150000;
+
+    document.getElementById("kpiTotalCash").innerText = Math.round(totalCash).toLocaleString();
+    document.getElementById("kpiMainCash").innerText = Math.round(mainAcc).toLocaleString();
+    document.getElementById("kpiNakheelCash").innerText = Math.round(nakheelAcc).toLocaleString();
+    document.getElementById("kpiSalamCash").innerText = Math.round(salamAcc).toLocaleString();
+    document.getElementById("kpiBankCash").innerText = Math.round(bankAcc).toLocaleString();
+}
+
+function switchTreasuryTab(tabName) {
+    activeTreasuryTab = tabName;
+    ['treasuries', 'operations', 'ledger', 'statements'].forEach(t => {
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (btn) {
+            btn.className = t === tabName
+                ? "px-4 py-2 rounded-xl text-xs font-bold bg-primary text-on-primary shadow-sm flex items-center gap-1.5"
+                : "px-4 py-2 rounded-xl text-xs font-bold border border-outline-variant hover:bg-surface-variant text-on-surface flex items-center gap-1.5";
+        }
+    });
+    renderMainContent();
+}
+
+function renderMainContent() {
+    const container = document.getElementById("mainTreasuryContainer");
+    container.innerHTML = "";
+
+    const searchText = (document.getElementById("trSearchInput")?.value || document.getElementById("topSearchInput")?.value || "").toLowerCase();
+
+    if (activeTreasuryTab === 'treasuries') {
+        renderTreasuryAccountsView(container, searchText);
+    } else if (activeTreasuryTab === 'operations') {
+        renderOperationsView(container, searchText);
+    } else if (activeTreasuryTab === 'ledger') {
+        renderMasterLedgerView(container, searchText);
+    } else if (activeTreasuryTab === 'statements') {
+        renderEntityStatementsView(container, searchText);
+    }
+}
+
+// 1. TREASURY ACCOUNTS VIEW
+function renderTreasuryAccountsView(container, searchText) {
+    let rows = treasuryState.filter(a => !searchText || a.name.toLowerCase().includes(searchText)).map(a => `
+        <tr class="hover:bg-surface-container-low transition-colors">
+            <td class="py-3.5 px-4 font-bold text-primary flex items-center gap-2">
+                <span class="material-symbols-outlined text-base">${a.type === 'Bank' ? 'account_balance' : 'payments'}</span>
+                <span>${a.name}</span>
+            </td>
+            <td class="py-3.5 px-4 text-xs font-semibold">${a.type}</td>
+            <td class="py-3.5 px-4 font-data-mono">${a.openingBal.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-green-700">+${a.totalIn.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-red-700">-${a.totalOut.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-base text-tertiary-container">${a.currentBal.toLocaleString()} EGP</td>
+            <td class="py-3.5 px-4 text-center"><span class="px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">${a.status}</span></td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">اسم الخزينة / الحساب البنكي</th>
+                        <th class="p-3">النوع</th>
+                        <th class="p-3">الرصيد الافتتاحي</th>
+                        <th class="p-3">إجمالي المقبوضات (داخل)</th>
+                        <th class="p-3">إجمالي المدفوعات (خارج)</th>
+                        <th class="p-3">الرصيد النقدي الحالي</th>
+                        <th class="p-3 text-center">الحالة</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 2. OPERATIONS VIEW
+function renderOperationsView(container, searchText) {
+    let rows = transactionsState.filter(t => (t.type === 'دفع مورد' || t.type === 'تحصيل عميل' || t.type === 'تحويل خزينة') && (!searchText || t.entity.toLowerCase().includes(searchText) || t.finId.toLowerCase().includes(searchText))).map(t => `
+        <tr class="hover:bg-surface-container-low transition-colors">
+            <td class="py-3.5 px-4 font-bold font-data-mono text-primary">${t.finId}</td>
+            <td class="py-3.5 px-4 font-data-mono text-xs">${t.date}</td>
+            <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded text-xs font-bold ${t.debit > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${t.type}</span></td>
+            <td class="py-3.5 px-4 font-bold text-on-surface">${t.entity}</td>
+            <td class="py-3.5 px-4 font-data-mono text-xs">${t.treasury}</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-green-700">${t.debit > 0 ? '+' + t.debit.toLocaleString() + ' EGP' : '-'}</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-red-700">${t.credit > 0 ? '-' + t.credit.toLocaleString() + ' EGP' : '-'}</td>
+            <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">${t.status}</span></td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">رقم الحركة الإذن</th>
+                        <th class="p-3">التاريخ</th>
+                        <th class="p-3">نوع العملية</th>
+                        <th class="p-3">الجهة المتعاملة</th>
+                        <th class="p-3">الخزينة المنفذة</th>
+                        <th class="p-3">داخل (قبض)</th>
+                        <th class="p-3">خارج (صرف)</th>
+                        <th class="p-3 text-center">الحالة</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows || '<tr><td colspan="8" class="p-6 text-center">لا توجد عمليات مقبوضات/مدفوعات مسجلة</td></tr>'}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 3. MASTER LEDGER VIEW
+function renderMasterLedgerView(container, searchText) {
+    let rows = transactionsState.filter(t => !searchText || t.entity.toLowerCase().includes(searchText) || t.finId.toLowerCase().includes(searchText) || t.type.toLowerCase().includes(searchText)).map(t => `
+        <tr class="hover:bg-surface-container-low transition-colors">
+            <td class="py-3.5 px-4 font-bold font-data-mono text-primary">${t.finId}</td>
+            <td class="py-3.5 px-4 font-data-mono text-xs">${t.date}</td>
+            <td class="py-3.5 px-4 font-bold"><span class="bg-surface-container px-2 py-0.5 rounded text-xs">${t.type}</span></td>
+            <td class="py-3.5 px-4 font-bold text-on-surface">${t.entity}</td>
+            <td class="py-3.5 px-4 text-xs font-body-md">${t.description}</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-green-700">${t.debit > 0 ? t.debit.toLocaleString() : '-'}</td>
+            <td class="py-3.5 px-4 font-data-mono font-bold text-red-700">${t.credit > 0 ? t.credit.toLocaleString() : '-'}</td>
+            <td class="py-3.5 px-4 font-data-mono text-xs font-bold text-primary">${t.reference}</td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">رقم الحركة</th>
+                        <th class="p-3">التاريخ</th>
+                        <th class="p-3">نوع القيد ERP</th>
+                        <th class="p-3">الجهة الحسابية</th>
+                        <th class="p-3">البيان والشرح</th>
+                        <th class="p-3">مدين (Debit)</th>
+                        <th class="p-3">دائن (Credit)</th>
+                        <th class="p-3">المرجع</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 4. ENTITY STATEMENTS VIEW
+function renderEntityStatementsView(container, searchText) {
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm space-y-4 text-xs">
+            <div class="flex items-center gap-4">
+                <label class="font-bold">اختر الجهة لاستعراض كشف الحساب التماثلي:</label>
+                <select class="bg-surface border border-outline-variant rounded-lg p-2 font-bold text-primary">
+                    <option>شركة الخير للتوريدات (مورد خام - متبقي: 350,000 EGP)</option>
+                    <option>شركة ABC للتجارة الدولية (عميل - متبقي: 225,000 EGP)</option>
+                    <option>مقاول أحمد والتصنيع (مقاول - متبقي: 22,000 EGP)</option>
+                </select>
+            </div>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right">
+                    <thead class="bg-surface-container font-bold">
+                        <tr><th class="p-3">التاريخ</th><th class="p-3">المرجع الإذن</th><th class="p-3">البيان</th><th class="p-3">مدين (+ مستحق)</th><th class="p-3">دائن (- مسدد)</th><th class="p-3">الرصيد المتبقي</th></tr>
+                    </thead>
+                    <tbody class="divide-y font-data-mono">
+                        <tr><td class="p-3">23/08/2026</td><td class="p-3 font-bold text-primary">SUPPLY-0025</td><td class="p-3 font-body-md">توريد 10,000 كجم فراولة خام</td><td class="p-3 text-red-700 font-bold">300,000 EGP</td><td class="p-3">-</td><td class="p-3 font-bold">300,000 EGP</td></tr>
+                        <tr><td class="p-3">24/08/2026</td><td class="p-3 font-bold text-primary">PAY-0025</td><td class="p-3 font-body-md">صرف دفعة نقدية من الخزينة الرئيسية</td><td class="p-3">-</td><td class="p-3 text-green-700 font-bold">100,000 EGP</td><td class="p-3 font-bold text-tertiary-container">200,000 EGP</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function filterTreasuryTable() { renderMainContent(); }
+
+// MODAL LOGIC
+function openPaymentModal(txType = 'PAY') {
+    const modal = document.getElementById("paymentModal");
+    const header = document.getElementById("paymentModalHeader");
+    const title = document.getElementById("paymentModalTitle");
+    const submitBtn = document.getElementById("pmSubmitBtn");
+
+    document.getElementById("pmTxType").value = txType;
+
+    if (txType === 'PAY') {
+        header.className = "p-4 bg-red-700 text-white flex justify-between items-center";
+        title.innerText = "- تسجيل دفعة (صرف نقدية - Money OUT)";
+        submitBtn.className = "px-6 py-2.5 bg-red-700 text-white font-bold text-xs rounded-xl shadow-md hover:bg-red-800 transition-all";
+    } else {
+        header.className = "p-4 bg-tertiary-container text-on-tertiary-container flex justify-between items-center";
+        title.innerText = "+ تسجيل تحصيل (قبض نقدية - Money IN)";
+        submitBtn.className = "px-6 py-2.5 bg-tertiary-container text-on-tertiary-container font-bold text-xs rounded-xl shadow-md hover:bg-primary hover:text-white transition-all";
+    }
+
+    updateEntityNameDropdown();
+    modal.classList.remove("hidden");
+}
+
+function onPaymentTxTypeChanged() {
+    openPaymentModal(document.getElementById("pmTxType").value);
+}
+
+function closePaymentModal() { document.getElementById("paymentModal").classList.add("hidden"); }
+
+function updateEntityNameDropdown() {
+    const eType = document.getElementById("pmEntityType").value;
+    const select = document.getElementById("pmEntityName");
+    select.innerHTML = "";
+
+    let options = [];
+    if (eType === 'مورد') options = ["شركة الخير للتوريدات", "أحمد السيد لتوريد الخامات", "محمد حسن"];
+    if (eType === 'عميل') options = ["شركة ABC للتجارة الدولية", "شركة النور للتصدير", "Global Foods Demo"];
+    if (eType === 'مقاول') options = ["مقاول أحمد والتصنيع", "مقاول محمد والشحن"];
+    if (eType === 'موظف') options = ["أحمد علي (مهندس محطة)", "محمود حسن (مشرف انتاج)"];
+    if (eType === 'مصروف') options = ["مصاريف نقل ونولون", "كهرباء وصيانة المحطة", "مستلزمات مكتبية"];
+
+    options.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o;
+        opt.innerText = o;
+        select.appendChild(opt);
+    });
+}
+
+function confirmSavePaymentAction() {
+    const txType = document.getElementById("pmTxType").value;
+    const eName = document.getElementById("pmEntityName").value;
+    const accName = document.getElementById("pmTreasuryAccount").value;
+    const amt = parseFloat(document.getElementById("pmAmount").value) || 0;
+    const ref = document.getElementById("pmReference").value || "REC-001";
+    const desc = document.getElementById("pmDescription").value;
+
+    if (amt <= 0) { showToast("أدخل مبلغ صحيح أكبر من صفر", "error"); return; }
+
+    const accObj = treasuryState.find(a => accName.includes(a.name));
+    if (txType === 'PAY') {
+        if (accObj && amt > accObj.currentBal) {
+            showToast(`خطأ: رصيد ${accObj.name} (${accObj.currentBal.toLocaleString()} EGP) غير كافٍ لصرف ${amt.toLocaleString()} EGP!`, "error");
+            return;
+        }
+    }
+
+    if (accObj) {
+        if (txType === 'PAY') {
+            accObj.currentBal -= amt;
+            accObj.totalOut += amt;
+        } else {
+            accObj.currentBal += amt;
+            accObj.totalIn += amt;
+        }
+    }
+
+    transactionsState.unshift({
+        finId: "FIN-00" + (transactionsState.length + 29),
+        date: new Date().toISOString().split('T')[0],
+        type: txType === 'PAY' ? "دفع مورد" : "تحصيل عميل",
+        entity: eName,
+        description: desc,
+        debit: txType === 'COL' ? amt : 0,
+        credit: txType === 'PAY' ? amt : 0,
+        treasury: accName.split(' ')[0] + ' ' + (accName.split(' ')[1] || ''),
+        reference: ref,
+        status: "معتمدة"
+    });
+
+    saveTreasuryState();
+    renderMainContent();
+    updateTreasuryKpis();
+    closePaymentModal();
+    showToast(`تم تنفيذ واعتماد حركة ${txType === 'PAY' ? 'الصرف' : 'القبض'} بمبلغ ${amt.toLocaleString()} EGP بنجاح!`, "success");
+}
+
+function openTransferModal() { document.getElementById("transferModal").classList.remove("hidden"); }
+function closeTransferModal() { document.getElementById("transferModal").classList.add("hidden"); }
+function confirmTreasuryTransfer() {
+    const fromName = document.getElementById("trFromAcc").value;
+    const toName = document.getElementById("trToAcc").value;
+    const amt = parseFloat(document.getElementById("trAmount").value) || 0;
+
+    const fromObj = treasuryState.find(a => fromName.includes(a.name));
+    const toObj = treasuryState.find(a => toName.includes(a.name));
+
+    if (fromObj && amt > fromObj.currentBal) {
+        showToast("الرصيد بالحساب المحول منه غير كافٍ", "error");
+        return;
+    }
+
+    if (fromObj && toObj) {
+        fromObj.currentBal -= amt;
+        toObj.currentBal += amt;
+    }
+
+    saveTreasuryState();
+    renderMainContent();
+    updateTreasuryKpis();
+    closeTransferModal();
+    showToast(`تم تحويل ${amt.toLocaleString()} EGP بين الخزائن بنجاح!`, "success");
+}
+
+// TOAST HELPERS
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// DOM LOADED
+document.addEventListener("DOMContentLoaded", () => {
+    initTreasuryPrototype();
+});
+</script>
+
+</body>
+</html>

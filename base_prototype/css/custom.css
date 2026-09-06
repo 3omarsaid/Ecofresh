@@ -1,0 +1,50 @@
+/* Interactive Prototype Helper Styles */
+.toast-notification {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(100%);
+  opacity: 0;
+}
+.toast-notification.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+.tab-content {
+  transition: opacity 0.2s ease-in-out;
+}
+.tab-content.hidden {
+  display: none !important;
+}
+.step-pane.hidden {
+  display: none !important;
+}
+.drawer-backdrop, .modal-backdrop {
+  transition: opacity 0.3s ease;
+}
+aside {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Custom Scrollbar Styles for Sidebar and Table Containers */
+aside::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+aside::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+aside::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: rgba(113, 121, 115, 0.25);
+  border-radius: 9999px;
+}
+aside::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(1, 45, 29, 0.5);
+}
+

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إضافة حركة مالية جديدة</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+<!-- Top Navigation Bar -->
+<!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    <div class="bg-surface p-6 rounded-lg border border-outline-variant shadow-sm space-y-6">
+      <div class="border-b border-outline-variant pb-3 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-primary">بيانات الحركة المالية</h2>
+        <span class="text-xs text-on-surface-variant bg-surface-variant px-3 py-1 rounded">معاينة التأثير الفوري على كشف الحساب والسيولة</span>
+      </div>
+
+      <form class="space-y-6">
+        <div class="grid grid-cols-2 gap-6">
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">نوع العملية (Transaction Type) *</label>
+            <select id="tx-type" class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm font-semibold">
+              <option value="payment" selected>سداد (Payment) — خروج نقدية</option>
+              <option value="collection">تحصيل (Collection) — دخول نقدية</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">نوع الطرف (Party Type) *</label>
+            <select id="party-type" class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm font-semibold">
+              <option value="supplier" selected>مورد (Supplier)</option>
+              <option value="customer">عميل (Customer)</option>
+              <option value="contractor">مقاول (Contractor)</option>
+              <option value="station">محطة (Station)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">اسم الطرف (Party) *</label>
+            <select id="party-name" class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm font-semibold">
+              <option value="khair" selected>شركة الخير (مورد خام)</option>
+              <option value="baraka">شركة البركة (مورد كرانيق)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">الرصيد المستحق الحالي (Current Balance) *</label>
+            <input id="current-balance" type="number" value="300000" class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm font-mono font-bold text-rose-600"/>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">المبلغ (Amount) *</label>
+            <input id="tx-amount" type="number" value="100000" class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm font-mono font-bold text-primary"/>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">الخزينة / البنك *</label>
+            <select class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm">
+              <option selected>البنك الأهلي — حساب التصدير</option>
+              <option>الخزينة الرئيسية</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">طريقة الدفع *</label>
+            <select class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm">
+              <option selected>تحويل بنكي (Bank Transfer)</option>
+              <option>شيك (Cheque)</option>
+              <option>نقدي (Cash)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">التاريخ *</label>
+            <input type="date" value="2026-08-11" class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm font-mono"/>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-primary block mb-1">المستند المرتبط (اختياري)</label>
+            <input type="text" value="PUR-2026-001" class="w-full bg-background border border-outline-variant rounded px-3 py-2 text-sm font-mono"/>
+          </div>
+        </div>
+
+        <!-- Live Balance Calculator Box -->
+        <div class="bg-primary/5 border border-primary/20 p-4 rounded-lg space-y-2">
+          <span class="text-xs font-bold text-primary">معاينة الرصيد التلقائية (Live Balance Preview):</span>
+          <div class="flex justify-between items-center text-sm font-bold">
+            <span class="text-on-surface-variant">الرصيد المستحق الحالي: <span id="preview-current-balance" class="font-mono text-rose-600">300,000.00 جنيه</span></span>
+            <span id="preview-operator-icon" class="material-symbols-outlined text-primary">remove</span>
+            <span class="text-on-surface-variant"><span id="preview-amount-label">المبلغ المسدد الان: </span><span id="preview-tx-amount" class="font-mono text-emerald-700">100,000.00 جنيه</span></span>
+            <span class="material-symbols-outlined text-primary">drag_handle</span>
+            <span class="text-primary font-bold">الرصيد المتبقي الجديد: <span id="preview-new-balance" class="font-mono text-primary text-base">200,000.00 جنيه</span></span>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 border-t border-outline-variant pt-4">
+          <a href="payments-collections.html" class="px-5 py-2 border border-outline-variant rounded text-sm hover:bg-surface-variant font-medium">إلغاء</a>
+          <button type="submit" class="px-6 py-2 bg-primary text-white rounded text-sm font-bold hover:bg-primary-container">حفظ الحركة المالية وتأكيد السداد</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const txTypeSelect = document.getElementById('tx-type');
+    const partyTypeSelect = document.getElementById('party-type');
+    const partyNameSelect = document.getElementById('party-name');
+    const currentBalInput = document.getElementById('current-balance');
+    const txAmountInput = document.getElementById('tx-amount');
+    
+    const previewCurrentBal = document.getElementById('preview-current-balance');
+    const previewOperatorIcon = document.getElementById('preview-operator-icon');
+    const previewAmountLabel = document.getElementById('preview-amount-label');
+    const previewTxAmount = document.getElementById('preview-tx-amount');
+    const previewNewBal = document.getElementById('preview-new-balance');
+
+    const partyOptionsMap = {
+      supplier: [
+        { value: 'khair', name: 'شركة الخير (مورد خام)', balance: 300000.00 },
+        { value: 'baraka', name: 'شركة البركة (مورد كرانيق)', balance: 150000.00 }
+      ],
+      customer: [
+        { value: 'sama', name: 'شركة سما (عميل)', balance: 450000.00 },
+        { value: 'khalij', name: 'الخليج للتجارة (عميل)', balance: 280000.00 }
+      ],
+      contractor: [
+        { value: 'nour_cont', name: 'مقاول النور (مقاول)', balance: 120000.00 },
+        { value: 'fath_cont', name: 'مقاول الفتح (مقاول)', balance: 85000.00 }
+      ],
+      station: [
+        { value: 'october_st', name: 'محطة 6 أكتوبر (محطة)', balance: 210000.00 },
+        { value: 'nobaria_st', name: 'محطة النوبارية (محطة)', balance: 175000.00 }
+      ]
+    };
+
+    function formatEGP(num) {
+      return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' جنيه';
+    }
+
+    function updatePartyDropdown() {
+      if (!partyTypeSelect || !partyNameSelect) return;
+      const selectedType = partyTypeSelect.value || 'supplier';
+      const options = partyOptionsMap[selectedType] || partyOptionsMap['supplier'];
+      partyNameSelect.innerHTML = options.map(opt => `<option value="${opt.value}">${opt.name}</option>`).join('');
+      if (options.length > 0 && currentBalInput) {
+        currentBalInput.value = options[0].balance;
+      }
+      updateLiveBalancePreview();
+    }
+
+    function updateLiveBalancePreview() {
+      let currentBal = 0;
+      if (currentBalInput) {
+        currentBal = parseFloat(currentBalInput.value) || 0;
+      } else {
+        const partyKey = partyNameSelect ? partyNameSelect.value : 'khair';
+        currentBal = 300000.00;
+      }
+      
+      const amount = parseFloat(txAmountInput ? txAmountInput.value : 0) || 0;
+      const type = txTypeSelect ? txTypeSelect.value.toLowerCase() : 'payment';
+
+      const isCollection = type.includes('collection') || type.includes('credit') || type.includes('تحصيل');
+
+      let newBal = 0;
+      if (isCollection) {
+        newBal = currentBal + amount;
+        if (previewOperatorIcon) previewOperatorIcon.textContent = 'add';
+        if (previewAmountLabel) previewAmountLabel.textContent = 'المبلغ المحصل الان: ';
+      } else {
+        newBal = currentBal - amount;
+        if (previewOperatorIcon) previewOperatorIcon.textContent = 'remove';
+        if (previewAmountLabel) previewAmountLabel.textContent = 'المبلغ المسدد الان: ';
+      }
+
+      if (previewCurrentBal) previewCurrentBal.textContent = formatEGP(currentBal);
+      if (previewTxAmount) previewTxAmount.textContent = formatEGP(amount);
+      if (previewNewBal) previewNewBal.textContent = formatEGP(newBal);
+    }
+
+    if (partyTypeSelect) {
+      partyTypeSelect.addEventListener('change', updatePartyDropdown);
+    }
+    if (txTypeSelect) {
+      txTypeSelect.addEventListener('change', updateLiveBalancePreview);
+      txTypeSelect.addEventListener('input', updateLiveBalancePreview);
+    }
+    if (partyNameSelect) {
+      partyNameSelect.addEventListener('change', () => {
+        const selectedType = partyTypeSelect ? partyTypeSelect.value : 'supplier';
+        const options = partyOptionsMap[selectedType] || [];
+        const found = options.find(o => o.value === partyNameSelect.value);
+        if (found && currentBalInput) {
+          currentBalInput.value = found.balance;
+        }
+        updateLiveBalancePreview();
+      });
+    }
+    if (currentBalInput) {
+      currentBalInput.addEventListener('input', updateLiveBalancePreview);
+      currentBalInput.addEventListener('change', updateLiveBalancePreview);
+      currentBalInput.addEventListener('keyup', updateLiveBalancePreview);
+    }
+    if (txAmountInput) {
+      txAmountInput.addEventListener('input', updateLiveBalancePreview);
+      txAmountInput.addEventListener('change', updateLiveBalancePreview);
+      txAmountInput.addEventListener('keyup', updateLiveBalancePreview);
+    }
+
+    updateLiveBalancePreview();
+  });
+</script>
+</body>
+</html>

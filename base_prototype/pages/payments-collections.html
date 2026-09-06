@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>المدفوعات والتحصيلات - المركز المالي الموحد</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- PAGE HEADER BANNER -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">account_balance_wallet</span>
+            المدفوعات والتحصيلات
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">مركز المعاملات المالية الموحد</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">تنفيذ ومتابعة جميع الحركات المالية والمدفوعات والتحصيلات وتسوية مستحقات الأطراف</p>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <a href="financial-statements.html" class="bg-surface border border-outline-variant text-primary text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+          كشوف الحسابات
+        </a>
+      </div>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="payment-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="payment-toast-msg">تم تنفيذ الحركة المالية وتحديث أرصدة الخزينة والذمم بنجاح</span>
+    </div>
+
+    <!-- MANAGEMENT SUMMARY CARDS (7 COMPACT CARDS) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+      
+      <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-[11px] text-on-surface-variant font-semibold">إجمالي المقبوضات</span>
+        <div class="text-base font-bold text-emerald-800 font-mono">1,250,000 <span class="text-[10px] font-normal">ج.م</span></div>
+        <span class="text-[9px] text-emerald-700 font-medium">تحصيلات عملاء معتمدة</span>
+      </div>
+
+      <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-[11px] text-on-surface-variant font-semibold">إجمالي المدفوعات</span>
+        <div class="text-base font-bold text-rose-700 font-mono">840,000 <span class="text-[10px] font-normal">ج.م</span></div>
+        <span class="text-[9px] text-rose-600 font-medium">موردين ومقاولين ومصروفات</span>
+      </div>
+
+      <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-[11px] text-on-surface-variant font-semibold">صافي حركة الخزينة</span>
+        <div class="text-base font-bold text-primary font-mono">+410,000 <span class="text-[10px] font-normal">ج.م</span></div>
+        <span class="text-[9px] text-primary font-medium">الصافي التراكمي للسيولة</span>
+      </div>
+
+      <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-[11px] text-on-surface-variant font-semibold">مستحقات الموردين</span>
+        <div class="text-base font-bold text-rose-700 font-mono">320,000 <span class="text-[10px] font-normal">ج.م</span></div>
+        <span class="text-[9px] text-rose-600 font-medium">ذمة وارد خام ومستلزمات</span>
+      </div>
+
+      <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-[11px] text-on-surface-variant font-semibold">مستحقات المقاولين</span>
+        <div class="text-base font-bold text-amber-800 font-mono">45,000 <span class="text-[10px] font-normal">ج.م</span></div>
+        <span class="text-[9px] text-amber-700 font-medium">أجور تجهيز وعمالة</span>
+      </div>
+
+      <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-[11px] text-on-surface-variant font-semibold">مستحقات المحطات</span>
+        <div class="text-base font-bold text-secondary font-mono">65,000 <span class="text-[10px] font-normal">ج.م</span></div>
+        <span class="text-[9px] text-secondary font-medium">تكاليف تشغيل محطات</span>
+      </div>
+
+      <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-[11px] text-on-surface-variant font-semibold">مستحقات العملاء (الذمم)</span>
+        <div class="text-base font-bold text-emerald-800 font-mono">185,000 <span class="text-[10px] font-normal">ج.م</span></div>
+        <span class="text-[9px] text-emerald-700 font-medium">فواتير صادرة متبقية</span>
+      </div>
+
+    </div>
+
+    <!-- INTENT-BASED PRIMARY ACTIONS BAR -->
+    <div class="bg-surface rounded-xl border border-outline-variant p-4 shadow-sm space-y-3">
+      <div class="flex items-center justify-between border-b border-outline-variant/60 pb-2">
+        <h2 class="text-sm font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">flash_on</span>
+          تنفيذ معاملة مالية جديدة حسب الهدف (Intent-Based Financial Actions)
+        </h2>
+        <span class="text-xs text-on-surface-variant">اختر الهدف المالي المباشر لتحديد نموذج السداد والربط التلقائي</span>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap text-xs">
+        
+        <!-- Action 1: + تحصيل من عميل -->
+        <button onclick="openIntentModal('COLLECTION_CUSTOMER')" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-3.5 py-2 rounded-lg transition-all shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">price_check</span>
+          + تحصيل من عميل
+        </button>
+
+        <!-- Action 2: + دفع لمورد -->
+        <button onclick="openIntentModal('PAYMENT_SUPPLIER')" class="bg-primary hover:bg-primary-container text-white font-bold px-3.5 py-2 rounded-lg transition-all shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">payments</span>
+          + دفع لمورد
+        </button>
+
+        <!-- Action 3: + دفع لمقاول -->
+        <button onclick="openIntentModal('PAYMENT_CONTRACTOR')" class="bg-surface-variant text-on-surface hover:bg-outline-variant font-bold px-3.5 py-2 rounded-lg transition-all border border-outline-variant/60 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">engineering</span>
+          + دفع لمقاول
+        </button>
+
+        <!-- Action 4: + دفع للمحطة -->
+        <button onclick="openIntentModal('PAYMENT_STATION')" class="bg-surface-variant text-on-surface hover:bg-outline-variant font-bold px-3.5 py-2 rounded-lg transition-all border border-outline-variant/60 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">factory</span>
+          + دفع للمحطة
+        </button>
+
+        <!-- Action 5: + مصروف تشغيلي -->
+        <button onclick="openIntentModal('OPERATIONAL_EXPENSE')" class="bg-surface-variant text-on-surface hover:bg-outline-variant font-bold px-3.5 py-2 rounded-lg transition-all border border-outline-variant/60 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">receipt</span>
+          + مصروف تشغيلي
+        </button>
+
+        <!-- Action 6: + تحويل بين الخزن -->
+        <button onclick="openIntentModal('TREASURY_TRANSFER')" class="bg-surface-variant text-on-surface hover:bg-outline-variant font-bold px-3.5 py-2 rounded-lg transition-all border border-outline-variant/60 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">sync_alt</span>
+          + تحويل بين الخزن
+        </button>
+
+        <!-- Action 7: + رد مبلغ -->
+        <button onclick="openIntentModal('REFUND')" class="bg-surface-variant text-on-surface hover:bg-outline-variant font-bold px-3.5 py-2 rounded-lg transition-all border border-outline-variant/60 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">undo</span>
+          + رد مبلغ
+        </button>
+
+      </div>
+    </div>
+
+    <!-- COMPACT HORIZONTAL FILTER BAR -->
+    <div class="bg-surface rounded-xl border border-outline-variant p-3 shadow-sm flex flex-wrap items-center gap-3 text-xs">
+      <div class="flex items-center gap-1.5 shrink-0 font-bold text-primary">
+        <span class="material-symbols-outlined text-[18px]">filter_alt</span>
+        تصفية الحركات:
+      </div>
+
+      <!-- Type Filter -->
+      <select id="filter-intent-type" onchange="filterTransactionsTable()" class="bg-background border border-outline-variant rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+        <option value="ALL">جميع أنواع الحركات</option>
+        <option value="COLLECTION_CUSTOMER">تحصيل من عميل</option>
+        <option value="PAYMENT_SUPPLIER">دفع لمورد</option>
+        <option value="PAYMENT_CONTRACTOR">دفع لمقاول</option>
+        <option value="PAYMENT_STATION">دفع للمحطة</option>
+        <option value="OPERATIONAL_EXPENSE">مصروف تشغيلي</option>
+        <option value="TREASURY_TRANSFER">تحويل بين الخزن</option>
+      </select>
+
+      <!-- Party Filter -->
+      <select id="filter-party" onchange="filterTransactionsTable()" class="bg-background border border-outline-variant rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+        <option value="ALL">جميع الأطراف والجهات</option>
+        <option value="شركة سما">شركة سما للتجارة</option>
+        <option value="شركة الخير">شركة الخير للتنمية</option>
+        <option value="مقاولات محمد">مقاولات محمد للتجهيز</option>
+        <option value="محطة النور">محطة النور للمعالجة</option>
+      </select>
+
+      <!-- Treasury Filter -->
+      <select id="filter-treasury" onchange="filterTransactionsTable()" class="bg-background border border-outline-variant rounded-lg px-2.5 py-1 text-xs font-bold focus:outline-none focus:border-primary">
+        <option value="ALL">جميع الخزن والحسابات</option>
+        <option value="الخزينة الرئيسية">الخزينة الرئيسية</option>
+        <option value="البنك الأهلي">البنك الأهلي - حساب التصدير</option>
+        <option value="خزينة محطة النور">خزينة محطة النور</option>
+      </select>
+
+      <!-- Search Input -->
+      <div class="flex-1 min-w-[200px] relative">
+        <input type="text" id="search-tx-input" onkeyup="filterTransactionsTable()" placeholder="بحث برقم الحركة، المرجع، أو اسم الطرف..." class="w-full bg-background border border-outline-variant rounded-lg px-3 py-1 pr-8 text-xs font-bold focus:outline-none focus:border-primary"/>
+        <span class="material-symbols-outlined text-[16px] text-outline absolute right-2 top-1/2 -translate-y-1/2">search</span>
+      </div>
+    </div>
+
+    <!-- MAIN UNIFIED TRANSACTIONS TABLE -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h2 class="text-base font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">table_view</span>
+          سجل الحركات والمعاملات المالية المركزية (Transactions Log)
+        </h2>
+        <span class="text-xs font-mono font-bold text-primary bg-surface-variant border border-outline-variant px-3 py-1 rounded">
+          142 حركة تسوية مسجلة
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+            <tr>
+              <th class="p-3 font-mono">رقم الحركة</th>
+              <th class="p-3 font-mono">التاريخ</th>
+              <th class="p-3 text-center">نوع الحركة (الهدف)</th>
+              <th class="p-3">الطرف / الجهة</th>
+              <th class="p-3">المحطة</th>
+              <th class="p-3 font-mono">المبلغ</th>
+              <th class="p-3">الخزينة / الحساب</th>
+              <th class="p-3 font-mono">طريقة الدفع والمرجع</th>
+              <th class="p-3 text-center">الحالة</th>
+              <th class="p-3 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-tbody" class="divide-y divide-outline-variant/40">
+            
+            <!-- Row 1: PAY-2026-001 (Payment to Supplier) -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='payment-details.html?id=PAY-2026-001'">
+              <td class="p-3 font-mono font-bold text-primary text-sm">
+                <a href="payment-details.html?id=PAY-2026-001" class="hover:underline">PAY-2026-001</a>
+              </td>
+              <td class="p-3 font-mono text-on-surface-variant">14/08/2026</td>
+              <td class="p-3 text-center">
+                <span class="bg-rose-100 text-rose-900 border border-rose-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">🔴 دفع لمورد</span>
+              </td>
+              <td class="p-3 font-bold text-primary"><a href="supplier-details.html" class="hover:underline">شركة الخير للتنمية الزراعية</a></td>
+              <td class="p-3 text-on-surface font-medium">محطة النور</td>
+              <td class="p-3 font-mono font-bold text-rose-700 text-sm">200,000.00 ج.م</td>
+              <td class="p-3 font-bold text-on-surface">البنك الأهلي - حساب التصدير</td>
+              <td class="p-3 font-mono text-on-surface-variant">
+                <span>تحويل بنكي</span>
+                <span class="text-[10px] text-outline block">مرجع: REF-884910</span>
+              </td>
+              <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">مؤكد ومسوى</span></td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1.5">
+                  <a href="payment-details.html?id=PAY-2026-001" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-xs font-bold transition-all shadow-sm">
+                    التفاصيل
+                  </a>
+                  <button onclick="window.print()" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2 py-1 rounded text-xs font-bold transition-all border border-outline-variant/60">
+                    طباعة
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 2: COL-2026-001 (Collection from Customer) -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='payment-details.html?id=COL-2026-001'">
+              <td class="p-3 font-mono font-bold text-primary text-sm">
+                <a href="payment-details.html?id=COL-2026-001" class="hover:underline">COL-2026-001</a>
+              </td>
+              <td class="p-3 font-mono text-on-surface-variant">14/08/2026</td>
+              <td class="p-3 text-center">
+                <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">🟢 تحصيل من عميل</span>
+              </td>
+              <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">شركة سما للتجارة والتصدير</a></td>
+              <td class="p-3 text-on-surface font-medium">محطة النور</td>
+              <td class="p-3 font-mono font-bold text-emerald-800 text-sm">100,000.00 ج.م</td>
+              <td class="p-3 font-bold text-on-surface">الخزينة الرئيسية</td>
+              <td class="p-3 font-mono text-on-surface-variant">
+                <span>تحويل بنكي</span>
+                <span class="text-[10px] text-outline block">مرجع: REC-0041 (SHP-001)</span>
+              </td>
+              <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">مؤكد ومسوى</span></td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1.5">
+                  <a href="payment-details.html?id=COL-2026-001" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-xs font-bold transition-all shadow-sm">
+                    التفاصيل
+                  </a>
+                  <button onclick="window.print()" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2 py-1 rounded text-xs font-bold transition-all border border-outline-variant/60">
+                    طباعة
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 3: PAY-2026-002 (Contractor Payment) -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='payment-details.html?id=PAY-2026-002'">
+              <td class="p-3 font-mono font-bold text-primary text-sm">
+                <a href="payment-details.html?id=PAY-2026-002" class="hover:underline">PAY-2026-002</a>
+              </td>
+              <td class="p-3 font-mono text-on-surface-variant">11/08/2026</td>
+              <td class="p-3 text-center">
+                <span class="bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">👷 دفع لمقاول</span>
+              </td>
+              <td class="p-3 font-bold text-primary"><a href="contractor-details.html" class="hover:underline">مقاولات محمد للتجهيز</a></td>
+              <td class="p-3 text-on-surface font-medium">محطة النور</td>
+              <td class="p-3 font-mono font-bold text-rose-700 text-sm">25,000.00 ج.م</td>
+              <td class="p-3 font-bold text-on-surface">خزينة محطة النور</td>
+              <td class="p-3 font-mono text-on-surface-variant">
+                <span>نقدي</span>
+                <span class="text-[10px] text-outline block">مرجع: C-PAY-009</span>
+              </td>
+              <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">مؤكد ومسوى</span></td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1.5">
+                  <a href="payment-details.html?id=PAY-2026-002" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-xs font-bold transition-all shadow-sm">
+                    التفاصيل
+                  </a>
+                  <button onclick="window.print()" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2 py-1 rounded text-xs font-bold transition-all border border-outline-variant/60">
+                    طباعة
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 4: EXP-2026-001 (Operational Expense) -->
+            <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="window.location.href='payment-details.html?id=EXP-2026-001'">
+              <td class="p-3 font-mono font-bold text-primary text-sm">
+                <a href="payment-details.html?id=EXP-2026-001" class="hover:underline">EXP-2026-001</a>
+              </td>
+              <td class="p-3 font-mono text-on-surface-variant">09/08/2026</td>
+              <td class="p-3 text-center">
+                <span class="bg-purple-100 text-purple-900 border border-purple-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">🧾 مصروف تشغيلي</span>
+              </td>
+              <td class="p-3 font-bold text-primary">نقل وشحن محطة النور</td>
+              <td class="p-3 text-on-surface font-medium">محطة النور</td>
+              <td class="p-3 font-mono font-bold text-rose-700 text-sm">2,500.00 ج.م</td>
+              <td class="p-3 font-bold text-on-surface">الخزينة الرئيسية</td>
+              <td class="p-3 font-mono text-on-surface-variant">
+                <span>نقدي</span>
+                <span class="text-[10px] text-outline block">مرجع: EXP-TR-01</span>
+              </td>
+              <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">مؤكد ومسوى</span></td>
+              <td class="p-3 text-center" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-center gap-1.5">
+                  <a href="payment-details.html?id=EXP-2026-001" class="bg-primary text-white hover:bg-primary-container px-2.5 py-1 rounded text-xs font-bold transition-all shadow-sm">
+                    التفاصيل
+                  </a>
+                  <button onclick="window.print()" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2 py-1 rounded text-xs font-bold transition-all border border-outline-variant/60">
+                    طباعة
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- DYNAMIC INTENT-BASED TRANSACTION FORM MODAL -->
+  <div id="intent-transaction-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-2xl max-w-2xl w-full p-6 space-y-4 overflow-hidden relative max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h3 id="modal-intent-title" class="font-bold text-primary text-base flex items-center gap-2">
+          <span class="material-symbols-outlined text-[22px] text-secondary">payments</span>
+          تنفيذ حركة مالية
+        </h3>
+        <button onclick="closeIntentModal()" class="text-on-surface-variant hover:text-primary p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Transaction Intent Dynamic Form -->
+      <form onsubmit="handleTransactionSubmit(event)" class="space-y-4 text-xs">
+        
+        <!-- Common Inputs Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <div class="space-y-1">
+            <label id="lbl-party-select" class="font-bold text-primary">الطرف / الجهة المستهدفة</label>
+            <select id="input-party" onchange="updateAllocationPreview()" class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+              <option value="شركة سما للتجارة والتصدير">شركة سما للتجارة والتصدير (عميل - ذمة 185,000 ج.م)</option>
+              <option value="شركة الخير للتنمية الزراعية">شركة الخير للتنمية الزراعية (مورد - مستحق 520,000 ج.م)</option>
+              <option value="مقاولات محمد للتجهيز">مقاولات محمد للتجهيز (مقاول - مستحق 45,000 ج.م)</option>
+              <option value="محطة النور للمعالجة">محطة النور للمعالجة (محطة - مستحق 65,000 ج.م)</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">تاريخ الحركة المالية</label>
+            <input type="date" value="2026-08-14" class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">الخزينة / الحساب المالي (المصدر أو الوجهة)</label>
+            <select id="input-treasury" onchange="updateTreasuryPreview()" class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+              <option value="850000" selected>الخزينة الرئيسية (الرصيد الحالي: 850,000.00 ج.م)</option>
+              <option value="1450000">البنك الأهلي - حساب التصدير (الرصيد الحالي: 1,450,000.00 ج.م)</option>
+              <option value="45000">خزينة محطة النور (الرصيد الحالي: 45,000.00 ج.م)</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">طريقة السداد / التحصيل</label>
+            <select class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+              <option>تحويل بنكي / شيك</option>
+              <option>نقدي (كاش)</option>
+              <option>إيداع مباشر</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">المبلغ المراد تنفيذه (ج.م)</label>
+            <input type="number" id="input-amount" value="100000" onkeyup="updateAllocationPreview()" class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono text-primary text-sm focus:outline-none focus:border-primary"/>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">رقم المرجع / الإيصال البنكي</label>
+            <input type="text" value="REC-2026-9041" placeholder="مثال: REF-9901" class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+          </div>
+
+        </div>
+
+        <!-- LIVE TREASURY BALANCE PREVIEW BOX -->
+        <div class="bg-emerald-50 border border-emerald-300 p-3 rounded-lg flex justify-between items-center">
+          <div>
+            <span class="text-emerald-950 font-bold block">معاينة تأثير الرصيد المالي على الخزينة:</span>
+            <span id="preview-treasury-text" class="text-[11px] text-emerald-800 font-mono">الرصيد الحالي: 850,000.00 ج.م ← الرصيد بعد الحركة: 950,000.00 ج.م</span>
+          </div>
+          <span class="bg-emerald-200 text-emerald-900 px-2.5 py-1 rounded text-xs font-bold font-mono">تحديث آلي</span>
+        </div>
+
+        <!-- DOCUMENT ALLOCATION AREA (FOR CUSTOMERS / SUPPLIERS) -->
+        <div id="allocation-box" class="space-y-2 border-t border-outline-variant/60 pt-3">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-primary">تخصيص المبلغ على المستندات والفواتير المستحقة:</span>
+            <span class="text-[10px] text-on-surface-variant font-mono">إجمالي المستحق الحالي: <strong id="lbl-total-outstanding" class="text-rose-700">185,000.00 ج.م</strong></span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/40 space-y-2">
+            
+            <div class="flex items-center justify-between text-[11px]">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" checked class="rounded border-outline-variant text-primary focus:ring-primary"/>
+                <span class="font-bold text-primary font-mono">SHP-2026-001</span> (شحنة فراولة - مستحق: 100,000.00 ج.م)
+              </label>
+              <input type="number" value="60000" class="w-32 bg-surface border border-outline-variant rounded p-1 text-xs font-mono font-bold text-emerald-800 text-left"/>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px]">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" checked class="rounded border-outline-variant text-primary focus:ring-primary"/>
+                <span class="font-bold text-primary font-mono">SHP-2026-002</span> (شحنة فراولة - مستحق: 85,000.00 ج.م)
+              </label>
+              <input type="number" value="40000" class="w-32 bg-surface border border-outline-variant rounded p-1 text-xs font-mono font-bold text-emerald-800 text-left"/>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-primary">ملاحظات وبيان الحركة</label>
+          <input type="text" placeholder="مثال: تحصيل دفعة تحت الحساب لشحنات فراولة تصدير..." class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+        </div>
+
+        <!-- Form Submit & Cancel Actions -->
+        <div class="flex justify-end items-center gap-2 pt-3 border-t border-outline-variant/60">
+          <button type="button" onclick="closeIntentModal()" class="bg-surface-variant text-on-surface px-4 py-2 rounded-lg text-xs font-bold hover:bg-outline-variant">
+            إلغاء
+          </button>
+          <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">check_circle</span>
+            حفظ وتأفيذ الحركة المالية
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+<script>
+let currentIntent = 'COLLECTION_CUSTOMER';
+
+function openIntentModal(intent) {
+  currentIntent = intent;
+  const modal = document.getElementById('intent-transaction-modal');
+  const title = document.getElementById('modal-intent-title');
+  const lblParty = document.getElementById('lbl-party-select');
+  const inputParty = document.getElementById('input-party');
+
+  if (intent === 'COLLECTION_CUSTOMER') {
+    title.innerHTML = '<span class="material-symbols-outlined text-[22px] text-emerald-700">price_check</span> + تحصيل من عميل';
+    lblParty.innerText = 'العميل المستلم منه المبلغ';
+    inputParty.innerHTML = `
+      <option value="شركة سما للتجارة والتصدير">شركة سما للتجارة والتصدير (عميل - ذمة 185,000 ج.م)</option>
+      <option value="مؤسسة النور للاستيراد">مؤسسة النور للاستيراد (عميل - ذمة 92,400 ج.م)</option>
+    `;
+  } else if (intent === 'PAYMENT_SUPPLIER') {
+    title.innerHTML = '<span class="material-symbols-outlined text-[22px] text-rose-700">payments</span> + دفع لمورد';
+    lblParty.innerText = 'المورد المستحق له السداد';
+    inputParty.innerHTML = `
+      <option value="شركة الخير للتنمية الزراعية">شركة الخير للتنمية الزراعية (مورد - مستحق 520,000 ج.م)</option>
+      <option value="مزارع الوادي الحديثة">مزارع الوادي الحديثة (مورد - مستحق 140,000 ج.م)</option>
+    `;
+  } else if (intent === 'PAYMENT_CONTRACTOR') {
+    title.innerHTML = '<span class="material-symbols-outlined text-[22px] text-amber-700">engineering</span> + دفع لمقاول';
+    lblParty.innerText = 'المقاول المنفذ للأعمال';
+    inputParty.innerHTML = `
+      <option value="مقاولات محمد للتجهيز">مقاولات محمد للتجهيز (مقاول - مستحق 45,000 ج.م)</option>
+    `;
+  } else if (intent === 'PAYMENT_STATION') {
+    title.innerHTML = '<span class="material-symbols-outlined text-[22px] text-secondary">factory</span> + دفع للمحطة';
+    lblParty.innerText = 'المحطة التشغيلية المستحقة';
+    inputParty.innerHTML = `
+      <option value="محطة النور للمعالجة">محطة النور للمعالجة (محطة - مستحق 65,000 ج.م)</option>
+      <option value="محطة السلام للتجهيز">محطة السلام للتجهيز (محطة - مستحق 35,000 ج.م)</option>
+    `;
+  } else if (intent === 'OPERATIONAL_EXPENSE') {
+    title.innerHTML = '<span class="material-symbols-outlined text-[22px] text-purple-700">receipt</span> + تسجيل مصروف تشغيلي';
+    lblParty.innerText = 'فئة وتصنيف المصروف التشغيلي';
+    inputParty.innerHTML = `
+      <option value="نقل وتوصيل">نقل وتوصيل ومستندات (مصروف تشغيلي)</option>
+      <option value="كهرباء ومرافق">كهرباء ومرافق وتبريد (مصروف تشغيلي)</option>
+      <option value="صيانة وتشغيل">صيانة وإصلاح معدات (مصروف تشغيلي)</option>
+      <option value="وقود ومحروقات">وقود ومحروقات غلايات (مصروف تشغيلي)</option>
+    `;
+  } else if (intent === 'TREASURY_TRANSFER') {
+    title.innerHTML = '<span class="material-symbols-outlined text-[22px] text-secondary">sync_alt</span> + تحويل بين الخزن والحسابات';
+    lblParty.innerText = 'الخزينة / الحساب المستلم (الوجهة)';
+    inputParty.innerHTML = `
+      <option value="خزينة محطة النور">خزينة محطة النور (فرعي)</option>
+      <option value="البنك الأهلي - حساب التصدير">البنك الأهلي - حساب التصدير</option>
+    `;
+  } else {
+    title.innerHTML = '<span class="material-symbols-outlined text-[22px] text-rose-700">undo</span> + تسجيل رد مبلغ';
+    lblParty.innerText = 'الجهة المرتجع لها المبلغ';
+    inputParty.innerHTML = `
+      <option value="شركة سما للتجارة">شركة سما للتجارة</option>
+    `;
+  }
+
+  updateTreasuryPreview();
+  modal.classList.remove('hidden');
+}
+
+function closeIntentModal() {
+  document.getElementById('intent-transaction-modal').classList.add('hidden');
+}
+
+function updateTreasuryPreview() {
+  const amount = parseFloat(document.getElementById('input-amount').value) || 0;
+  const baseTreasury = parseFloat(document.getElementById('input-treasury').value) || 850000;
+  const previewText = document.getElementById('preview-treasury-text');
+
+  if (currentIntent === 'COLLECTION_CUSTOMER') {
+    const after = baseTreasury + amount;
+    previewText.innerText = `الرصيد الحالي: ${baseTreasury.toLocaleString()} ج.م ← الرصيد بعد التحصيل: ${after.toLocaleString()} ج.م`;
+  } else {
+    const after = baseTreasury - amount;
+    previewText.innerText = `الرصيد الحالي: ${baseTreasury.toLocaleString()} ج.م ← الرصيد بعد الدفع: ${after.toLocaleString()} ج.م`;
+  }
+}
+
+function updateAllocationPreview() {
+  updateTreasuryPreview();
+}
+
+function handleTransactionSubmit(event) {
+  event.preventDefault();
+  closeIntentModal();
+  const toast = document.getElementById('payment-toast');
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 5000);
+}
+
+function filterTransactionsTable() {
+  const typeFilter = document.getElementById('filter-intent-type').value;
+  const partyFilter = document.getElementById('filter-party').value;
+  const treasuryFilter = document.getElementById('filter-treasury').value;
+  const query = document.getElementById('search-tx-input').value.toLowerCase().trim();
+
+  const rows = document.querySelectorAll('#transactions-tbody tr');
+
+  rows.forEach(r => {
+    const text = r.innerText.toLowerCase();
+    
+    let matchType = (typeFilter === 'ALL');
+    if (typeFilter === 'COLLECTION_CUSTOMER') matchType = text.includes('تحصيل من عميل');
+    else if (typeFilter === 'PAYMENT_SUPPLIER') matchType = text.includes('دفع لمورد');
+    else if (typeFilter === 'PAYMENT_CONTRACTOR') matchType = text.includes('دفع لمقاول');
+    else if (typeFilter === 'OPERATIONAL_EXPENSE') matchType = text.includes('مصروف تشغيلي');
+
+    let matchParty = (partyFilter === 'ALL') || text.includes(partyFilter.toLowerCase());
+    let matchTreasury = (treasuryFilter === 'ALL') || text.includes(treasuryFilter.toLowerCase());
+    let matchQuery = !query || text.includes(query);
+
+    if (matchType && matchParty && matchTreasury && matchQuery) {
+      r.classList.remove('hidden');
+    } else {
+      r.classList.add('hidden');
+    }
+  });
+}
+</script>
+</body>
+</html>

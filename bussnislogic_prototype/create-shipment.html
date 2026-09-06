@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إنشاء شحنة تصدير جديدة - نظام تجميد للتصدير</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #c4c6cd; border-radius: 4px; }
+        .tab-active { border-bottom: 3px solid #041627; color: #041627; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+
+<!-- SideNavBar Navigation -->
+<nav class="fixed right-0 top-0 h-screen w-[280px] z-50 flex flex-col bg-primary text-on-primary shadow-xl border-l border-outline-variant/10">
+    <div class="h-toolbar-height flex flex-col justify-center px-6 border-b border-outline-variant/20 py-4 bg-primary shrink-0">
+        <h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">نظام تجميد للتصدير</h1>
+        <p class="font-label-sm text-label-sm text-primary-fixed-dim">Glacier Ledger ERP</p>
+    </div>
+    <div class="flex-1 overflow-y-auto py-3 px-3">
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>لوحة القيادة التنفيذية</span>
+                </a>
+            </li>
+            <li>
+                <a href="supplies.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>إدارة المستلزمات (Supplies)</span>
+                </a>
+            </li>
+            <li>
+                <a href="create-shipment.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold bg-secondary-container text-on-secondary-container border-r-4 border-surface-variant transition-all">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>إنشاء شحنة تصدير (Create Shipment)</span>
+                </a>
+            </li>
+            <li>
+                <a href="finished-goods.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory</span>
+                    <span>مخزن المنتج الجاهز (Finished Goods)</span>
+                </a>
+            </li>
+            <li>
+                <a href="processing-operations.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">autorenew</span>
+                    <span>عمليات التدوير (Processing)</span>
+                </a>
+            </li>
+            <li>
+                <a href="raw-materials.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>مخزن المواد الخام (Raw Inventory)</span>
+                </a>
+            </li>
+            <li>
+                <a href="employees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">badge</span>
+                    <span>إدارة الموظفين (Employees)</span>
+                </a>
+            </li>
+            <li>
+                <a href="client-orders.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>طلبات العملاء والاتفاقيات</span>
+                </a>
+            </li>
+            <li>
+                <a href="new-operation.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">conveyor_belt</span>
+                    <span>عملية تشغيل جديدة</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>الموردون</span>
+                </a>
+            </li>
+            <li>
+                <a href="treasury-payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات</span>
+                </a>
+            </li>
+            <li>
+                <a href="stations-management.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">factory</span>
+                    <span>إدارة المحطات</span>
+                </a>
+            </li>
+            <li>
+                <a href="exports-contractors.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>إدارة المقاولين والصادرات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="p-4 border-t border-outline-variant/20 shrink-0 bg-primary-container/30">
+        <div class="flex items-center gap-3 text-xs text-primary-fixed-dim">
+            <span class="material-symbols-outlined text-green-400 text-base">check_circle</span>
+            <span>ربط الطلبيات بالربحية active</span>
+        </div>
+    </div>
+</nav>
+
+<!-- TopNavBar -->
+<header class="bg-surface fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding border-b border-outline-variant">
+    <div class="flex items-center gap-4">
+        <h2 class="font-title-sm text-title-sm font-black text-primary">نظام تجميد للتصدير - إنشاء ومراجعة شحنة تصدير (Shipment ERP)</h2>
+        <span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-xs font-bold font-data-mono">PROTOTYPE ONLY</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" title="التنبيهات">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" onclick="resetShipmentPrototypeData()" title="إعادة ضبط بيانات الشحنات">
+                <span class="material-symbols-outlined">restart_alt</span>
+            </button>
+        </div>
+        <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant shrink-0">
+            <img alt="صورة المستخدم" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByztzte-7HG582Cqe_OCtfzP-23PrUqNwLlLKTTX96RHPgxCDROx15p3gKfgy7bRsiZyRSy2CJKPAAoU4Ap_Jra0RLti2ZthCxcTyK472-hCGMhTug7bvSfpiuQQJJmpTgix3-ONAd5-2TDY04W1GHPZQla8t5urxJCFKTNJOzmSgZpWcD4ynve2FL4nv6CqOvLC5wEm8-Nnc1qpYBThQnSXMJfYQuQATCq16IC8ALWBY2xm5FkfaO"/>
+        </div>
+    </div>
+</header>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Main Content Area with Fixed Right Sticky Financial Summary Sidebar -->
+<main class="mr-[280px] pt-toolbar-height min-h-screen p-container-padding">
+    <div class="max-w-[1440px] mx-auto space-y-gutter">
+
+        <!-- Page Top Header & Action Bar -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-surface-container-lowest border border-outline-variant p-6 rounded-2xl shadow-sm mb-6">
+            <div>
+                <div class="flex items-center gap-3 mb-1">
+                    <h1 class="font-display-lg text-display-lg text-primary flex items-center gap-2">
+                        <span class="material-symbols-outlined text-3xl">local_shipping</span>
+                        <span>إنشاء شحنة جديدة (Create Shipment)</span>
+                    </h1>
+                    <span id="shpStatusBadge" class="bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full text-xs font-data-mono">مسودة</span>
+                </div>
+                <p class="font-body-md text-body-md text-on-surface-variant">ربط الشحنة بطلبية عميل مفتوحة، سحب اللوطات التامة، حساب التكاليف والربحية الفعلية</p>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-data-mono">
+                <div class="text-right">
+                    <span class="text-on-surface-variant block">رقم الشحنة التلقائي:</span>
+                    <strong id="shpNumberDisplay" class="text-base font-bold text-primary">SHP-2026-0025</strong>
+                </div>
+                <div class="text-right border-r pr-4 border-outline-variant">
+                    <span class="text-on-surface-variant block">التاريخ الحالي:</span>
+                    <strong class="text-sm font-bold text-on-surface">23/08/2026</strong>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="saveShipmentDraft()" class="px-4 py-2.5 bg-surface border border-outline-variant hover:bg-surface-variant text-on-surface font-bold rounded-xl transition-all shadow-xs">
+                        حفظ كمسودة
+                    </button>
+                    <button onclick="triggerApproveShipmentModal()" class="px-5 py-2.5 bg-tertiary-container text-on-tertiary-container hover:bg-primary hover:text-white font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-base">check_circle</span>
+                        <span>اعتماد الشحنة</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strict Business Rule Clarification Banner -->
+        <div class="bg-surface-container border-2 border-primary/20 p-4 rounded-xl flex items-center gap-3 text-xs text-on-surface mb-6">
+            <span class="material-symbols-outlined text-primary text-xl">verified</span>
+            <div>
+                <strong>قاعدة ERP الإلزامية:</strong> لا يمكن إنشاء شحنة إلا إذا كان هناك <strong>طلبية عميل مفتوحة أولاً (Customer Order Required)</strong>. اختيار الشحنة يتم عن طريق تخصيص الكميات من الـ Batches المتاحة بمخزن المنتج الجاهز وربطها برقم الطلبية.
+            </div>
+        </div>
+
+        <!-- MAIN LAYOUT GRID: Left Form (8 Cols) vs Right Sticky Financial Summary (4 Cols) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- LEFT FORM CONTAINER (8 COLS) -->
+            <div class="lg:col-span-8 space-y-6">
+
+                <!-- SECTION 1: CUSTOMER & OPEN ORDER SELECTION -->
+                <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 shadow-sm">
+                    <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-3 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">person_search</span>
+                        <span>1. العميل والطلبية المفتوحة (Customer & Order Selection)</span>
+                    </h3>
+
+                    <div class="space-y-4 text-xs">
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">اختر العميل المستورد *</label>
+                            <select id="shpCustomer" onchange="onCustomerSelected()" class="w-full bg-surface border border-outline-variant rounded-xl p-3 text-sm font-bold text-primary focus:border-primary">
+                                <option value="شركة ABC للتجارة الدولية">شركة ABC للتجارة الدولية (ألمانيا)</option>
+                                <option value="شركة النور للتصدير">شركة النور للتصدير (السعودية)</option>
+                                <option value="Global Foods Demo">Global Foods Demo (المملكة المتحدة)</option>
+                                <option value="Frozen Market Demo">Frozen Market Demo (الإمارات)</option>
+                                <option value="عميل بدون طلبيات">شركة الشرق الأوسط (بدون طلبيات مفتوحة - اختبار التجربة)</option>
+                            </select>
+                        </div>
+
+                        <!-- Open Customer Orders Table -->
+                        <div>
+                            <label class="block font-bold mb-2 text-on-surface">الطلبيات المتاحة لهذا العميل:</label>
+                            <div class="border rounded-xl overflow-hidden bg-surface-container-lowest">
+                                <table class="w-full text-right text-xs">
+                                    <thead class="bg-surface-container font-bold text-on-surface-variant">
+                                        <tr>
+                                            <th class="p-3">رقم الطلبية</th>
+                                            <th class="p-3">تاريخ الطلب</th>
+                                            <th class="p-3">المنتج المطلوب</th>
+                                            <th class="p-3">إجمالي الكمية</th>
+                                            <th class="p-3">تم شحنه</th>
+                                            <th class="p-3">المتبقي</th>
+                                            <th class="p-3 text-center">اختيار</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="customerOrdersTbody" class="divide-y divide-outline-variant/60 font-body-md">
+                                        <!-- Dynamic customer orders rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- No Available Order Warning Box -->
+                        <div id="noOrderWarningBox" class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-900 hidden flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-red-700">warning</span>
+                                <div>
+                                    <strong>لا تتوفر طلبيات مفتوحة لهذا العميل.</strong>
+                                    <p class="text-[11px] text-red-700 mt-0.5">لا يمكن إنشاء شحنة لهذا العميل إلا بعد تسليط أو فتح طلبية عميل أولاً.</p>
+                                </div>
+                            </div>
+                            <a href="client-orders.html" class="px-3 py-1.5 bg-red-700 text-white rounded-lg text-xs font-bold hover:bg-red-800">الذهاب لطلبيات العملاء</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: SHIPMENT QUANTITY & PRODUCT DETAILS -->
+                <div id="sectionShipmentDetails" class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 shadow-sm">
+                    <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-3 mb-4 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">edit_note</span>
+                            <span>2. تفاصيل ورصيد الشحنة (Shipment Quantity & Order Match)</span>
+                        </span>
+                        <span id="selectedOrderBadge" class="bg-secondary-container text-on-secondary-container text-xs font-bold font-data-mono px-3 py-1 rounded-full">ORD-1025</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-data-mono mb-4">
+                        <div class="bg-surface p-3 rounded-xl border">
+                            <span class="text-on-surface-variant block text-[11px] font-body-md">المنتج المتعاقد عليه:</span>
+                            <strong id="dispProductName" class="text-sm text-primary font-body-md font-bold">فراولة مجمدة IQF</strong>
+                        </div>
+                        <div class="bg-surface p-3 rounded-xl border">
+                            <span class="text-on-surface-variant block text-[11px] font-body-md">المتبقي في الطلبية:</span>
+                            <strong id="dispOrderRemainingKg" class="text-sm text-amber-800 font-bold">6,000 KG</strong>
+                        </div>
+                        <div class="bg-surface p-3 rounded-xl border">
+                            <span class="text-on-surface-variant block text-[11px] font-body-md">المتاح بالمخزن التام:</span>
+                            <strong id="dispWarehouseAvailKg" class="text-sm text-green-700 font-bold">25,000 KG</strong>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">الكمية المراد شحنها في هذه الشحنة (KG) *</label>
+                            <input id="shpRequestedQty" type="number" value="5000" oninput="onShipmentQtyInputChanged()" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-base font-bold font-data-mono text-primary focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">تاريخ التحميل الشحنة *</label>
+                            <input id="shpLoadingDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-sm focus:border-primary"/>
+                        </div>
+                    </div>
+
+                    <div id="qtyValidationMsg" class="mt-3 p-3 rounded-xl text-xs font-bold bg-green-50 text-green-800 border border-green-200">
+                        ✓ الكمية ضمن المتاح بالطلبية ومخزن المنتج الجاهز (المتبقي بعد الشحنة: 1,000 KG)
+                    </div>
+                </div>
+
+                <!-- SECTION 3: FINISHED GOODS BATCH SELECTION & ACTUAL PRODUCTION COST -->
+                <div id="sectionBatchSelection" class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 shadow-sm">
+                    <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-3 mb-4 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">qr_code_2</span>
+                            <span>3. اختيار اللوطات (Batches) من مخزن المنتج الجاهز والتكلفة الفعطية</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-normal">أدخل الكمية المسحوبة من كل Batch</span>
+                    </h3>
+
+                    <div class="border rounded-xl overflow-hidden bg-surface-container-lowest mb-4">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-surface-container font-bold text-on-surface-variant">
+                                <tr>
+                                    <th class="p-3">الـ Batch</th>
+                                    <th class="p-3">عملية التدوير المصدر</th>
+                                    <th class="p-3">المحطة</th>
+                                    <th class="p-3">الرصيد المتاح</th>
+                                    <th class="p-3">تكلفة الإنتاج / KG</th>
+                                    <th class="p-3">الكمية المسحوبة للشحنة (KG)</th>
+                                    <th class="p-3">إجمالي التكلفة الحجمية</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchAllocationTbody" class="divide-y divide-outline-variant/60 font-body-md">
+                                <!-- Dynamic Batch Allocation Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Batch Allocation Validation Summary Box -->
+                    <div id="batchValBox" class="p-3.5 rounded-xl border flex flex-col md:flex-row justify-between items-center gap-2 text-xs font-bold bg-green-50 border-green-300 text-green-900">
+                        <div>
+                            <span>الشحنة المطلوبة: <strong id="bValReqKg" class="font-data-mono text-sm">5,000</strong> KG | المخصص من الـ Batches: <strong id="bValAllocKg" class="font-data-mono text-sm">5,000</strong> KG</span>
+                        </div>
+                        <div id="bValStatusMsg" class="font-bold">✓ تم تخصيص كامل كمية الشحنة من الـ Batches المتاحة!</div>
+                    </div>
+                </div>
+
+                <!-- SECTION 4: SELLING PRICE & SALES REVENUE -->
+                <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 shadow-sm">
+                    <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-3 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">attach_money</span>
+                        <span>4. سعر البيع وإجمالي قيمة المبيعات (Sales Revenue)</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-data-mono">
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface font-body-md">سعر البيع للتصدير (EGP/KG) *</label>
+                            <input id="shpSellingPriceKg" type="number" value="65" oninput="calculateShipmentFinancials()" class="w-full bg-surface border border-outline-variant rounded-xl p-2.5 text-base font-bold text-primary focus:border-primary"/>
+                        </div>
+                        <div class="bg-surface p-3 rounded-xl border flex flex-col justify-center">
+                            <span class="text-on-surface-variant block text-[11px] font-body-md">كمية الشحنة المطلوبة:</span>
+                            <strong id="dispSalesQty" class="text-base text-on-surface font-bold">5,000 KG</strong>
+                        </div>
+                        <div class="bg-tertiary-container text-on-tertiary-container p-3 rounded-xl flex flex-col justify-center">
+                            <span class="text-tertiary-fixed-dim block text-[11px] font-body-md">إجمالي المبيعات الإرادية:</span>
+                            <strong id="dispTotalSalesRevenue" class="text-xl font-bold font-data-mono text-tertiary-fixed">325,000 EGP</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: SHIPMENT SUPPLIES (مستلزمات التعبئة والتغليف للشحن) -->
+                <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 shadow-sm">
+                    <div class="flex justify-between items-center border-b border-surface-variant pb-3 mb-4">
+                        <h3 class="font-title-sm text-title-sm text-primary font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">inventory_2</span>
+                            <span>5. مستلزمات التعبئة والتغليف الإضافية للشحنة (Shipment Supplies)</span>
+                        </h3>
+                        <button onclick="addSuppliesRow()" class="px-3 py-1 bg-surface border border-outline-variant hover:bg-surface-variant text-xs font-bold rounded-lg">+ إضافة مستلزم</button>
+                    </div>
+
+                    <div class="border rounded-xl overflow-hidden mb-3">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-surface-container font-bold">
+                                <tr>
+                                    <th class="p-2.5">المستلزم</th>
+                                    <th class="p-2.5">الوحدة</th>
+                                    <th class="p-2.5">الكمية</th>
+                                    <th class="p-2.5">سعر الوحدة (EGP)</th>
+                                    <th class="p-2.5">إجمالي التكلفة</th>
+                                    <th class="p-2.5 text-center">حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suppliesTbody" class="divide-y font-data-mono">
+                                <!-- Dynamic Supplies Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-end text-xs font-bold text-primary">
+                        <span>إجمالي مستلزمات الشحنة: <strong id="dispSuppliesCostTotal" class="text-sm font-data-mono text-tertiary-container">10,000 EGP</strong></span>
+                    </div>
+                </div>
+
+                <!-- SECTION 6 & 7: LOGISTICS COSTS & GRATUITIES -->
+                <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 shadow-sm space-y-6">
+                    <!-- Logistics Costs -->
+                    <div>
+                        <div class="flex justify-between items-center border-b border-surface-variant pb-3 mb-4">
+                            <h3 class="font-title-sm text-title-sm text-primary font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">local_shipping</span>
+                                <span>6. المصاريف والخدمات اللوجستية للشحنة (Logistics Costs)</span>
+                            </h3>
+                            <button onclick="addLogisticsCostRow()" class="px-3 py-1 bg-surface border border-outline-variant hover:bg-surface-variant text-xs font-bold rounded-lg">+ إضافة بند مصاريف</button>
+                        </div>
+                        <div class="border rounded-xl overflow-hidden mb-3">
+                            <table class="w-full text-right text-xs">
+                                <thead class="bg-surface-container font-bold">
+                                    <tr>
+                                        <th class="p-2.5">بند المصروف</th>
+                                        <th class="p-2.5">المبلغ (EGP)</th>
+                                        <th class="p-2.5">ملاحظات والتفاصيل</th>
+                                        <th class="p-2.5 text-center">حذف</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logisticsTbody" class="divide-y font-data-mono">
+                                    <!-- Dynamic Logistics Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-end text-xs font-bold text-primary">
+                            <span>إجمالي المصاريف اللوجستية: <strong id="dispLogisticsCostTotal" class="text-sm font-data-mono text-tertiary-container">28,000 EGP</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Gratuities (الإكراميات المباشرة) -->
+                    <div class="pt-4 border-t border-outline-variant/60">
+                        <div class="flex justify-between items-center border-b border-surface-variant pb-3 mb-4">
+                            <h3 class="font-title-sm text-title-sm text-primary font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-amber-600">volunteer_activism</span>
+                                <span>7. الإكراميات المباشرة للشحنة (Gratuities Log)</span>
+                            </h3>
+                            <button onclick="addGratuityRow()" class="px-3 py-1 bg-amber-50 border border-amber-300 text-amber-900 hover:bg-amber-100 text-xs font-bold rounded-lg">+ إضافة إكرامية</button>
+                        </div>
+                        <div class="border rounded-xl overflow-hidden mb-3">
+                            <table class="w-full text-right text-xs">
+                                <thead class="bg-surface-container font-bold">
+                                    <tr>
+                                        <th class="p-2.5">المستلم / الجهة</th>
+                                        <th class="p-2.5">السبب والعملية</th>
+                                        <th class="p-2.5">المبلغ (EGP)</th>
+                                        <th class="p-2.5 text-center">حذف</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gratuitiesTbody" class="divide-y font-data-mono">
+                                    <!-- Dynamic Gratuities Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-end text-xs font-bold text-amber-900">
+                            <span>إجمالي الإكراميات: <strong id="dispGratuitiesCostTotal" class="text-sm font-data-mono">1,000 EGP</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 8: SHIPPING & EXPORT MANIFEST DETAILS -->
+                <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 shadow-sm">
+                    <h3 class="font-title-sm text-title-sm text-primary font-bold border-b border-surface-variant pb-3 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">anchor</span>
+                        <span>8. بيانات الشحن والتصدير والجمارك (Export Manifest)</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">شركة الشحن الملاحية</label>
+                            <input id="expShippingLine" type="text" value="Maersk Line Export" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">رقم الحاوية (Container No)</label>
+                            <input id="expContainerNo" type="text" value="MSKU-882019-4" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm font-data-mono focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">رقم الختم / Seal</label>
+                            <input id="expSealNo" type="text" value="SEAL-99201" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm font-data-mono focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">ميناء التحميل</label>
+                            <input id="expLoadingPort" type="text" value="ميناء الدخيلة - الإسكندرية" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">ميناء الوصول المستهدف</label>
+                            <input id="expDestinationPort" type="text" value="Hamburg Port - ألمانيا" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm focus:border-primary"/>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-on-surface">درجة حرارة الحاوية</label>
+                            <input id="expTemp" type="text" value="-18°C مئوية" class="w-full bg-surface border border-outline-variant rounded-lg p-2 text-sm font-data-mono focus:border-primary"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT STICKY FINANCIAL SUMMARY SIDEBAR (4 COLS) -->
+            <div class="lg:col-span-4 sticky top-[80px] space-y-6">
+                
+                <!-- STICKY PROFIT & COST SUMMARY CARD -->
+                <div class="bg-primary text-on-primary rounded-2xl p-6 shadow-xl border border-outline-variant/30 space-y-5">
+                    
+                    <div class="border-b border-primary-fixed-dim/20 pb-3 flex justify-between items-center">
+                        <h3 class="font-bold text-base flex items-center gap-2">
+                            <span class="material-symbols-outlined text-tertiary-fixed">calculate</span>
+                            <span>ملخص الربحية والتكلفة</span>
+                        </h3>
+                        <span class="text-[10px] bg-tertiary-fixed text-on-tertiary-container px-2 py-0.5 rounded font-bold">حساب فوري</span>
+                    </div>
+
+                    <!-- Cost Items Breakdown -->
+                    <div class="space-y-2 text-xs font-data-mono">
+                        <div class="flex justify-between text-primary-fixed-dim">
+                            <span>تكلفة التصنيع الفعلية للـ Batches:</span>
+                            <strong id="cardProdCost" class="text-white font-bold">229,940 EGP</strong>
+                        </div>
+                        <div class="flex justify-between text-primary-fixed-dim">
+                            <span>مستلزمات تعبئة الشحنة:</span>
+                            <strong id="cardSuppliesCost" class="text-white font-bold">10,000 EGP</strong>
+                        </div>
+                        <div class="flex justify-between text-primary-fixed-dim">
+                            <span>المصاريف اللوجستية والنولون:</span>
+                            <strong id="cardLogisticsCost" class="text-white font-bold">28,000 EGP</strong>
+                        </div>
+                        <div class="flex justify-between text-primary-fixed-dim">
+                            <span>الإكراميات والمصاريف الأخرى:</span>
+                            <strong id="cardOtherCost" class="text-white font-bold">3,000 EGP</strong>
+                        </div>
+                        <div class="pt-2 border-t border-primary-fixed-dim/30 flex justify-between text-sm font-bold text-white">
+                            <span>إجمالي تكلفة الشحنة الكاملة:</span>
+                            <strong id="cardTotalShipmentCost" class="text-base text-red-300">270,940 EGP</strong>
+                        </div>
+                    </div>
+
+                    <!-- Revenue & Profit Highlight -->
+                    <div class="bg-primary-container p-4 rounded-xl space-y-3 border border-outline-variant/20">
+                        <div class="flex justify-between items-center text-xs text-primary-fixed-dim">
+                            <span>إجمالي المبيعات الإرادية:</span>
+                            <strong id="cardTotalSales" class="text-sm font-bold text-white font-data-mono">325,000 EGP</strong>
+                        </div>
+                        <div class="flex justify-between items-center text-xs text-primary-fixed-dim">
+                            <span>إجمالي التكلفة الإجمالية:</span>
+                            <strong id="cardTotalCostCopy" class="text-sm font-bold text-red-300 font-data-mono">270,940 EGP</strong>
+                        </div>
+                        <div class="pt-2 border-t border-white/10 flex justify-between items-center">
+                            <div>
+                                <span class="text-[11px] text-tertiary-fixed block font-body-md">صافي ربح الشحنة (Net Profit):</span>
+                                <strong id="cardNetProfit" class="text-xl font-bold text-tertiary-fixed font-data-mono">54,060 EGP</strong>
+                            </div>
+                            <div class="text-left">
+                                <span class="text-[10px] text-primary-fixed-dim block font-body-md">هامش الربح:</span>
+                                <strong id="cardProfitMargin" class="text-sm font-bold text-tertiary-fixed font-data-mono">16.63%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profit per KG metric -->
+                    <div class="flex justify-between items-center text-xs bg-white/5 p-3 rounded-xl">
+                        <span class="text-primary-fixed-dim">ربح الكيلو الصافي (Profit/KG):</span>
+                        <strong id="cardProfitPerKg" class="text-sm font-bold text-tertiary-fixed font-data-mono">10.81 EGP/KG</strong>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="space-y-2 pt-2">
+                        <button onclick="triggerApproveShipmentModal()" class="w-full py-3 bg-tertiary-fixed text-on-tertiary-container hover:bg-white font-bold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            <span>تأكيد واعتماد الشحنة</span>
+                        </button>
+                        <button onclick="saveShipmentDraft()" class="w-full py-2.5 border border-primary-fixed-dim/40 text-primary-fixed-dim hover:bg-white/10 font-bold text-xs rounded-xl transition-all">
+                            حفظ كمسودة
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- CUSTOMER RECEIVABLE PREVIEW CARD -->
+                <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 shadow-sm space-y-3 text-xs">
+                    <h4 class="font-bold text-primary flex items-center gap-2 border-b pb-2">
+                        <span class="material-symbols-outlined">account_balance_wallet</span>
+                        <span>حالة مستحقات العميل المعتمدة</span>
+                    </h4>
+                    <div class="space-y-2 font-data-mono">
+                        <div class="flex justify-between"><span>مستحق الفاتورة (Receivable):</span><strong id="cardReceivable" class="text-primary">325,000 EGP</strong></div>
+                        <div class="flex justify-between"><span>المدفوع المسبق/الدفعة:</span><strong class="text-green-700">100,000 EGP</strong></div>
+                        <div class="flex justify-between border-t pt-1 font-bold"><span>الرصيد المتبقي على العميل:</span><strong id="cardRemainingReceivable" class="text-tertiary-container text-sm">225,000 EGP</strong></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+<!-- CONFIRM APPROVAL MODAL -->
+<div id="approveModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-md flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-tertiary-fixed">check_circle</span>
+                <span>تأكيد اعتماد الشحنة رسمياً</span>
+            </h3>
+            <button onclick="closeApproveModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 space-y-4 text-xs">
+            <div class="p-3.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl space-y-1">
+                <strong class="block text-sm">هل أنت متأكد من اعتماد الشحنة النهائي؟</strong>
+                <p>بعد الاعتماد سيتم خصم الكميات المخصصة من الـ Batches بمخزن المنتج الجاهز، وتحديث طلبية العميل، وتسجيل مستحق مالي على حساب العميل.</p>
+            </div>
+            <div class="bg-surface p-3 rounded-xl border space-y-1 font-data-mono">
+                <div>العميل: <strong id="mCustName">شركة ABC للتجارة الدولية</strong></div>
+                <div>الكمية المشحونة: <strong id="mQty">5,000 KG</strong></div>
+                <div>إجمالي المبيعات: <strong id="mSales" class="text-green-700">325,000 EGP</strong></div>
+                <div>صافي الربح المتوقع: <strong id="mProfit" class="text-tertiary-container">54,060 EGP</strong></div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closeApproveModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmApproveShipmentAction()" class="px-6 py-2.5 bg-tertiary-container text-on-tertiary-container hover:bg-primary hover:text-white font-bold text-xs rounded-xl shadow-md transition-all">تأكيد الاعتماد والخصم</button>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT STATE & CALCULATION LOGIC -->
+<script>
+const MOCK_CUSTOMER_ORDERS = [
+    {
+        orderId: "ORD-1025",
+        customer: "شركة ABC للتجارة الدولية",
+        date: "2026-08-10",
+        productName: "فراولة مجمدة IQF",
+        totalOrderedKg: 10000,
+        alreadyShippedKg: 4000,
+        remainingKg: 6000,
+        status: "مفتوحة"
+    },
+    {
+        orderId: "ORD-1040",
+        customer: "شركة ABC للتجارة الدولية",
+        date: "2026-08-12",
+        productName: "مانجو مكعبات مجمدة",
+        totalOrderedKg: 5000,
+        alreadyShippedKg: 0,
+        remainingKg: 5000,
+        status: "مفتوحة"
+    },
+    {
+        orderId: "ORD-1052",
+        customer: "Global Foods Demo",
+        date: "2026-08-15",
+        productName: "فراولة مجمدة IQF",
+        totalOrderedKg: 15000,
+        alreadyShippedKg: 5000,
+        remainingKg: 10000,
+        status: "مفتوحة"
+    },
+    {
+        orderId: "ORD-1060",
+        customer: "شركة النور للتصدير",
+        date: "2026-08-18",
+        productName: "بامية مجمدة",
+        totalOrderedKg: 8000,
+        alreadyShippedKg: 2000,
+        remainingKg: 6000,
+        status: "مفتوحة"
+    }
+];
+
+const MOCK_AVAILABLE_BATCHES = [
+    { batchId: "FG-260820-001", sourceOpId: "PR-0025", station: "محطة النخيل", productName: "فراولة مجمدة IQF", availKg: 3000, costPerKg: 45.18 },
+    { batchId: "FG-260821-002", sourceOpId: "PR-0026", station: "محطة السلام", productName: "فراولة مجمدة IQF", availKg: 5000, costPerKg: 47.20 },
+    { batchId: "FG-260822-003", sourceOpId: "PR-0027", station: "محطة النخيل", productName: "فراولة مجمدة IQF", availKg: 4000, costPerKg: 44.90 },
+    { batchId: "FG-260815-010", sourceOpId: "PR-0020", station: "محطة السلام", productName: "مانجو مكعبات مجمدة", availKg: 8000, costPerKg: 62.50 }
+];
+
+let selectedOrder = null;
+let suppliesList = [
+    { name: "كرتونة تصدير مقوى X", unit: "Piece", qty: 500, price: 12 },
+    { name: "Pallets خشبي معالج", unit: "Piece", qty: 20, price: 150 },
+    { name: "Stretch Film رول", unit: "Roll", qty: 10, price: 100 }
+];
+
+let logisticsList = [
+    { item: "نولون ونقل بري للميناء", cost: 15000, notes: "سائق تبريد مباشر" },
+    { item: "تعتيق وتحميل الحاوية", cost: 3000, notes: "محطة النخيل" },
+    { item: "تخليص جمركي ومصادقات", cost: 7000, notes: "مستندات ألمانيا" },
+    { item: "مصاريف إذن تفريغ وميناء", cost: 3000, notes: "رسوم الميناء" }
+];
+
+let gratuitiesList = [
+    { recipient: "عمال تحميل الحاوية", reason: "إكرامية تحميل وتفريغ", amount: 500 },
+    { recipient: "مراقب التخليص الجمركي", reason: "إنهاء إجراءات المعاينة", amount: 500 }
+];
+
+function initCreateShipmentPage() {
+    onCustomerSelected();
+    renderSuppliesTable();
+    renderLogisticsTable();
+    renderGratuitiesTable();
+}
+
+function onCustomerSelected() {
+    const cust = document.getElementById("shpCustomer").value;
+    const tbody = document.getElementById("customerOrdersTbody");
+    const warnBox = document.getElementById("noOrderWarningBox");
+    tbody.innerHTML = "";
+
+    const availableOrders = MOCK_CUSTOMER_ORDERS.filter(o => o.customer === cust && o.status === "مفتوحة");
+
+    if (availableOrders.length === 0) {
+        warnBox.classList.remove("hidden");
+        document.getElementById("sectionShipmentDetails").classList.add("opacity-50", "pointer-events-none");
+        document.getElementById("sectionBatchSelection").classList.add("opacity-50", "pointer-events-none");
+        selectedOrder = null;
+        return;
+    }
+
+    warnBox.classList.add("hidden");
+    document.getElementById("sectionShipmentDetails").classList.remove("opacity-50", "pointer-events-none");
+    document.getElementById("sectionBatchSelection").classList.remove("opacity-50", "pointer-events-none");
+
+    availableOrders.forEach((ord, idx) => {
+        const isChecked = idx === 0 ? "checked" : "";
+        if (idx === 0) selectedOrder = ord;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-surface-container-low cursor-pointer";
+        tr.onclick = () => selectOrderRow(ord);
+        tr.innerHTML = `
+            <td class="p-3 font-bold font-data-mono text-primary">${ord.orderId}</td>
+            <td class="p-3 font-data-mono">${ord.date}</td>
+            <td class="p-3 font-bold">${ord.productName}</td>
+            <td class="p-3 font-data-mono">${ord.totalOrderedKg.toLocaleString()} KG</td>
+            <td class="p-3 font-data-mono text-green-700">${ord.alreadyShippedKg.toLocaleString()} KG</td>
+            <td class="p-3 font-data-mono font-bold text-amber-800">${ord.remainingKg.toLocaleString()} KG</td>
+            <td class="p-3 text-center">
+                <input type="radio" name="orderSelect" value="${ord.orderId}" ${isChecked} onchange='selectOrderRow(${JSON.stringify(ord)})'/>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    if (selectedOrder) {
+        updateOrderSelectionDetails();
+    }
+}
+
+function selectOrderRow(ord) {
+    selectedOrder = ord;
+    const radios = document.querySelectorAll("input[name='orderSelect']");
+    radios.forEach(r => { if (r.value === ord.orderId) r.checked = true; });
+    updateOrderSelectionDetails();
+}
+
+function updateOrderSelectionDetails() {
+    if (!selectedOrder) return;
+    document.getElementById("selectedOrderBadge").innerText = selectedOrder.orderId;
+    document.getElementById("dispProductName").innerText = selectedOrder.productName;
+    document.getElementById("dispOrderRemainingKg").innerText = selectedOrder.remainingKg.toLocaleString() + " KG";
+
+    // Set requested shipment qty default to 5000 or remaining
+    document.getElementById("shpRequestedQty").value = Math.min(5000, selectedOrder.remainingKg);
+
+    renderBatchAllocationTable();
+    onShipmentQtyInputChanged();
+}
+
+function renderBatchAllocationTable() {
+    if (!selectedOrder) return;
+    const tbody = document.getElementById("batchAllocationTbody");
+    tbody.innerHTML = "";
+
+    const availableBatches = MOCK_AVAILABLE_BATCHES.filter(b => b.productName === selectedOrder.productName);
+
+    if (availableBatches.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-on-surface-variant font-medium">لا توجد Batches متاحة في مخزن المنتج الجاهز لـ ${selectedOrder.productName}</td></tr>`;
+        calculateBatchAllocationSummary();
+        return;
+    }
+
+    availableBatches.forEach((b, idx) => {
+        // Pre-fill default allocations for demo (e.g. 3000 from 1st, 2000 from 2nd)
+        let defaultAlloc = 0;
+        if (idx === 0) defaultAlloc = 3000;
+        if (idx === 1) defaultAlloc = 2000;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-3 font-bold font-data-mono text-primary">${b.batchId}</td>
+            <td class="p-3 font-data-mono text-xs font-bold text-tertiary-container">${b.sourceOpId}</td>
+            <td class="p-3 text-xs">${b.station}</td>
+            <td class="p-3 font-data-mono font-bold text-green-700">${b.availKg.toLocaleString()} KG</td>
+            <td class="p-3 font-data-mono">${b.costPerKg} EGP</td>
+            <td class="p-3">
+                <input type="number" data-batch-id="${b.batchId}" data-cost="${b.costPerKg}" data-max="${b.availKg}" value="${defaultAlloc}" oninput="calculateBatchAllocationSummary()" class="w-32 bg-surface border border-outline-variant rounded-lg p-2 text-sm font-bold font-data-mono text-tertiary-container focus:border-primary"/>
+            </td>
+            <td class="p-3 font-data-mono font-bold batch-cost-display text-primary">${(defaultAlloc * b.costPerKg).toLocaleString()} EGP</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    calculateBatchAllocationSummary();
+}
+
+function onShipmentQtyInputChanged() {
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    const msg = document.getElementById("qtyValidationMsg");
+
+    if (!selectedOrder) return;
+
+    if (reqQty <= 0) {
+        msg.innerText = "من فضلك أدخل كمية شحنة أكبر من 0";
+        msg.className = "mt-3 p-3 rounded-xl text-xs font-bold bg-red-50 text-red-800 border border-red-200";
+    } else if (reqQty > selectedOrder.remainingKg) {
+        msg.innerText = `خطأ: الكمية المطلوبة (${reqQty.toLocaleString()} KG) تتجاوز الكمية المتبقية في الطلبية (${selectedOrder.remainingKg.toLocaleString()} KG)!`;
+        msg.className = "mt-3 p-3 rounded-xl text-xs font-bold bg-red-50 text-red-800 border border-red-200";
+    } else {
+        const remAfter = selectedOrder.remainingKg - reqQty;
+        msg.innerText = `✓ الكمية مسموحة وضمن المتبقي بالطلبية (المتبقي في الطلبية بعد الشحن: ${remAfter.toLocaleString()} KG)`;
+        msg.className = "mt-3 p-3 rounded-xl text-xs font-bold bg-green-50 text-green-800 border border-green-200";
+    }
+
+    calculateBatchAllocationSummary();
+}
+
+function calculateBatchAllocationSummary() {
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    const inputs = document.querySelectorAll("#batchAllocationTbody input");
+    let totalAllocated = 0;
+    let totalProdCost = 0;
+    let hasExceededMax = false;
+
+    inputs.forEach(inp => {
+        const val = parseFloat(inp.value) || 0;
+        const cost = parseFloat(inp.getAttribute("data-cost")) || 0;
+        const max = parseFloat(inp.getAttribute("data-max")) || 0;
+        const tr = inp.closest("tr");
+        const disp = tr.querySelector(".batch-cost-display");
+
+        if (val > max) {
+            hasExceededMax = true;
+            inp.classList.add("border-red-600", "bg-red-50");
+        } else {
+            inp.classList.remove("border-red-600", "bg-red-50");
+        }
+
+        const batchCost = val * cost;
+        disp.innerText = batchCost.toLocaleString() + " EGP";
+
+        totalAllocated += val;
+        totalProdCost += batchCost;
+    });
+
+    document.getElementById("bValReqKg").innerText = reqQty.toLocaleString();
+    document.getElementById("bValAllocKg").innerText = totalAllocated.toLocaleString();
+
+    const msg = document.getElementById("bValStatusMsg");
+    const box = document.getElementById("batchValBox");
+
+    if (hasExceededMax) {
+        msg.innerText = "خطأ: كمية مخصصة من Batch تتجاوز رصيده المتاح!";
+        box.className = "p-3.5 rounded-xl border flex flex-col md:flex-row justify-between items-center gap-2 text-xs font-bold bg-red-50 border-red-300 text-red-900";
+    } else if (totalAllocated !== reqQty) {
+        msg.innerText = `لم يتم تخصيص كامل كمية الشحنة المطلوبة (${reqQty - totalAllocated} KG فارق التخصيص)`;
+        box.className = "p-3.5 rounded-xl border flex flex-col md:flex-row justify-between items-center gap-2 text-xs font-bold bg-amber-50 border-amber-300 text-amber-900";
+    } else {
+        msg.innerText = "✓ تم تخصيص كامل كمية الشحنة من الـ Batches المتاحة بنجاح!";
+        box.className = "p-3.5 rounded-xl border flex flex-col md:flex-row justify-between items-center gap-2 text-xs font-bold bg-green-50 border-green-300 text-green-900";
+    }
+
+    calculateShipmentFinancials(totalProdCost);
+}
+
+// SUPPLIES DYNAMIC ROWS
+function renderSuppliesTable() {
+    const tbody = document.getElementById("suppliesTbody");
+    tbody.innerHTML = "";
+    let total = 0;
+
+    suppliesList.forEach((s, idx) => {
+        const cost = s.qty * s.price;
+        total += cost;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-2 font-bold">${s.name}</td>
+            <td class="p-2">${s.unit}</td>
+            <td class="p-2">${s.qty.toLocaleString()}</td>
+            <td class="p-2">${s.price} EGP</td>
+            <td class="p-2 font-bold text-tertiary-container">${cost.toLocaleString()} EGP</td>
+            <td class="p-2 text-center">
+                <button onclick="removeSuppliesRow(${idx})" class="text-red-600 hover:text-red-800"><span class="material-symbols-outlined text-base">delete</span></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById("dispSuppliesCostTotal").innerText = total.toLocaleString() + " EGP";
+    calculateShipmentFinancials();
+}
+
+function addSuppliesRow() {
+    const name = prompt("اسم مستلزم التعبئة والشحن:", "استيكرات طباعة وحسية");
+    if (name) {
+        suppliesList.push({ name: name, unit: "Piece", qty: 100, price: 10 });
+        renderSuppliesTable();
+    }
+}
+function removeSuppliesRow(idx) {
+    suppliesList.splice(idx, 1);
+    renderSuppliesTable();
+}
+
+// LOGISTICS COSTS DYNAMIC ROWS
+function renderLogisticsTable() {
+    const tbody = document.getElementById("logisticsTbody");
+    tbody.innerHTML = "";
+    let total = 0;
+
+    logisticsList.forEach((l, idx) => {
+        total += l.cost;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-2 font-bold">${l.item}</td>
+            <td class="p-2 font-bold text-primary">${l.cost.toLocaleString()} EGP</td>
+            <td class="p-2 text-xs font-body-md">${l.notes}</td>
+            <td class="p-2 text-center">
+                <button onclick="removeLogisticsRow(${idx})" class="text-red-600 hover:text-red-800"><span class="material-symbols-outlined text-base">delete</span></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById("dispLogisticsCostTotal").innerText = total.toLocaleString() + " EGP";
+    calculateShipmentFinancials();
+}
+
+function addLogisticsCostRow() {
+    const item = prompt("اسم بند المصروف اللوجستي:", "تأمين ملاحي عالي الجودة");
+    if (item) {
+        logisticsList.push({ item: item, cost: 2000, notes: "مصروف إضافي" });
+        renderLogisticsTable();
+    }
+}
+function removeLogisticsRow(idx) {
+    logisticsList.splice(idx, 1);
+    renderLogisticsTable();
+}
+
+// GRATUITIES DYNAMIC ROWS
+function renderGratuitiesTable() {
+    const tbody = document.getElementById("gratuitiesTbody");
+    tbody.innerHTML = "";
+    let total = 0;
+
+    gratuitiesList.forEach((g, idx) => {
+        total += g.amount;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="p-2 font-bold">${g.recipient}</td>
+            <td class="p-2 text-xs font-body-md">${g.reason}</td>
+            <td class="p-2 font-bold text-amber-900">${g.amount.toLocaleString()} EGP</td>
+            <td class="p-2 text-center">
+                <button onclick="removeGratuityRow(${idx})" class="text-red-600 hover:text-red-800"><span class="material-symbols-outlined text-base">delete</span></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById("dispGratuitiesCostTotal").innerText = total.toLocaleString() + " EGP";
+    calculateShipmentFinancials();
+}
+
+function addGratuityRow() {
+    const rec = prompt("اسم المستلم الإكرامية:", "سائق التبريد");
+    if (rec) {
+        gratuitiesList.push({ recipient: rec, reason: "نولون وإكرامية طريق", amount: 300 });
+        renderGratuitiesTable();
+    }
+}
+function removeGratuityRow(idx) {
+    gratuitiesList.splice(idx, 1);
+    renderGratuitiesTable();
+}
+
+// MAIN FINANCIAL & PROFIT CALCULATIONS
+function calculateShipmentFinancials(providedProdCost = null) {
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    const sellPrice = parseFloat(document.getElementById("shpSellingPriceKg").value) || 0;
+
+    // Calculate Sales Revenue
+    const salesRevenue = reqQty * sellPrice;
+
+    // Calculate Product Cost from selected batches if not provided
+    let prodCost = 0;
+    if (providedProdCost !== null) {
+        prodCost = providedProdCost;
+    } else {
+        const inputs = document.querySelectorAll("#batchAllocationTbody input");
+        inputs.forEach(inp => {
+            const val = parseFloat(inp.value) || 0;
+            const cost = parseFloat(inp.getAttribute("data-cost")) || 0;
+            prodCost += (val * cost);
+        });
+    }
+
+    // Supplies Cost
+    const suppliesCost = suppliesList.reduce((acc, curr) => acc + (curr.qty * curr.price), 0);
+
+    // Logistics Cost
+    const logisticsCost = logisticsList.reduce((acc, curr) => acc + curr.cost, 0);
+
+    // Gratuities Cost
+    const gratuitiesCost = gratuitiesList.reduce((acc, curr) => acc + curr.amount, 0);
+
+    // Total Shipment Cost
+    const totalShipmentCost = prodCost + suppliesCost + logisticsCost + gratuitiesCost;
+
+    // Net Profit
+    const netProfit = salesRevenue - totalShipmentCost;
+    const profitMargin = salesRevenue > 0 ? ((netProfit / salesRevenue) * 100).toFixed(2) : 0;
+    const profitPerKg = reqQty > 0 ? (netProfit / reqQty).toFixed(2) : 0;
+
+    // Update UI Elements
+    document.getElementById("dispSalesQty").innerText = reqQty.toLocaleString() + " KG";
+    document.getElementById("dispTotalSalesRevenue").innerText = salesRevenue.toLocaleString() + " EGP";
+
+    document.getElementById("cardProdCost").innerText = Math.round(prodCost).toLocaleString() + " EGP";
+    document.getElementById("cardSuppliesCost").innerText = Math.round(suppliesCost).toLocaleString() + " EGP";
+    document.getElementById("cardLogisticsCost").innerText = Math.round(logisticsCost).toLocaleString() + " EGP";
+    document.getElementById("cardOtherCost").innerText = Math.round(gratuitiesCost).toLocaleString() + " EGP";
+    document.getElementById("cardTotalShipmentCost").innerText = Math.round(totalShipmentCost).toLocaleString() + " EGP";
+
+    document.getElementById("cardTotalSales").innerText = Math.round(salesRevenue).toLocaleString() + " EGP";
+    document.getElementById("cardTotalCostCopy").innerText = Math.round(totalShipmentCost).toLocaleString() + " EGP";
+
+    document.getElementById("cardNetProfit").innerText = Math.round(netProfit).toLocaleString() + " EGP";
+    document.getElementById("cardProfitMargin").innerText = profitMargin + "%";
+    document.getElementById("cardProfitPerKg").innerText = profitPerKg + " EGP/KG";
+
+    document.getElementById("cardReceivable").innerText = Math.round(salesRevenue).toLocaleString() + " EGP";
+    document.getElementById("cardRemainingReceivable").innerText = Math.round(salesRevenue - 100000).toLocaleString() + " EGP";
+}
+
+// APPROVAL & DRAFT SAVING SIMULATION
+function triggerApproveShipmentModal() {
+    if (!selectedOrder) {
+        showToast("لا تتوفر طلبية عميل مختارة", "error");
+        return;
+    }
+
+    const reqQty = parseFloat(document.getElementById("shpRequestedQty").value) || 0;
+    if (reqQty <= 0 || reqQty > selectedOrder.remainingKg) {
+        showToast("من فضلك أدخل كمية شحنة صحيحة ضمن المتبقي بالطلبية", "error");
+        return;
+    }
+
+    document.getElementById("mCustName").innerText = selectedOrder.customer;
+    document.getElementById("mQty").innerText = reqQty.toLocaleString() + " KG";
+    document.getElementById("mSales").innerText = document.getElementById("dispTotalSalesRevenue").innerText;
+    document.getElementById("mProfit").innerText = document.getElementById("cardNetProfit").innerText;
+
+    document.getElementById("approveModal").classList.remove("hidden");
+}
+
+function closeApproveModal() {
+    document.getElementById("approveModal").classList.add("hidden");
+}
+
+function confirmApproveShipmentAction() {
+    document.getElementById("shpStatusBadge").innerText = "معتمدة ومكتملة";
+    document.getElementById("shpStatusBadge").className = "bg-green-100 text-green-800 font-bold px-3 py-1 rounded-full text-xs font-data-mono";
+
+    closeApproveModal();
+    showToast("تم اعتماد الشحنة رسمياً وخصم الـ Batches وتسجيل الربحية ومستحقات العميل بنجاح!", "success");
+}
+
+function saveShipmentDraft() {
+    showToast("تم حفظ مسودة الشحنة SHP-2026-0025 بنجاح دون خصم رصيد المخزن", "info");
+}
+
+function resetShipmentPrototypeData() {
+    if (confirm("إعادة ضبط الشحنة للوضع التجريبي الافتراضي؟")) {
+        onCustomerSelected();
+        showToast("تم إعادة ضبط الشحنة بنجاح", "info");
+    }
+}
+
+// TOAST HELPERS
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// INITIALIZE
+document.addEventListener("DOMContentLoaded", () => {
+    initCreateShipmentPage();
+});
+</script>
+
+</body>
+</html>

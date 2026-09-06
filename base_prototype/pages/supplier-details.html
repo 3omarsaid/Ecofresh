@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>الملف الكامل للمورد - شركة الخير الزراعية (SUP-001)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Top Breadcrumb & Back Link -->
+    <div class="flex items-center justify-between">
+      <a href="suppliers.html" class="inline-flex items-center gap-1 text-xs text-secondary font-bold hover:underline">
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        العودة لقائمة الموردين
+      </a>
+      <span class="text-xs text-outline font-mono">الملف الكامل للمورد المعتمد</span>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="supplier-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="supplier-toast-msg">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- SUPPLIER PROFILE HEADER CARD -->
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-outline-variant/60 pb-4">
+        
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 bg-primary-container/10 border border-primary/20 rounded-xl flex items-center justify-center text-primary shrink-0">
+            <span class="material-symbols-outlined text-3xl">storefront</span>
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-3 flex-wrap">
+              <h1 id="supplier-profile-name" class="text-xl font-bold text-primary">شركة الخير الزراعية</h1>
+              <span class="font-mono text-xs font-bold bg-surface-variant text-primary px-2.5 py-0.5 rounded border border-outline-variant">SUP-001</span>
+              <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">نشط</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-on-surface-variant flex-wrap pt-0.5">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-outline">call</span> 01012345678</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-outline">person</span> أ. أحمد الخير (مدير المزرعة)</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-outline">location_on</span> البحيرة - مركز كفر الدوار</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supplier Action Buttons Bar -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <a href="supplier-add.html?edit=SUP-001" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">edit</span>
+            تعديل المورد
+          </a>
+          <a href="raw-arrival-add.html?supplier=SUP-001" class="bg-secondary text-white hover:bg-secondary-container px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">input</span>
+            تسجيل وارد
+          </a>
+          <button onclick="openPaymentModal()" class="bg-rose-700 text-white hover:bg-rose-800 px-3.5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">payments</span>
+            تسجيل دفعة
+          </button>
+          <button onclick="window.print()" class="bg-surface border border-outline-variant text-on-surface hover:bg-surface-variant px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">print</span>
+            طباعة كشف الحساب
+          </button>
+        </div>
+      </div>
+
+      <!-- FINANCIAL SUMMARY KPIS BAR -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
+        <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[10px] text-outline font-medium">إجمالي المشتريات</span>
+          <div id="kpi-purchases-val" class="text-lg font-bold text-primary font-mono">500,000.00 <span class="text-xs font-normal">ج.م</span></div>
+        </div>
+        <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[10px] text-outline font-medium">المدفوع الفعلي</span>
+          <div id="kpi-paid-val" class="text-lg font-bold text-emerald-700 font-mono">300,000.00 <span class="text-xs font-normal">ج.م</span></div>
+        </div>
+        <div class="bg-rose-50/60 p-3 rounded-lg border border-rose-200 space-y-1">
+          <span class="text-[10px] text-rose-900 font-medium">الرصيد المستحق (له)</span>
+          <div id="kpi-balance-val" class="text-lg font-bold text-rose-700 font-mono">200,000.00 <span class="text-xs font-normal">ج.م</span></div>
+        </div>
+        <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[10px] text-outline font-medium">آخر دفعة</span>
+          <div class="text-xs font-bold text-primary font-mono mt-1">100,000.00 ج.م <span class="text-[10px] text-outline font-normal block">(08/08/2026)</span></div>
+        </div>
+        <div class="bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[10px] text-outline font-medium">آخر حركة</span>
+          <div class="text-xs font-bold text-secondary font-mono mt-1">PAY-025 <span class="text-[10px] text-outline font-normal block">(08/08/2026)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPPLIER PROFILE TABS INTERFACE -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden space-y-5 p-5">
+      
+      <!-- Tab Controls Bar -->
+      <div class="flex items-center gap-2 border-b border-outline-variant/60 pb-3 overflow-x-auto">
+        <button onclick="switchTab('overview', this)" class="tab-btn active bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">dashboard</span>
+          نظرة عامة
+        </button>
+        <button onclick="switchTab('purchases', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">inventory</span>
+          المشتريات والوارد
+        </button>
+        <button onclick="switchTab('statement', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">receipt_long</span>
+          كشف الحساب
+        </button>
+        <button onclick="switchTab('payments', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">payments</span>
+          المدفوعات
+        </button>
+        <button onclick="switchTab('products', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">sell</span>
+          المنتجات والأسعار المتفق عليها
+        </button>
+        <button onclick="switchTab('traceability', this)" class="tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40 flex items-center gap-1.5 shrink-0">
+          <span class="material-symbols-outlined text-[16px]">timeline</span>
+          التتبع والمخزون
+        </button>
+      </div>
+
+      <!-- TAB 1: OVERVIEW (نظرة عامة) -->
+      <div id="tab-content-overview" class="tab-pane space-y-6">
+        
+        <!-- Operational Statistics Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">إجمالي الكميات الموردة</span>
+            <div class="text-xl font-bold text-primary font-mono">24,285 <span class="text-xs font-normal">KG (24.2 طن)</span></div>
+            <span class="text-[10px] text-emerald-700 font-medium block">توريدات خام هذا الموسم</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">متوسط سعر الشراء الكلي</span>
+            <div class="text-xl font-bold text-primary font-mono">35.00 <span class="text-xs font-normal">ج.م / KG</span></div>
+            <span class="text-[10px] text-on-surface-variant font-medium block">متوسط مرجح لأسعار التوريد</span>
+          </div>
+
+          <div class="bg-surface-variant/30 p-4 rounded-xl border border-outline-variant/60 space-y-1">
+            <span class="text-xs text-outline font-semibold">أكثر صنف تزامناً وتوريداً</span>
+            <div class="text-base font-bold text-emerald-800">فراولة خام ممتاز (IQF)</div>
+            <span class="text-[10px] text-emerald-700 font-medium block">نسبة 100% من إجمالي التوريدات</span>
+          </div>
+        </div>
+
+        <!-- Products & Prices Table Preview -->
+        <div class="bg-surface rounded-lg border border-outline-variant/60 p-4 space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-emerald-700">sell</span>
+              المنتجات والأسعار الافتراضية المتفق عليها
+            </h3>
+            <button onclick="switchTab('products')" class="text-xs text-secondary font-bold hover:underline">إدارة الأسعار</button>
+          </div>
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-2">المنتج</th>
+                <th class="p-2">الوحدة</th>
+                <th class="p-2 font-mono">السعر الافتراضي</th>
+                <th class="p-2 font-mono">آخر سعر منفذ</th>
+                <th class="p-2">آخر تحديث</th>
+                <th class="p-2 text-center">الحالة</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              <tr>
+                <td class="p-2 font-bold text-primary">فراولة خام درجة أولى</td>
+                <td class="p-2 font-mono font-bold">KG</td>
+                <td class="p-2 font-mono font-bold text-emerald-700">50.00 ج.م</td>
+                <td class="p-2 font-mono font-bold">35.00 ج.م</td>
+                <td class="p-2 font-mono text-[11px]">01/08/2026</td>
+                <td class="p-2 text-center"><span class="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full text-[10px] font-bold">مفعل</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Transaction Timeline -->
+        <div class="bg-surface rounded-lg border border-outline-variant/60 p-4 space-y-3">
+          <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-secondary">history</span>
+            آخر الحركات في سجل المورد (Chronological Timeline)
+          </h3>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between bg-surface-variant/30 p-2.5 rounded border border-outline-variant/40">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-[18px] text-emerald-700">payments</span>
+                <div>
+                  <strong class="text-primary block">سداد دفعة للمورد (PAY-025)</strong>
+                  <span class="text-[10px] text-on-surface-variant">تحويل بنكي - البنك الأهلي المصري</span>
+                </div>
+              </div>
+              <div class="text-left font-mono">
+                <span class="text-emerald-700 font-bold text-sm block">-100,000.00 ج.م</span>
+                <span class="text-[10px] text-outline">08/08/2026</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between bg-surface-variant/30 p-2.5 rounded border border-outline-variant/40">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-[18px] text-rose-700">inventory_2</span>
+                <div>
+                  <strong class="text-primary block">وارد خام محطة النور (REC-001)</strong>
+                  <span class="text-[10px] text-on-surface-variant">14.28 طن فراولة خام × 35.00 ج.م/كجم</span>
+                </div>
+              </div>
+              <div class="text-left font-mono">
+                <span class="text-rose-600 font-bold text-sm block">+500,000.00 ج.م</span>
+                <span class="text-[10px] text-outline">01/08/2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: PURCHASES & RECEIVING (المشتريات والوارد) -->
+      <div id="tab-content-purchases" class="tab-pane hidden space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-secondary">input</span>
+            سجل توريد الوارد والمشتريات التشغيلية
+          </h3>
+          <a href="raw-arrival-add.html?supplier=SUP-001" class="bg-secondary text-white hover:bg-secondary-container px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">add</span> تسجيل توريد جديد
+          </a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">رقم الوارد</th>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">المحطة المستلمة</th>
+                <th class="p-3">المنتج</th>
+                <th class="p-3 font-mono">الكمية المقبوضة</th>
+                <th class="p-3 font-mono">سعر الكيلو (ج.م)</th>
+                <th class="p-3 font-mono">إجمالي القيمة</th>
+                <th class="p-3 font-mono">المدفوع</th>
+                <th class="p-3 font-mono">المتبقي</th>
+                <th class="p-3 text-center">التتبع والصفقة</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40 transition-colors">
+                <td class="p-3 font-mono font-bold text-primary">REC-001</td>
+                <td class="p-3 font-mono text-on-surface-variant">01/08/2026</td>
+                <td class="p-3 font-bold">محطة النور المعالجة</td>
+                <td class="p-3">فراولة خام ممتازة</td>
+                <td class="p-3 font-mono font-bold text-emerald-700">14,285.71 KG</td>
+                <td class="p-3 font-mono font-bold">35.00 ج.م</td>
+                <td class="p-3 font-mono font-bold text-sm text-primary">500,000.00 ج.م</td>
+                <td class="p-3 font-mono font-bold text-emerald-700">300,000.00 ج.م</td>
+                <td class="p-3 font-mono font-bold text-rose-600">200,000.00 ج.م</td>
+                <td class="p-3 text-center">
+                  <a href="raw-purchase-details.html?id=REC-001" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-[11px] font-bold border border-outline-variant">
+                    عرض المستند
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: ACCOUNT STATEMENT (كشف الحساب) -->
+      <div id="tab-content-statement" class="tab-pane hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60">
+          <div class="flex items-center gap-4 text-xs font-bold">
+            <span>الرصيد السابق: <strong class="font-mono text-primary">0.00 ج.م</strong></span>
+            <span>إجمالي الاستحقاق: <strong class="font-mono text-rose-600">500,000.00 ج.م</strong></span>
+            <span>إجمالي السداد: <strong class="font-mono text-emerald-700">300,000.00 ج.م</strong></span>
+            <span>الرصيد الحالي: <strong class="font-mono text-rose-700 text-sm">200,000.00 ج.م (له)</strong></span>
+          </div>
+          <button onclick="window.print()" class="bg-surface border border-outline-variant px-3 py-1.5 rounded text-xs font-bold hover:bg-surface-variant">تصدير PDF</button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">رقم الحركة</th>
+                <th class="p-3">البيان الشارح</th>
+                <th class="p-3 font-mono">مستحق له (دائن)</th>
+                <th class="p-3 font-mono">مدفوع له (مدين)</th>
+                <th class="p-3 font-mono">الرصيد التراكمي</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40">
+                <td class="p-3 font-mono">01/08/2026</td>
+                <td class="p-3 font-mono font-bold text-secondary">REC-001</td>
+                <td class="p-3 font-bold text-primary">استلام توريد فراولة خام 14.28 طن × 35.00 ج.م</td>
+                <td class="p-3 font-mono font-bold text-rose-600">500,000.00 ج.م</td>
+                <td class="p-3 font-mono text-gray-400">-</td>
+                <td class="p-3 font-mono font-bold text-rose-600">500,000.00 ج.م</td>
+              </tr>
+              <tr class="hover:bg-surface-variant/40">
+                <td class="p-3 font-mono">03/08/2026</td>
+                <td class="p-3 font-mono font-bold text-secondary">PAY-018</td>
+                <td class="p-3">سداد دفعة نقدية تحويل بنكي الخزينة الرئيسية</td>
+                <td class="p-3 font-mono text-gray-400">-</td>
+                <td class="p-3 font-mono font-bold text-emerald-700">200,000.00 ج.م</td>
+                <td class="p-3 font-mono font-bold text-rose-600">300,000.00 ج.م</td>
+              </tr>
+              <tr class="hover:bg-surface-variant/40">
+                <td class="p-3 font-mono">08/08/2026</td>
+                <td class="p-3 font-mono font-bold text-secondary">PAY-025</td>
+                <td class="p-3">سداد دفعة تحويل بنكي الحساب الرئيسي</td>
+                <td class="p-3 font-mono text-gray-400">-</td>
+                <td class="p-3 font-mono font-bold text-emerald-700">100,000.00 ج.م</td>
+                <td class="p-3 font-mono font-bold text-rose-600">200,000.00 ج.م</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: PAYMENTS (المدفوعات) -->
+      <div id="tab-content-payments" class="tab-pane hidden space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-rose-700">payments</span>
+            سجل المدفوعات الصادرة للمورد
+          </h3>
+          <button onclick="openPaymentModal()" class="bg-rose-700 text-white hover:bg-rose-800 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">add</span> تسجيل دفعة جديدة
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">رقم الدفعة</th>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">طريقة الدفع والحساب</th>
+                <th class="p-3 font-mono">المبلغ (ج.م)</th>
+                <th class="p-3">المرجع</th>
+                <th class="p-3">البيان والملاحظات</th>
+              </tr>
+            </thead>
+            <tbody id="supplier-payments-tbody" class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40">
+                <td class="p-3 font-mono font-bold text-primary">PAY-018</td>
+                <td class="p-3 font-mono text-on-surface-variant">03/08/2026</td>
+                <td class="p-3 font-bold">تحويل بنكي - البنك الأهلي</td>
+                <td class="p-3 font-mono font-bold text-emerald-700 text-sm">200,000.00 ج.م</td>
+                <td class="p-3 font-mono">TRF-99021882</td>
+                <td class="p-3 text-on-surface-variant">سداد دفعة تحت حساب التوريد الخام</td>
+              </tr>
+              <tr class="hover:bg-surface-variant/40">
+                <td class="p-3 font-mono font-bold text-primary">PAY-025</td>
+                <td class="p-3 font-mono text-on-surface-variant">08/08/2026</td>
+                <td class="p-3 font-bold">تحويل بنكي - البنك الأهلي</td>
+                <td class="p-3 font-mono font-bold text-emerald-700 text-sm">100,000.00 ج.م</td>
+                <td class="p-3 font-mono">TRF-99022019</td>
+                <td class="p-3 text-on-surface-variant">دفعة ثانية عن توريد فراولة محطة النور</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 5: PRODUCTS & AGREED PRICES (المنتجات والأسعار المتفق عليها) -->
+      <div id="tab-content-products" class="tab-pane hidden space-y-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-primary text-xs flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-emerald-700">sell</span>
+              قائمة المنتجات والأسعار المعتمدة للمورد
+            </h3>
+            <p class="text-[10px] text-on-surface-variant">الأسعار المسجلة تُستخدم آلياً عند إنشاء أوامر التوريد، وتثبت قيم المعاملات التاريخية</p>
+          </div>
+          <button onclick="openAddProductModal()" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">add</span> إضافة منتج بسعر متفق عليه
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">المنتج</th>
+                <th class="p-3">الوحدة</th>
+                <th class="p-3 font-mono">السعر الافتراضي المتفق عليه</th>
+                <th class="p-3 font-mono">آخر سعر توريد منفذ</th>
+                <th class="p-3">تاريخ التحديث</th>
+                <th class="p-3 text-center">الحالة</th>
+                <th class="p-3 text-center">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="supplier-products-tbody" class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40">
+                <td class="p-3 font-bold text-primary">فراولة خام درجة أولى (IQF)</td>
+                <td class="p-3 font-mono font-bold">KG</td>
+                <td class="p-3 font-mono font-bold text-emerald-700 text-sm">50.00 ج.م / KG</td>
+                <td class="p-3 font-mono font-bold">35.00 ج.م / KG</td>
+                <td class="p-3 font-mono text-on-surface-variant">01/08/2026</td>
+                <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded-full text-[10px] font-bold">مفعل</span></td>
+                <td class="p-3 text-center">
+                  <button onclick="openEditProductPriceModal('فراولة خام', 50.00)" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-[11px] font-bold border border-outline-variant">
+                    تعديل السعر
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 6: TRACEABILITY & STOCK (التتبع والمخزون) -->
+      <div id="tab-content-traceability" class="tab-pane hidden space-y-4">
+        <div class="bg-emerald-50/50 border border-emerald-200 p-4 rounded-xl space-y-2">
+          <h3 class="font-bold text-emerald-900 text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px] text-emerald-700">timeline</span>
+            تتبع توريدات الخام المسحوبة بالمحطات والمتبقي بالمخزن
+          </h3>
+          <p class="text-[11px] text-emerald-800">يربط النظام توريد المورد مباشرة بمخزن خام المحطة ويتابع الكميات المستهلكة في الشحنات</p>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">رقم الباتش/الإذن</th>
+                <th class="p-3">المحطة</th>
+                <th class="p-3 font-mono">الكمية الواردة</th>
+                <th class="p-3 font-mono">المسحوب للشحنات</th>
+                <th class="p-3 font-mono">المتبقي بـ مخزن الخام</th>
+                <th class="p-3">حالة الاستهلاك</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/40">
+              <tr class="hover:bg-surface-variant/40">
+                <td class="p-3 font-mono font-bold text-primary">REC-001 (REC-23-0891)</td>
+                <td class="p-3 font-bold">محطة النور - البحيرة</td>
+                <td class="p-3 font-mono font-bold">10,000 KG</td>
+                <td class="p-3 font-mono font-bold text-secondary">4,000 KG (شحنة SH-000125)</td>
+                <td class="p-3 font-mono font-bold text-emerald-700 text-sm">6,000 KG</td>
+                <td class="p-3"><span class="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded font-bold">مسحوب جزئياً (تجميد IQF)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL 1: PAYMENT REGISTRATION FOR THIS SUPPLIER -->
+  <div id="supplier-payment-modal" class="hidden fixed inset-0 z-[100] bg-on-surface/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-rose-50 border-rose-200">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[22px] text-rose-800">payments</span>
+          <h3 class="font-bold text-rose-900 text-sm">تسجيل دفعة سداد للمورد</h3>
+        </div>
+        <button onclick="closePaymentModal()" class="text-on-surface-variant hover:text-error transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
+      <form onsubmit="submitSupplierPayment(event)" class="p-5 space-y-4 text-xs">
+        <div class="bg-surface-variant/40 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[10px] text-outline font-medium">المورد المحدد (معين تلقائياً):</span>
+          <div class="font-bold text-primary text-sm">شركة الخير الزراعية (SUP-001)</div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">مبلغ الدفعة المدفوع (ج.م) <span class="text-rose-600">*</span></label>
+          <div class="relative">
+            <input id="payment-amount-input" type="number" step="100" required placeholder="0.00" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 pl-12 font-mono font-bold text-sm focus:outline-none focus:border-primary"/>
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-outline">ج.م</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">طريقة الدفع والحساب <span class="text-rose-600">*</span></label>
+          <select id="payment-method-select" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-bold focus:outline-none focus:border-primary">
+            <option value="تحويل بنكي - البنك الأهلي">تحويل بنكي - البنك الأهلي المصري</option>
+            <option value="خزينة رئيسية">خزينة رئيسية - نقدية</option>
+            <option value="شيك بنكي صادرة">شيك بنكي مقبول الدفع</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">ملاحظات إضافية / رقم الحوالة</label>
+          <input id="payment-notes-input" type="text" placeholder="مثال: سداد دفعة تحت حساب المشتريات" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closePaymentModal()" class="px-4 py-2 bg-surface border border-outline-variant rounded-lg text-xs font-bold hover:bg-surface-variant transition-colors">إلغاء</button>
+          <button type="submit" class="px-5 py-2 bg-rose-700 text-white rounded-lg text-xs font-bold hover:bg-rose-800 transition-all shadow-sm">تأكيد وتسجيل الدفعة</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ADD PRODUCT PRICE MODAL -->
+  <div id="add-product-price-modal" class="hidden fixed inset-0 z-[100] bg-on-surface/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-variant/30">
+        <h3 class="font-bold text-primary text-sm flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">add_circle</span>
+          إضافة منتج بسعر متفق عليه للمورد
+        </h3>
+        <button onclick="closeAddProductModal()" class="text-on-surface-variant hover:text-error transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="submitAddProduct(event)" class="p-5 space-y-4 text-xs">
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">اسم المنتج المستورد <span class="text-rose-600">*</span></label>
+          <input id="new-product-name" type="text" required placeholder="مثال: مانجو كيت ممتاز" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-bold focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="font-semibold text-on-surface-variant">السعر الافتراضي <span class="text-rose-600">*</span></label>
+            <input id="new-product-price" type="number" step="0.5" required placeholder="50.00" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-mono font-bold focus:outline-none focus:border-primary"/>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="font-semibold text-on-surface-variant">الوحدة</label>
+            <select id="new-product-unit" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-bold focus:outline-none focus:border-primary">
+              <option value="KG">كيلوجرام (KG)</option>
+              <option value="TON">طن (TON)</option>
+              <option value="BOX">كرتونة (BOX)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddProductModal()" class="px-4 py-2 bg-surface border border-outline-variant rounded-lg text-xs font-bold hover:bg-surface-variant transition-colors">إلغاء</button>
+          <button type="submit" class="px-5 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container transition-all shadow-sm">حفظ المنتج والسعر</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+// Master State for Supplier Details Profile
+let supplierProfileState = {
+  id: "SUP-001",
+  name: "شركة الخير الزراعية",
+  totalPurchases: 500000,
+  paidAmount: 300000,
+  paymentsHistory: [
+    { doc: "PAY-018", date: "03/08/2026", method: "تحويل بنكي - البنك الأهلي", amount: 200000, ref: "TRF-99021882", notes: "سداد دفعة تحت حساب التوريد الخام" },
+    { doc: "PAY-025", date: "08/08/2026", method: "تحويل بنكي - البنك الأهلي", amount: 100000, ref: "TRF-99022019", notes: "دفعة ثانية عن توريد فراولة محطة النور" }
+  ],
+  products: [
+    { name: "فراولة خام درجة أولى (IQF)", unit: "KG", defaultPrice: 50.00, lastPrice: 35.00, date: "01/08/2026", status: "مفعل" }
+  ]
+};
+
+function switchTab(tabId, btnElement) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('bg-primary', 'text-white');
+    b.classList.add('bg-surface-variant/60', 'text-on-surface');
+  });
+
+  const contentEl = document.getElementById(`tab-content-${tabId}`);
+  if (contentEl) contentEl.classList.remove('hidden');
+
+  if (btnElement) {
+    btnElement.classList.remove('bg-surface-variant/60', 'text-on-surface');
+    btnElement.classList.add('bg-primary', 'text-white');
+  }
+}
+
+// Payment Modal Logic
+function openPaymentModal() {
+  document.getElementById('payment-amount-input').value = '';
+  document.getElementById('supplier-payment-modal').classList.remove('hidden');
+}
+
+function closePaymentModal() {
+  document.getElementById('supplier-payment-modal').classList.add('hidden');
+}
+
+function submitSupplierPayment(e) {
+  e.preventDefault();
+  const amt = parseFloat(document.getElementById('payment-amount-input').value) || 0;
+  const method = document.getElementById('payment-method-select').value;
+  const notes = document.getElementById('payment-notes-input').value;
+
+  if (amt <= 0) return;
+
+  const todayStr = "14/08/2026";
+  const docId = `PAY-0${Math.floor(100 + Math.random() * 900)}`;
+
+  supplierProfileState.paidAmount += amt;
+  supplierProfileState.paymentsHistory.push({
+    doc: docId,
+    date: todayStr,
+    method: method,
+    amount: amt,
+    ref: `TRF-${Math.floor(10000000 + Math.random() * 90000000)}`,
+    notes: notes || 'سداد دفعة للمورد'
+  });
+
+  closePaymentModal();
+  updateFinancialKPIs();
+  renderPaymentsTable();
+
+  showToast(`تم تسجيل دفعة بقيمة ${amt.toLocaleString()} ج.م للمورد بنجاح!`, 'success');
+}
+
+function updateFinancialKPIs() {
+  const remaining = supplierProfileState.totalPurchases - supplierProfileState.paidAmount;
+  document.getElementById('kpi-purchases-val').innerHTML = `${supplierProfileState.totalPurchases.toLocaleString('ar-EG', {minimumFractionDigits: 2})} <span class="text-xs font-normal">ج.م</span>`;
+  document.getElementById('kpi-paid-val').innerHTML = `${supplierProfileState.paidAmount.toLocaleString('ar-EG', {minimumFractionDigits: 2})} <span class="text-xs font-normal">ج.م</span>`;
+  document.getElementById('kpi-balance-val').innerHTML = `${remaining.toLocaleString('ar-EG', {minimumFractionDigits: 2})} <span class="text-xs font-normal">ج.م</span>`;
+}
+
+function renderPaymentsTable() {
+  const tbody = document.getElementById('supplier-payments-tbody');
+  tbody.innerHTML = '';
+  supplierProfileState.paymentsHistory.forEach(p => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-surface-variant/40">
+        <td class="p-3 font-mono font-bold text-primary">${p.doc}</td>
+        <td class="p-3 font-mono text-on-surface-variant">${p.date}</td>
+        <td class="p-3 font-bold">${p.method}</td>
+        <td class="p-3 font-mono font-bold text-emerald-700 text-sm">${p.amount.toLocaleString()} ج.م</td>
+        <td class="p-3 font-mono">${p.ref}</td>
+        <td class="p-3 text-on-surface-variant">${p.notes}</td>
+      </tr>
+    `;
+  });
+}
+
+// Add/Edit Product Modal Logic
+function openAddProductModal() {
+  document.getElementById('new-product-name').value = '';
+  document.getElementById('new-product-price').value = '';
+  document.getElementById('add-product-price-modal').classList.remove('hidden');
+}
+
+function closeAddProductModal() {
+  document.getElementById('add-product-price-modal').classList.add('hidden');
+}
+
+function submitAddProduct(e) {
+  e.preventDefault();
+  const name = document.getElementById('new-product-name').value;
+  const price = parseFloat(document.getElementById('new-product-price').value) || 0;
+  const unit = document.getElementById('new-product-unit').value;
+
+  if (!name || price <= 0) return;
+
+  supplierProfileState.products.push({
+    name: name,
+    unit: unit,
+    defaultPrice: price,
+    lastPrice: price,
+    date: "14/08/2026",
+    status: "مفعل"
+  });
+
+  closeAddProductModal();
+  renderProductsTable();
+  showToast(`تمت إضافة منتج ${name} بسعر ${price.toFixed(2)} ج.م بنجاح!`, 'success');
+}
+
+function renderProductsTable() {
+  const tbody = document.getElementById('supplier-products-tbody');
+  tbody.innerHTML = '';
+  supplierProfileState.products.forEach(p => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-surface-variant/40">
+        <td class="p-3 font-bold text-primary">${p.name}</td>
+        <td class="p-3 font-mono font-bold">${p.unit}</td>
+        <td class="p-3 font-mono font-bold text-emerald-700 text-sm">${p.defaultPrice.toFixed(2)} ج.م / ${p.unit}</td>
+        <td class="p-3 font-mono font-bold">${p.lastPrice.toFixed(2)} ج.م / ${p.unit}</td>
+        <td class="p-3 font-mono text-on-surface-variant">${p.date}</td>
+        <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded-full text-[10px] font-bold">${p.status}</span></td>
+        <td class="p-3 text-center">
+          <button onclick="openEditProductPriceModal('${p.name}', ${p.defaultPrice})" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-[11px] font-bold border border-outline-variant">
+            تعديل السعر
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function openEditProductPriceModal(name, price) {
+  const newPrice = prompt(`تعديل السعر الافتراضي للمنتج: ${name}\nأدخل السعر الجديد بالجنيه (ملاحظة: السعر الجديد لن يؤثر على المعاملات التاريخية السابقة):`, price);
+  if (newPrice !== null && !isNaN(parseFloat(newPrice))) {
+    const p = supplierProfileState.products.find(item => item.name === name);
+    if (p) {
+      p.defaultPrice = parseFloat(newPrice);
+      p.date = "14/08/2026";
+      renderProductsTable();
+      showToast(`تم تعديل السعر الافتراضي لـ ${name} إلى ${p.defaultPrice.toFixed(2)} ج.م بنجاح`, 'success');
+    }
+  }
+}
+
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('supplier-toast');
+  document.getElementById('supplier-toast-msg').innerText = msg;
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 3500);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateFinancialKPIs();
+  renderPaymentsTable();
+  renderProductsTable();
+});
+</script>
+</body>
+</html>

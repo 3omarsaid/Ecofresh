@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>تفاصيل وسجل حركة المخزن - نظام التصدير</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+<aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+<main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+  
+  <!-- Header Banner -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+    <div class="space-y-1">
+      <div class="flex items-center gap-3 flex-wrap">
+        <h1 id="wh-title" class="text-xl font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-[24px] text-emerald-800">warehouse</span>
+          مخزن خام محطة النور
+        </h1>
+        <span id="wh-type-badge" class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded text-xs font-bold">مخزن مواد خام</span>
+        <span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full text-xs font-bold">نشط</span>
+      </div>
+      <p class="text-xs text-on-surface-variant flex items-center gap-2">
+        <span class="font-semibold">المحطة التابعة:</span>
+        <a href="station-details.html" class="text-primary font-bold hover:underline flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">factory</span>
+          محطة النور للمعالجة والتجميد - البحيرة
+        </a>
+      </p>
+    </div>
+    
+    <div class="flex items-center gap-2.5">
+      <a href="warehouses.html" class="bg-surface border border-outline-variant text-on-surface px-4 py-2 rounded-lg text-xs font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        العودة لقائمة المخازن
+      </a>
+      <a href="raw-arrival-add.html" class="bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-primary-container transition-all flex items-center gap-1.5 shadow-sm">
+        <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+        تسجيل توريد جديد
+      </a>
+    </div>
+  </div>
+
+  <!-- Top KPI Cards for this Warehouse -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm">
+      <span class="text-xs text-on-surface-variant font-medium">الرصيد الحالي المتاح</span>
+      <div id="kpi-balance" class="text-xl font-bold text-emerald-800 font-mono mt-1">8,000 <span class="text-xs font-normal">KG</span></div>
+    </div>
+    <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm">
+      <span class="text-xs text-on-surface-variant font-medium">إجمالي الواردات التراكمية</span>
+      <div id="kpi-incoming" class="text-xl font-bold text-primary font-mono mt-1">20,000 <span class="text-xs font-normal">KG</span></div>
+    </div>
+    <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm">
+      <span class="text-xs text-on-surface-variant font-medium">إجمالي المنصرفات للتشغيل</span>
+      <div id="kpi-outgoing" class="text-xl font-bold text-rose-700 font-mono mt-1">12,000 <span class="text-xs font-normal">KG</span></div>
+    </div>
+    <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm">
+      <span class="text-xs text-on-surface-variant font-medium">الهالك المرتبط بالتشغيل</span>
+      <div id="kpi-waste" class="text-xl font-bold text-amber-800 font-mono mt-1">800 <span class="text-xs font-normal">KG (6.67%)</span></div>
+    </div>
+    <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm">
+      <span class="text-xs text-on-surface-variant font-medium">إجمالي الحركات المعتمدة</span>
+      <div id="kpi-movements" class="text-xl font-bold text-secondary font-mono mt-1">24 <span class="text-xs font-normal">حركة</span></div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs (5 Tabs) -->
+  <div class="border-b border-outline-variant flex gap-2 overflow-x-auto bg-surface px-4 pt-2 rounded-xl border border-outline-variant/60 shadow-sm" role="tablist">
+    <button onclick="switchWhTab('overview')" id="wh-tab-overview" class="px-4 py-3 text-xs font-bold border-b-2 border-primary text-primary transition-all flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px]">dashboard</span>
+      نظرة عامة ورصيد التخزين
+    </button>
+    <button onclick="switchWhTab('incoming')" id="wh-tab-incoming" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px]">south_west</span>
+      سجل توريدات الوارد
+    </button>
+    <button onclick="switchWhTab('outgoing')" id="wh-tab-outgoing" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px]">north_east</span>
+      سجل مسحوبات المنصرف
+    </button>
+    <button onclick="switchWhTab('ledger')" id="wh-tab-ledger" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+      كشف حساب حركات المخزن (Ledger)
+    </button>
+    <button onclick="switchWhTab('waste')" id="wh-tab-waste" class="px-4 py-3 text-xs font-bold border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px]">account_tree</span>
+      الهالك والتتبع الخاص بالمخزن
+    </button>
+  </div>
+
+  <!-- TAB 1: OVERVIEW -->
+  <div id="wh-content-overview" class="space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Balance Calculation Formula Preview Card (8 cols) -->
+      <div class="lg:col-span-8 bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <h3 class="font-bold text-primary text-sm border-b border-outline-variant/60 pb-3 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">calculate</span>
+          معادلة رصيد التخزين المباشر للمخزن
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-surface-variant/40 p-4 rounded-xl border border-outline-variant/60 text-center">
+          <div class="bg-surface p-3 rounded-lg border border-emerald-200">
+            <span class="text-xs text-on-surface-variant font-medium block">الوارد التراكمي (+)</span>
+            <span class="text-lg font-bold text-emerald-800 font-mono mt-1 block">20,000 KG</span>
+          </div>
+          <div class="bg-surface p-3 rounded-lg border border-rose-200">
+            <span class="text-xs text-on-surface-variant font-medium block">المنصرف للشحنات (-)</span>
+            <span class="text-lg font-bold text-rose-700 font-mono mt-1 block">12,000 KG</span>
+          </div>
+          <div class="bg-primary text-white p-3 rounded-lg shadow-sm">
+            <span class="text-xs text-white/80 font-medium block">الرصيد المتبقي الفعلي (=)</span>
+            <span class="text-lg font-bold text-emerald-400 font-mono mt-1 block">8,000 KG</span>
+          </div>
+        </div>
+
+        <div class="text-xs text-on-surface-variant bg-emerald-50 text-emerald-900 border border-emerald-200 p-3 rounded-lg flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px] text-emerald-700">check_circle</span>
+          تنبيه مخزني: الهالك المرتبط بالإنتاج (800 كجم) محسب ضمن المنصرفات ولا يخصم مرة ثانية لمنع الخصم المزدوج.
+        </div>
+      </div>
+
+      <!-- Largest Shipments Card (4 cols) -->
+      <div class="lg:col-span-4 bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <h3 class="font-bold text-primary text-sm border-b border-outline-variant/60 pb-3 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">trending_down</span>
+          أكبر مسحوبات الشحنات
+        </h3>
+        <div class="space-y-3 text-xs">
+          <div class="flex justify-between items-center bg-surface-variant/40 p-2.5 rounded-lg border border-outline-variant/60">
+            <div class="flex flex-col">
+              <a href="shipment-details.html" class="font-bold text-primary hover:underline">SHP-2026-001</a>
+              <span class="text-[10px] text-on-surface-variant">شركة سما للتوزيع</span>
+            </div>
+            <span class="font-mono font-bold text-rose-700">4,000 KG</span>
+          </div>
+          <div class="flex justify-between items-center bg-surface-variant/40 p-2.5 rounded-lg border border-outline-variant/60">
+            <div class="flex flex-col">
+              <a href="shipment-details.html" class="font-bold text-primary hover:underline">SHP-2026-002</a>
+              <span class="text-[10px] text-on-surface-variant">الشركة الدولية</span>
+            </div>
+            <span class="font-mono font-bold text-rose-700">4,000 KG</span>
+          </div>
+          <div class="flex justify-between items-center bg-surface-variant/40 p-2.5 rounded-lg border border-outline-variant/60">
+            <div class="flex flex-col">
+              <a href="shipment-details.html" class="font-bold text-primary hover:underline">SHP-2026-003</a>
+              <span class="text-[10px] text-on-surface-variant">شركة الأهرام</span>
+            </div>
+            <span class="font-mono font-bold text-rose-700">4,000 KG</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: INCOMING LOG -->
+  <div id="wh-content-incoming" class="space-y-6 hidden">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-4 space-y-3">
+      <h3 class="text-sm font-bold text-primary flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">south_west</span>
+        سجل توريدات الوارد (ربط الفواتير بالموارد)
+      </h3>
+      <table class="w-full text-right text-xs">
+        <thead class="bg-surface-variant text-on-surface-variant font-bold border-b border-outline-variant">
+          <tr>
+            <th class="p-3">التاريخ</th>
+            <th class="p-3">رقم التوريد / الفاتورة</th>
+            <th class="p-3">المورد</th>
+            <th class="p-3">المنتج الخام</th>
+            <th class="p-3">الكمية الواردة</th>
+            <th class="p-3">سعر الشراء</th>
+            <th class="p-3">مصاريف النقل</th>
+            <th class="p-3">الرصيد بعد الحركة</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/60">
+          <tr class="hover:bg-surface-variant/40">
+            <th class="p-3 font-mono text-on-surface-variant">2026-08-01</th>
+            <td class="p-3 font-mono font-bold text-primary"><a href="raw-purchase-details.html" class="hover:underline">PUR-2026-001</a></td>
+            <td class="p-3 font-bold text-primary"><a href="supplier-details.html" class="hover:underline">شركة الخير المزرعة</a></td>
+            <td class="p-3">فراولة خام 25/30</td>
+            <td class="p-3 font-mono font-bold text-emerald-800">+ 10,000 KG</td>
+            <td class="p-3 font-mono">35.00 ج.م/KG</td>
+            <td class="p-3 font-mono">1,500.00 ج.م</td>
+            <td class="p-3 font-mono font-bold text-primary">10,000 KG</td>
+          </tr>
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-05</td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="raw-purchase-details.html" class="hover:underline">PUR-2026-005</a></td>
+            <td class="p-3 font-bold text-primary"><a href="supplier-details.html" class="hover:underline">شركة الخير المزرعة</a></td>
+            <td class="p-3">فراولة خام 25/30</td>
+            <td class="p-3 font-mono font-bold text-emerald-800">+ 10,000 KG</td>
+            <td class="p-3 font-mono">35.00 ج.م/KG</td>
+            <td class="p-3 font-mono">1,500.00 ج.م</td>
+            <td class="p-3 font-mono font-bold text-primary">20,000 KG</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 3: OUTGOING LOG -->
+  <div id="wh-content-outgoing" class="space-y-6 hidden">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-4 space-y-3">
+      <h3 class="text-sm font-bold text-primary flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">north_east</span>
+        سجل مسحوبات المنصرف للتشغيل والشحنات
+      </h3>
+      <table class="w-full text-right text-xs">
+        <thead class="bg-surface-variant text-on-surface-variant font-bold border-b border-outline-variant">
+          <tr>
+            <th class="p-3">التاريخ</th>
+            <th class="p-3">رقم الشحنة</th>
+            <th class="p-3">العميل المستورد</th>
+            <th class="p-3">المنتج</th>
+            <th class="p-3">الخام المسحوب</th>
+            <th class="p-3">الوزن الصافي الناتج</th>
+            <th class="p-3">الهالك الناتج</th>
+            <th class="p-3">نسبة الهالك</th>
+            <th class="p-3">الرصيد بعد الحركة</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/60">
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-03</td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html" class="hover:underline">SHP-2026-001</a></td>
+            <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">شركة سما للتوزيع</a></td>
+            <td class="p-3">فراولة مجمدة 25/30</td>
+            <td class="p-3 font-mono font-bold text-rose-700">- 4,000 KG</td>
+            <td class="p-3 font-mono font-bold text-emerald-800">3,700 KG</td>
+            <td class="p-3 font-mono text-amber-800">300 KG</td>
+            <td class="p-3 font-mono font-bold text-rose-700">7.50%</td>
+            <td class="p-3 font-mono font-bold text-primary">16,000 KG</td>
+          </tr>
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-07</td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html" class="hover:underline">SHP-2026-002</a></td>
+            <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">الشركة الدولية</a></td>
+            <td class="p-3">فراولة مجمدة 25/30</td>
+            <td class="p-3 font-mono font-bold text-rose-700">- 4,000 KG</td>
+            <td class="p-3 font-mono font-bold text-emerald-800">3,750 KG</td>
+            <td class="p-3 font-mono text-amber-800">250 KG</td>
+            <td class="p-3 font-mono font-bold text-rose-700">6.25%</td>
+            <td class="p-3 font-mono font-bold text-primary">12,000 KG</td>
+          </tr>
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-11</td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html" class="hover:underline">SHP-2026-003</a></td>
+            <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">شركة الأهرام</a></td>
+            <td class="p-3">فراولة مجمدة 25/30</td>
+            <td class="p-3 font-mono font-bold text-rose-700">- 4,000 KG</td>
+            <td class="p-3 font-mono font-bold text-emerald-800">3,750 KG</td>
+            <td class="p-3 font-mono text-amber-800">250 KG</td>
+            <td class="p-3 font-mono font-bold text-rose-700">6.25%</td>
+            <td class="p-3 font-mono font-bold text-primary">8,000 KG</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 4: STOCK MOVEMENTS LEDGER -->
+  <div id="wh-content-ledger" class="space-y-6 hidden">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-4 space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+          كشف حساب حركات المخزن (Warehouse Ledger Statement)
+        </h3>
+        <span class="text-xs text-on-surface-variant font-mono">قاعدة الاحتساب: الرصيد = الوارد - المنصرف</span>
+      </div>
+
+      <table class="w-full text-right text-xs">
+        <thead class="bg-surface-variant text-on-surface-variant font-bold border-b border-outline-variant">
+          <tr>
+            <th class="p-3">التاريخ</th>
+            <th class="p-3">نوع الحركة</th>
+            <th class="p-3">رقم المرجع</th>
+            <th class="p-3">البيان والشرح</th>
+            <th class="p-3 text-emerald-800">وارد (+)</th>
+            <th class="p-3 text-rose-700">منصرف (-)</th>
+            <th class="p-3">الرصيد بعد الحركة</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/60">
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-01</td>
+            <td class="p-3"><span class="bg-emerald-100 text-emerald-900 text-[10px] font-bold px-2 py-0.5 rounded">وارد مشتريات</span></td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="raw-purchase-details.html" class="hover:underline">PUR-2026-001</a></td>
+            <td class="p-3">توريد خام من شركة الخير المزرعة</td>
+            <td class="p-3 font-mono font-bold text-emerald-800">+ 10,000 KG</td>
+            <td class="p-3 font-mono text-outline">0 KG</td>
+            <td class="p-3 font-mono font-bold text-primary">10,000 KG</td>
+          </tr>
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-03</td>
+            <td class="p-3"><span class="bg-rose-100 text-rose-900 text-[10px] font-bold px-2 py-0.5 rounded">صرف تشغيل</span></td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html" class="hover:underline">SHP-2026-001</a></td>
+            <td class="p-3">سحب تشغيل لشحنة شركة سما (صافي: 3,700 كجم / هالك: 300 كجم)</td>
+            <td class="p-3 font-mono text-outline">0 KG</td>
+            <td class="p-3 font-mono font-bold text-rose-700">- 4,000 KG</td>
+            <td class="p-3 font-mono font-bold text-primary">6,000 KG</td>
+          </tr>
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-05</td>
+            <td class="p-3"><span class="bg-emerald-100 text-emerald-900 text-[10px] font-bold px-2 py-0.5 rounded">وارد مشتريات</span></td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="raw-purchase-details.html" class="hover:underline">PUR-2026-005</a></td>
+            <td class="p-3">توريد خام من شركة الخير المزرعة</td>
+            <td class="p-3 font-mono font-bold text-emerald-800">+ 10,000 KG</td>
+            <td class="p-3 font-mono text-outline">0 KG</td>
+            <td class="p-3 font-mono font-bold text-primary">16,000 KG</td>
+          </tr>
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-07</td>
+            <td class="p-3"><span class="bg-rose-100 text-rose-900 text-[10px] font-bold px-2 py-0.5 rounded">صرف تشغيل</span></td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html" class="hover:underline">SHP-2026-002</a></td>
+            <td class="p-3">سحب تشغيل لشحنة الشركة الدولية</td>
+            <td class="p-3 font-mono text-outline">0 KG</td>
+            <td class="p-3 font-mono font-bold text-rose-700">- 4,000 KG</td>
+            <td class="p-3 font-mono font-bold text-primary">12,000 KG</td>
+          </tr>
+          <tr class="hover:bg-surface-variant/40">
+            <td class="p-3 font-mono text-on-surface-variant">2026-08-11</td>
+            <td class="p-3"><span class="bg-rose-100 text-rose-900 text-[10px] font-bold px-2 py-0.5 rounded">صرف تشغيل</span></td>
+            <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html" class="hover:underline">SHP-2026-003</a></td>
+            <td class="p-3">سحب تشغيل لشحنة شركة الأهرام</td>
+            <td class="p-3 font-mono text-outline">0 KG</td>
+            <td class="p-3 font-mono font-bold text-rose-700">- 4,000 KG</td>
+            <td class="p-3 font-mono font-bold text-primary">8,000 KG</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 5: WASTE & TRACEABILITY TREE -->
+  <div id="wh-content-waste" class="space-y-6 hidden">
+    <div class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h3 class="font-bold text-primary text-sm flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-amber-800">account_tree</span>
+          تتبع الهالك والكميات المنصرفة من هذا المخزن
+        </h3>
+        <a href="waste-monitoring.html" class="text-xs text-primary font-bold hover:underline flex items-center gap-1">
+          الانتقال لمركز التتبع الشامل
+          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+        </a>
+      </div>
+
+      <!-- Traceability Visual Chain -->
+      <div class="bg-surface-variant/40 p-4 rounded-xl border border-outline-variant/60 space-y-3">
+        <span class="text-xs font-bold text-primary">سلسلة التتبع الرأسية (360° Traceability Chain):</span>
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span class="bg-rose-100 text-rose-900 px-2.5 py-1 rounded-lg font-bold border border-rose-300">هالك خام: 300 KG (7.5%)</span>
+          <span class="material-symbols-outlined text-outline">arrow_back</span>
+          <a href="shipment-details.html" class="bg-surface border border-outline-variant px-2.5 py-1 rounded-lg font-bold hover:bg-surface-variant text-primary">شحنة SHP-2026-001</a>
+          <span class="material-symbols-outlined text-outline">arrow_back</span>
+          <span class="bg-surface border border-outline-variant px-2.5 py-1 rounded-lg font-bold text-on-surface">مقاول محطة النور</span>
+          <span class="material-symbols-outlined text-outline">arrow_back</span>
+          <span class="bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-lg font-bold border border-emerald-300">مخزن خام محطة النور</span>
+          <span class="material-symbols-outlined text-outline">arrow_back</span>
+          <a href="raw-purchase-details.html" class="bg-surface border border-outline-variant px-2.5 py-1 rounded-lg font-bold hover:bg-surface-variant text-primary">فاتورة PUR-2026-001</a>
+          <span class="material-symbols-outlined text-outline">arrow_back</span>
+          <a href="supplier-details.html" class="bg-surface border border-outline-variant px-2.5 py-1 rounded-lg font-bold hover:bg-surface-variant text-primary">المورد: شركة الخير المزرعة</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function switchWhTab(tabKey) {
+  const tabs = ['overview', 'incoming', 'outgoing', 'ledger', 'waste'];
+  tabs.forEach(key => {
+    const btn = document.getElementById(`wh-tab-${key}`);
+    const content = document.getElementById(`wh-content-${key}`);
+    if (key === tabKey) {
+      btn.classList.add('border-primary', 'text-primary');
+      btn.classList.remove('border-transparent', 'text-on-surface-variant');
+      content.classList.remove('hidden');
+    } else {
+      btn.classList.remove('border-primary', 'text-primary');
+      btn.classList.add('border-transparent', 'text-on-surface-variant');
+      content.classList.add('hidden');
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const wh = params.get('wh');
+  if (wh === 'pkg-noor') {
+    document.getElementById('wh-title').innerHTML = '<span class="material-symbols-outlined text-[24px] text-secondary">inventory_2</span> مخزن مستلزمات محطة النور';
+    document.getElementById('wh-type-badge').innerText = 'مخزن مستلزمات أصلية';
+    document.getElementById('wh-type-badge').className = 'bg-blue-100 text-blue-900 border border-blue-300 px-2.5 py-0.5 rounded text-xs font-bold';
+    document.getElementById('kpi-balance').innerHTML = '15,000 <span class="text-xs font-normal">مستلزمات (كراتين، أكياس، لزق)</span>';
+    document.getElementById('kpi-incoming').innerHTML = '20,000 <span class="text-xs font-normal">وحدة</span>';
+    document.getElementById('kpi-outgoing').innerHTML = '5,000 <span class="text-xs font-normal">وحدة</span>';
+    document.getElementById('kpi-waste').innerHTML = '120 <span class="text-xs font-normal">وحدة (2.4%)</span>';
+  }
+});
+</script>
+</body>
+</html>

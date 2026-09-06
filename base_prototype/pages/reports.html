@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مركز التقارير والتحليلات - ERP التصدير</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- SECTION 1: PAGE HEADER BANNER -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">analytics</span>
+            مركز التقارير والتحليلات
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">مركز اتخاذ القرار الإداري والمالي</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">رؤية شاملة للأداء المالي والتشغيلي والمخزون والربحية ودعم اتخاذ القرارات الإستراتيجية</p>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="openCustomReportModal()" class="bg-surface border border-outline-variant text-primary text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">tune</span>
+          تخصيص التقرير
+        </button>
+        <button onclick="window.print()" class="bg-surface border border-outline-variant text-primary text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">print</span>
+          طباعة
+        </button>
+        <button onclick="window.showToast('تم تصدير التقرير الفعلي المصفى بنجاح!', 'success')" class="bg-primary text-white text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-primary-container transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">download</span>
+          تصدير التقرير
+        </button>
+      </div>
+    </div>
+
+    <!-- GLOBAL DATE & ENTITY FILTERS BAR -->
+    <div class="bg-surface rounded-xl border border-outline-variant p-4 shadow-sm space-y-3">
+      <div class="flex items-center justify-between border-b border-outline-variant/60 pb-2">
+        <h3 class="text-xs font-bold text-primary flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">filter_alt</span>
+          شريط التصفية الموحد للتقارير (Global Analytical Filters)
+        </h3>
+        <span class="text-[11px] text-on-surface-variant">تحدد كافة المؤشرات والجداول ديناميكياً وفق التصفية المحددة</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 text-xs">
+        
+        <div class="space-y-1">
+          <label class="font-bold text-outline text-[10px]">الفترة الزمنية</label>
+          <select id="filter-global-date" onchange="filterAllReports()" class="w-full bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+            <option value="THIS_MONTH" selected>هذا الشهر (أغسطس 2026)</option>
+            <option value="TODAY">اليوم</option>
+            <option value="THIS_WEEK">هذا الأسبوع</option>
+            <option value="THIS_QUARTER">هذا الربع (Q3)</option>
+            <option value="THIS_YEAR">هذه السنة (2026)</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-outline text-[10px]">المحطة التشغيلية</label>
+          <select id="filter-global-station" onchange="filterAllReports()" class="w-full bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+            <option value="ALL">جميع المحطات</option>
+            <option value="محطة النور">محطة النور</option>
+            <option value="محطة السلام">محطة السلام</option>
+            <option value="محطة الصفا">محطة الصفا</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-outline text-[10px]">العميل المستلم</label>
+          <select id="filter-global-customer" onchange="filterAllReports()" class="w-full bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+            <option value="ALL">جميع العملاء</option>
+            <option value="شركة سما">شركة سما للتجارة</option>
+            <option value="مؤسسة النور">مؤسسة النور للاستيراد</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-outline text-[10px]">المورد المورد</label>
+          <select id="filter-global-supplier" onchange="filterAllReports()" class="w-full bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+            <option value="ALL">جميع الموردين</option>
+            <option value="شركة الخير">شركة الخير للتنمية</option>
+            <option value="مزارع الوادي">مزارع الوادي الحديثة</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-outline text-[10px]">المقاول المنفذ</label>
+          <select id="filter-global-contractor" onchange="filterAllReports()" class="w-full bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+            <option value="ALL">جميع المقاولين</option>
+            <option value="مقاولات محمد">مقاولات محمد للتجهيز</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-outline text-[10px]">المنتج المستهدف</label>
+          <select id="filter-global-product" onchange="filterAllReports()" class="w-full bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+            <option value="ALL">جميع المنتجات</option>
+            <option value="فراولة">فراولة مجمدة</option>
+            <option value="مانجو">مانجو مجمدة</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-outline text-[10px]">حالة الشحنات</label>
+          <select id="filter-global-status" onchange="filterAllReports()" class="w-full bg-background border border-outline-variant rounded-lg p-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+            <option value="ALL">جميع الحالات</option>
+            <option value="IN_PROGRESS">تحت التشغيل</option>
+            <option value="READY">جاهزة للشحن</option>
+            <option value="SHIPPED">تم الشحن</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 2: EXECUTIVE KPI CARDS (12 MANAGEMENT INDICATORS) -->
+    <div class="space-y-3">
+      <!-- First Row: 6 Primary KPIs -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        
+        <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+          <span class="text-[11px] text-on-surface-variant font-semibold">إجمالي المبيعات (الإيراد)</span>
+          <div class="text-lg font-bold text-primary font-mono">2,450,000 <span class="text-xs font-normal">ج.م</span></div>
+          <span class="text-[9px] text-emerald-700 font-bold flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[12px]">trending_up</span>
+            ↑ 14.2% عن الفترة السابقة
+          </span>
+        </div>
+
+        <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+          <span class="text-[11px] text-on-surface-variant font-semibold">إجمالي التكاليف المباشرة</span>
+          <div class="text-lg font-bold text-rose-700 font-mono">1,815,000 <span class="text-xs font-normal">ج.م</span></div>
+          <span class="text-[9px] text-rose-600 font-bold flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[12px]">trending_up</span>
+            ↑ 8.5% ارتفاع التكاليف
+          </span>
+        </div>
+
+        <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+          <span class="text-[11px] text-on-surface-variant font-semibold">صافي الربح الفعلي</span>
+          <div class="text-lg font-bold text-emerald-800 font-mono">+635,000 <span class="text-xs font-normal">ج.م</span></div>
+          <span class="text-[9px] text-emerald-700 font-bold flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[12px]">trending_up</span>
+            ↑ 12.5% زيادة صافية
+          </span>
+        </div>
+
+        <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+          <span class="text-[11px] text-on-surface-variant font-semibold">متوسط هامش الربح %</span>
+          <div class="text-lg font-bold text-secondary font-mono">25.92%</div>
+          <span class="text-[9px] text-secondary font-bold flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[12px]">trending_up</span>
+            ↑ 2.1% تحسن أداء الربحية
+          </span>
+        </div>
+
+        <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+          <span class="text-[11px] text-on-surface-variant font-semibold">إجمالي وزن الشحنات</span>
+          <div class="text-lg font-bold text-primary font-mono">45,000 <span class="text-xs font-normal">KG</span></div>
+          <span class="text-[9px] text-primary font-bold">45 طن صافي معبأ</span>
+        </div>
+
+        <div class="bg-surface p-3.5 rounded-xl border border-outline-variant shadow-sm space-y-1">
+          <span class="text-[11px] text-on-surface-variant font-semibold font-mono">إجمالي الهالك والقيمة</span>
+          <div class="text-base font-bold text-rose-600 font-mono">3,200 <span class="text-xs font-normal">KG</span></div>
+          <span class="text-[9px] text-rose-600 font-bold">51,550.00 ج.م تكلفة فقد</span>
+        </div>
+
+      </div>
+
+      <!-- Second Row: 6 Secondary Analytical KPIs -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5 text-xs">
+          <span class="text-outline text-[10px]">تكلفة الخام الإجمالية</span>
+          <div class="font-mono font-bold text-primary">1,250,000.00 ج.م</div>
+        </div>
+
+        <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5 text-xs">
+          <span class="text-outline text-[10px]">تكلفة المستلزمات والتعبئة</span>
+          <div class="font-mono font-bold text-primary">245,000.00 ج.م</div>
+        </div>
+
+        <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5 text-xs">
+          <span class="text-outline text-[10px]">أجور التشغيل والمقاولين</span>
+          <div class="font-mono font-bold text-primary">280,000.00 ج.م</div>
+        </div>
+
+        <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5 text-xs">
+          <span class="text-outline text-[10px]">عدد الشحنات المنفذة</span>
+          <div class="font-mono font-bold text-primary">14 شحنة معتمدة</div>
+        </div>
+
+        <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5 text-xs">
+          <span class="text-outline text-[10px]">صافي التدفق النقدي</span>
+          <div class="font-mono font-bold text-emerald-800">+410,000.00 ج.م</div>
+        </div>
+
+        <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5 text-xs">
+          <span class="text-outline text-[10px]">قيمة المخزون المتبقي</span>
+          <div class="font-mono font-bold text-primary">1,450,000.00 ج.م</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 14: ALERTS & EXCEPTIONS SECTION -->
+    <div class="bg-surface rounded-xl border border-outline-variant p-4 shadow-sm space-y-3">
+      <h3 class="text-xs font-bold text-rose-900 flex items-center gap-1.5 border-b border-outline-variant/60 pb-2">
+        <span class="material-symbols-outlined text-[18px] text-rose-700">warning</span>
+        تنبيهات وملاحظات تحتاج إلى مراجعة إدارية عاجلة (Alerts & Exceptions)
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+        
+        <div class="bg-rose-50 border border-rose-200 p-3 rounded-lg space-y-1">
+          <span class="bg-rose-100 text-rose-900 px-2 py-0.5 rounded font-bold text-[10px]">🔴 هامش ربح منخفض جداً</span>
+          <h4 class="font-bold text-primary"><a href="shipment-details.html?id=SHP-2026-002" class="hover:underline">الشحنة SHP-2026-002</a></h4>
+          <p class="text-[11px] text-rose-900">هامش الربح 8.50% فقط مقارنة بالمعدل العام البالغ 25.92% بسبب ارتفاع نسبة الهالك بالمحطة.</p>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-300 p-3 rounded-lg space-y-1">
+          <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-bold text-[10px]">⚠️ نسبة هالك مرتفعة</span>
+          <h4 class="font-bold text-primary"><a href="station-details.html" class="hover:underline">محطة النور للمعالجة</a></h4>
+          <p class="text-[11px] text-amber-950">نسبة هالك الخام بلغت 7.50% (300 كجم) للشحنات الأخيرة مقارنة بالمعدل المستهدف أقل من 4%.</p>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg space-y-1">
+          <span class="bg-blue-100 text-blue-900 px-2 py-0.5 rounded font-bold text-[10px]">🟠 ارتفاع سعر توريد</span>
+          <h4 class="font-bold text-primary"><a href="supplier-details.html" class="hover:underline">شركة الخير للتنمية</a></h4>
+          <p class="text-[11px] text-blue-950">ارتفع سعر الكيلو المورد بنسبة +5.26% ليصل إلى 30.00 ج.م مقارنة بالتوريد السابق 28.50 ج.م.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PRIMARY DYNAMIC ANALYTICAL TABS HUB (8 SPECIALIZED TABS) -->
+    <div class="space-y-4">
+      <div class="border-b border-outline-variant flex gap-2 overflow-x-auto bg-surface p-2 rounded-xl border border-outline-variant/60 shadow-sm text-xs font-bold" role="tablist">
+        <button onclick="switchMainTab('profitability', this)" class="main-tab-btn active bg-primary text-white px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">trending_up</span>
+          📊 الربحية والشحنات
+        </button>
+        <button onclick="switchMainTab('stations', this)" class="main-tab-btn text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">factory</span>
+          🏭 أداء المحطات
+        </button>
+        <button onclick="switchMainTab('customers', this)" class="main-tab-btn text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">groups</span>
+          🤝 العملاء والاتفاقيات
+        </button>
+        <button onclick="switchMainTab('suppliers', this)" class="main-tab-btn text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">agriculture</span>
+          🌾 الموردين والخام
+        </button>
+        <button onclick="switchMainTab('contractors', this)" class="main-tab-btn text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">engineering</span>
+          👷 المقاولين والأجور
+        </button>
+        <button onclick="switchMainTab('supplies', this)" class="main-tab-btn text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+          📦 المستلزمات والتعبئة
+        </button>
+        <button onclick="switchMainTab('waste', this)" class="main-tab-btn text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+          🗑️ تحليل الهالك
+        </button>
+        <button onclick="switchMainTab('treasury', this)" class="main-tab-btn text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+          💳 الخزينة والسيولة
+        </button>
+      </div>
+
+      <!-- TAB 1: PROFITABILITY ANALYSIS -->
+      <div id="tab-content-profitability" class="tab-pane space-y-4">
+        <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+          <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+            <h3 class="font-bold text-primary text-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-secondary">table_chart</span>
+              جدول تحليل ربحية الشحنات التفصيلية (Shipment Profitability Analysis)
+            </h3>
+            <span class="text-xs text-on-surface-variant">البيانات مقتطعة ومثبتة وفق الأسعار التاريخية لكل شحنة</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+                <tr>
+                  <th class="p-3 font-mono">رقم الشحنة</th>
+                  <th class="p-3">العميل المستلم</th>
+                  <th class="p-3">المنتج والاتفاقية</th>
+                  <th class="p-3">المحطة</th>
+                  <th class="p-3 font-mono">الوزن الصافي</th>
+                  <th class="p-3 font-mono">الإيراد المباشر</th>
+                  <th class="p-3 font-mono">تكلفة الخام</th>
+                  <th class="p-3 font-mono">المستلزمات</th>
+                  <th class="p-3 font-mono">التشغيل</th>
+                  <th class="p-3 font-mono">المقاول</th>
+                  <th class="p-3 font-mono">النقل</th>
+                  <th class="p-3 font-mono text-base">إجمالي التكلفة</th>
+                  <th class="p-3 font-mono text-base">صافي الربح</th>
+                  <th class="p-3 font-mono text-base">الهامش %</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/40">
+                <tr class="hover:bg-surface-variant/40 transition-colors">
+                  <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html?id=SHP-2026-001" class="hover:underline">SHP-2026-001</a></td>
+                  <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">شركة سما للتجارة</a></td>
+                  <td class="p-3">فراولة (كرتونة 10ك)</td>
+                  <td class="p-3">محطة النور</td>
+                  <td class="p-3 font-mono font-bold">3,700 KG</td>
+                  <td class="p-3 font-mono font-bold text-emerald-800">192,400.00 ج.م</td>
+                  <td class="p-3 font-mono">117,000.00 ج.م</td>
+                  <td class="p-3 font-mono">7,350.00 ج.م</td>
+                  <td class="p-3 font-mono">9,250.00 ج.م</td>
+                  <td class="p-3 font-mono">5,550.00 ج.م</td>
+                  <td class="p-3 font-mono">2,500.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-rose-700">142,150.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-emerald-800 text-sm">+50,250.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-secondary text-sm">26.12%</td>
+                </tr>
+
+                <tr class="hover:bg-surface-variant/40 transition-colors bg-rose-50/40">
+                  <td class="p-3 font-mono font-bold text-primary"><a href="shipment-details.html?id=SHP-2026-002" class="hover:underline">SHP-2026-002</a></td>
+                  <td class="p-3 font-bold text-primary"><a href="customer-details.html" class="hover:underline">شركة سما للتجارة</a></td>
+                  <td class="p-3">فراولة (كرتونة 5ك)</td>
+                  <td class="p-3">محطة النور</td>
+                  <td class="p-3 font-mono font-bold">2,000 KG</td>
+                  <td class="p-3 font-mono font-bold text-emerald-800">130,000.00 ج.م</td>
+                  <td class="p-3 font-mono">95,000.00 ج.م</td>
+                  <td class="p-3 font-mono">9,000.00 ج.م</td>
+                  <td class="p-3 font-mono">5,000.00 ج.م</td>
+                  <td class="p-3 font-mono">3,000.00 ج.م</td>
+                  <td class="p-3 font-mono">1,500.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-rose-700">118,950.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-amber-800 text-sm">+11,050.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-rose-600 text-sm">8.50% ⚠️</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: STATION PERFORMANCE -->
+      <div id="tab-content-stations" class="tab-pane space-y-4 hidden">
+        <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+          <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+            <h3 class="font-bold text-primary text-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px] text-secondary">factory</span>
+              مقارنة أداء المحطات كـ مراكز تكلفة وإنتاج (Station Performance & Ranking)
+            </h3>
+            <span class="text-xs font-mono font-bold text-primary">3 محطات</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+                <tr>
+                  <th class="p-3">المحطة التشغيلية</th>
+                  <th class="p-3 font-mono">إجمالي الشحنات</th>
+                  <th class="p-3 font-mono">الوزن الصافي المعبأ</th>
+                  <th class="p-3 font-mono">إجمالي المبيعات</th>
+                  <th class="p-3 font-mono">تكلفة الخام</th>
+                  <th class="p-3 font-mono">تكلفة المستلزمات</th>
+                  <th class="p-3 font-mono">رسوم المحطة</th>
+                  <th class="p-3 font-mono">أجور المقاولين</th>
+                  <th class="p-3 font-mono">هالك الخام KG</th>
+                  <th class="p-3 font-mono">تكلفة الهالك</th>
+                  <th class="p-3 font-mono text-base">صافي الربح</th>
+                  <th class="p-3 font-mono text-base">الهامش %</th>
+                  <th class="p-3 font-mono">متوسط ربح/كجم</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/40">
+                <tr class="hover:bg-surface-variant/40 transition-colors">
+                  <td class="p-3 font-bold text-primary"><a href="station-details.html" class="hover:underline">محطة النور للمعالجة</a></td>
+                  <td class="p-3 font-mono font-bold">12 شحنة</td>
+                  <td class="p-3 font-mono font-bold text-primary">35,000 KG</td>
+                  <td class="p-3 font-mono font-bold text-emerald-800">1,820,000.00 ج.م</td>
+                  <td class="p-3 font-mono">980,000.00 ج.م</td>
+                  <td class="p-3 font-mono">180,000.00 ج.م</td>
+                  <td class="p-3 font-mono">87,500.00 ج.م</td>
+                  <td class="p-3 font-mono">52,500.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-rose-700">800 KG (7.5%)</td>
+                  <td class="p-3 font-mono text-rose-700">28,500.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-emerald-800 text-sm">+491,500.00 ج.م</td>
+                  <td class="p-3 font-mono font-bold text-secondary text-sm">27.00%</td>
+                  <td class="p-3 font-mono text-emerald-700">14.04 ج.م/KG</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECTION 15: TOP & BOTTOM PERFORMERS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Top 3 Performers -->
+      <div class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-3">
+        <h3 class="font-bold text-primary text-xs border-b border-outline-variant/60 pb-2 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px] text-emerald-700">star</span>
+          أفضل الأداء (Top Performers)
+        </h3>
+        
+        <div class="space-y-2 text-xs">
+          <div class="p-2.5 bg-emerald-50/60 rounded-lg border border-emerald-200 flex justify-between items-center">
+            <div>
+              <span class="font-bold text-primary block">أعلى شحنة ربحية: <a href="shipment-details.html?id=SHP-2026-001" class="hover:underline">SHP-2026-001</a></span>
+              <span class="text-[10px] text-on-surface-variant font-mono">عميل: شركة سما للتجارة</span>
+            </div>
+            <span class="font-mono font-bold text-emerald-800 text-sm">+50,250.00 ج.م (26.12%)</span>
+          </div>
+
+          <div class="p-2.5 bg-emerald-50/60 rounded-lg border border-emerald-200 flex justify-between items-center">
+            <div>
+              <span class="font-bold text-primary block">أفضل محطة إنتاجية: محطة السلام</span>
+              <span class="text-[10px] text-on-surface-variant font-mono">أقل نسبة هالك (5.20%)</span>
+            </div>
+            <span class="font-mono font-bold text-emerald-800 text-sm">ربحية: 28.50%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom 3 Performers -->
+      <div class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-3">
+        <h3 class="font-bold text-primary text-xs border-b border-outline-variant/60 pb-2 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px] text-rose-700">trending_down</span>
+          أسوأ الأداء والأصناف الحرجة (Bottom Performers)
+        </h3>
+
+        <div class="space-y-2 text-xs">
+          <div class="p-2.5 bg-rose-50/60 rounded-lg border border-rose-200 flex justify-between items-center">
+            <div>
+              <span class="font-bold text-primary block">أقل شحنة هامشاً: <a href="shipment-details.html?id=SHP-2026-002" class="hover:underline">SHP-2026-002</a></span>
+              <span class="text-[10px] text-on-surface-variant font-mono">ارتفاع استهلاك التعبئة والهالك</span>
+            </div>
+            <span class="font-mono font-bold text-rose-700 text-sm">+11,050.00 ج.م (8.50%)</span>
+          </div>
+
+          <div class="p-2.5 bg-rose-50/60 rounded-lg border border-rose-200 flex justify-between items-center">
+            <div>
+              <span class="font-bold text-primary block">أعلى محطة هالكًا: محطة النور</span>
+              <span class="text-[10px] text-on-surface-variant font-mono">800 كجم هالك خام تراكمي</span>
+            </div>
+            <span class="font-mono font-bold text-rose-700 text-sm">هالك: 7.50%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- CUSTOM REPORT BUILDER MODAL -->
+  <div id="custom-report-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-2xl max-w-md w-full p-6 space-y-4 overflow-hidden relative">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h3 class="font-bold text-primary text-base flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">tune</span>
+          تخصيص وحفظ نموذج تقرير مخصص
+        </h3>
+        <button onclick="closeCustomReportModal()" class="text-on-surface-variant hover:text-primary p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="handleCustomReportSubmit(event)" class="space-y-3 text-xs">
+        <div class="space-y-1">
+          <label class="font-bold text-primary">اسم نموذج التقرير *</label>
+          <input type="text" placeholder="مثال: تقرير ربحية محطة النور كيو 3" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-primary">النماذج الجاهزة المسبقة (Preset Builder)</label>
+          <select class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+            <option>تقرير ربحية المحطات والتشغيل</option>
+            <option>تقرير حركة واستنزاف المخزون والتعبئة</option>
+            <option>تقرير الهالك والتكلفة المالية المباشرة</option>
+            <option>تقرير إنتاجية وأجور المقاولين</option>
+            <option>تقرير التدفق النقدي والسيولة</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/60">
+          <button type="button" onclick="closeCustomReportModal()" class="bg-surface-variant text-on-surface px-4 py-2 rounded-lg text-xs font-bold hover:bg-outline-variant">
+            إلغاء
+          </button>
+          <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-primary-container shadow-sm">
+            حفظ وإنشاء التقرير
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+function switchMainTab(tabKey, btnElement) {
+  document.querySelectorAll('.main-tab-btn').forEach(b => {
+    b.classList.remove('bg-primary', 'text-white');
+    b.classList.add('text-on-surface');
+  });
+
+  btnElement.classList.remove('text-on-surface');
+  btnElement.classList.add('bg-primary', 'text-white');
+
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+  const target = document.getElementById(`tab-content-${tabKey}`);
+  if (target) target.classList.remove('hidden');
+}
+
+function openCustomReportModal() {
+  document.getElementById('custom-report-modal').classList.remove('hidden');
+}
+
+function closeCustomReportModal() {
+  document.getElementById('custom-report-modal').classList.add('hidden');
+}
+
+function handleCustomReportSubmit(e) {
+  e.preventDefault();
+  closeCustomReportModal();
+  window.showToast('تم حفظ نموذج التقرير المخصص وتطبيقه بنجاح!', 'success');
+}
+
+function filterAllReports() {
+  window.showToast('تم تطبيق التصفية الشاملة على كافة التقارير والمؤشرات', 'info');
+}
+</script>
+</body>
+</html>

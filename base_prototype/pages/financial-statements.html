@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>كشوف الحسابات المركزية - نظام التصدير والمعالجة ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/state.js"></script>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Header Banner -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">account_balance_wallet</span>
+            كشوف الحسابات
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">مركز المراقبة المالي التراكمي</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">مراقبة الأرصدة والحركات المالية لجميع الأطراف (عملاء، موردون، مقاولون، محطات) وتتبع المستندات الأصلية</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="resetToOverview()" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1 border border-outline-variant">
+          <span class="material-symbols-outlined text-[16px]">clear_all</span>
+          إعادة ضبط المنظر
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Toast Alert Container -->
+    <div id="toast-alert" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="toast-alert-msg" class="flex-1">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- FIRST VIEW: 4 PRIMARY OVERVIEW SUMMARY CARDS -->
+    <div id="overview-cards-section" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- 1. Receivables (Customer) -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between space-y-2">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">إجمالي المستحق لنا (العملاء)</span>
+          <span class="material-symbols-outlined text-[20px] text-emerald-700 bg-emerald-50 p-1.5 rounded-lg border border-emerald-200">arrow_downward</span>
+        </div>
+        <div id="overview-total-receivables" class="text-2xl font-bold text-emerald-800 font-mono">350,000 <span class="text-xs font-normal">ج.م</span></div>
+        <div class="text-[11px] text-emerald-700 font-medium">مستحقات شحنات مبيعات تصديرية</div>
+      </div>
+
+      <!-- 2. Payables (Suppliers, Contractors, Stations) -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between space-y-2">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">إجمالي المستحق علينا (للأطراف)</span>
+          <span class="material-symbols-outlined text-[20px] text-rose-600 bg-rose-50 p-1.5 rounded-lg border border-rose-200">arrow_upward</span>
+        </div>
+        <div id="overview-total-payables" class="text-2xl font-bold text-rose-700 font-mono">390,000 <span class="text-xs font-normal">ج.م</span></div>
+        <div class="text-[11px] text-rose-600 font-medium">مستحقات خام ومستلزمات ومقاولين ومحطات</div>
+      </div>
+
+      <!-- 3. Total Collections -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between space-y-2">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">إجمالي التحصيلات المقبوضة</span>
+          <span class="material-symbols-outlined text-[20px] text-secondary bg-blue-50 p-1.5 rounded-lg border border-blue-200">savings</span>
+        </div>
+        <div id="overview-total-collections" class="text-2xl font-bold text-secondary font-mono">550,000 <span class="text-xs font-normal">ج.م</span></div>
+        <div class="text-[11px] text-secondary font-medium">مقبوضات نقدية وبنكية مجمعة</div>
+      </div>
+
+      <!-- 4. Total Payments -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between space-y-2">
+        <div class="flex justify-between items-center text-on-surface-variant">
+          <span class="text-xs font-semibold">إجمالي المدفوعات الصادرة</span>
+          <span class="material-symbols-outlined text-[20px] text-amber-800 bg-amber-50 p-1.5 rounded-lg border border-amber-200">payments</span>
+        </div>
+        <div id="overview-total-payments" class="text-2xl font-bold text-amber-900 font-mono">580,000 <span class="text-xs font-normal">ج.م</span></div>
+        <div class="text-[11px] text-amber-800 font-medium">مدفوعات الموردين والمقاولين وتشغيل المحطات</div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT TYPE TAB FILTERS & SEARCH BAR -->
+    <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-4">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b border-outline-variant/50 pb-3">
+        <!-- Tabs -->
+        <div class="flex items-center gap-1 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+          <button onclick="filterPartyType('ALL', this)" class="party-tab-btn active bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm">
+            كل الحسابات (الأطراف)
+          </button>
+          <button onclick="filterPartyType('CUSTOMER', this)" class="party-tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40">
+            العملاء
+          </button>
+          <button onclick="filterPartyType('SUPPLIER', this)" class="party-tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40">
+            الموردون
+          </button>
+          <button onclick="filterPartyType('CONTRACTOR', this)" class="party-tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40">
+            المقاولون
+          </button>
+          <button onclick="filterPartyType('STATION', this)" class="party-tab-btn bg-surface-variant/60 text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant/40">
+            المحطات
+          </button>
+        </div>
+
+        <!-- Date & Status Filter Dropdowns -->
+        <div class="flex items-center gap-2 flex-wrap w-full md:w-auto">
+          <input type="date" id="filter-date-from" onchange="applyFilters()" class="bg-background border border-outline-variant rounded-lg px-2.5 py-1.5 text-xs text-on-surface font-semibold focus:outline-none focus:border-primary" title="من تاريخ"/>
+          <span class="text-xs text-outline font-bold">إلى</span>
+          <input type="date" id="filter-date-to" onchange="applyFilters()" class="bg-background border border-outline-variant rounded-lg px-2.5 py-1.5 text-xs text-on-surface font-semibold focus:outline-none focus:border-primary" title="إلى تاريخ"/>
+          
+          <select id="filter-status-select" onchange="applyFilters()" class="bg-background border border-outline-variant rounded-lg px-3 py-1.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary">
+            <option value="ALL">جميع الحالات</option>
+            <option value="PAYABLE">له (مستحق له)</option>
+            <option value="RECEIVABLE">عليه (مستحق عليه)</option>
+            <option value="BALANCED">متعادل (رصيد صفر)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT SUMMARY TABLE (ملخص الحسابات) -->
+    <div id="accounts-summary-wrapper" class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden space-y-3 p-5">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h2 class="text-base font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">groups</span>
+          ملخص الحسابات والأرصدة القائمة (الأطراف المالية)
+        </h2>
+        <span class="text-[11px] text-on-surface-variant">انقر على أي طرف لفتح كشف حسابه التفصيلي المباشر</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+            <tr>
+              <th class="p-3">نوع الحساب</th>
+              <th class="p-3">اسم الحساب / الطرف</th>
+              <th class="p-3">إجمالي التعامل (مشتريات/مبيعات/تكلفة)</th>
+              <th class="p-3">المدفوع / المحصل</th>
+              <th class="p-3">الرصيد القائم</th>
+              <th class="p-3">آخر حركة</th>
+              <th class="p-3 text-center">الحالة</th>
+              <th class="p-3 text-center">الإجراء</th>
+            </tr>
+          </thead>
+          <tbody id="accounts-summary-tbody" class="divide-y divide-outline-variant/40">
+            <!-- Populated dynamically via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ACCOUNT DETAIL VIEW PANEL (كشف الحساب التفصيلي للطرف المحدد) -->
+    <div id="account-detail-section" class="hidden space-y-6">
+      
+      <!-- Party Header Card & Context Summary -->
+      <div class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-outline-variant/60 pb-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-3">
+              <span id="detail-party-type-badge" class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">مورد</span>
+              <h2 id="detail-party-name" class="text-xl font-bold text-primary">شركة الخير الزراعية</h2>
+            </div>
+            <p id="detail-party-subtitle" class="text-xs text-on-surface-variant">كشف حساب تفصيلي مستخرج آلياً من السجلات والتوريدات التشغيلية الشحنات</p>
+          </div>
+
+          <!-- Dynamic Action Buttons (Payment / Collection depending on Party type) -->
+          <div class="flex items-center gap-2">
+            <button id="action-pay-btn" onclick="openPaymentModal()" class="hidden bg-rose-700 text-white hover:bg-rose-800 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px]">payments</span>
+              تسجيل دفعة
+            </button>
+            <button id="action-collect-btn" onclick="openCollectionModal()" class="hidden bg-emerald-700 text-white hover:bg-emerald-800 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px]">savings</span>
+              تحصيل دفعة
+            </button>
+            <button onclick="closeAccountDetail()" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3 py-2 rounded-lg text-xs font-bold transition-all border border-outline-variant">
+              إغلاق الكشف
+            </button>
+          </div>
+        </div>
+
+        <!-- Compact Account Summary Badges -->
+        <div id="detail-summary-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Populated by JS according to Party Type -->
+        </div>
+      </div>
+
+      <!-- DETAILED STATEMENT LEDGER TABLE (جدول حركات كشف الحساب) -->
+      <div class="bg-surface rounded-xl border border-outline-variant shadow-sm p-5 space-y-4">
+        <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+          <h3 class="text-base font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+            سجل حركات كشف الحساب والربط المباشر بأساس المستندات
+          </h3>
+          <span class="text-[10px] bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-0.5 rounded font-bold">⚡ انقر على رقم المستند لفتح تفاصيل الصفقة التشغيلية</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+              <tr>
+                <th class="p-3">التاريخ</th>
+                <th class="p-3">نوع الحركة</th>
+                <th class="p-3">البيان الشارح للعملية</th>
+                <th class="p-3">المستند المرتبط</th>
+                <th class="p-3 font-mono">المبلغ المستحق (ج.م)</th>
+                <th class="p-3 font-mono">المدفوع / المحصل (ج.م)</th>
+                <th class="p-3 font-mono">الرصيد التراكمي (ج.م)</th>
+              </tr>
+            </thead>
+            <tbody id="statement-tbody" class="divide-y divide-outline-variant/40">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPEN BALANCES SECTION (المستحقات المفتوحة القائمة) -->
+    <div id="open-balances-section" class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <div class="space-y-0.5">
+          <h3 class="text-base font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">pending_actions</span>
+            المستحقات المفتوحة القائمة (Open Outstanding Balances)
+          </h3>
+          <p class="text-[11px] text-on-surface-variant">رؤية فورية للإدارة بالأطراف ذات الأرصدة القائمة لمتابعة التحصيل والسداد</p>
+        </div>
+        <span class="text-xs bg-amber-100 text-amber-900 border border-amber-300 px-3 py-0.5 rounded-full font-bold">تحديث لحظي</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+            <tr>
+              <th class="p-3">الطرف الفعلي</th>
+              <th class="p-3">نوع الحساب</th>
+              <th class="p-3">إجمالي التعامل</th>
+              <th class="p-3">المدفوع / المحصل</th>
+              <th class="p-3">الرصيد المتبقي</th>
+              <th class="p-3">آخر حركة</th>
+              <th class="p-3 text-center">الحالة</th>
+              <th class="p-3 text-center">التفاصيل</th>
+            </tr>
+          </thead>
+          <tbody id="open-balances-tbody" class="divide-y divide-outline-variant/40">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL 1: SOURCE DOCUMENT TRACEABILITY MODAL (عرض المستند التشغيلي الأصلي) -->
+  <div id="doc-trace-modal" class="hidden fixed inset-0 z-[100] bg-on-surface/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-xl w-full max-w-xl overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[22px] text-primary">find_in_page</span>
+          <h3 id="doc-modal-title" class="font-bold text-primary text-sm">مستند تشغيلي: REC-001</h3>
+        </div>
+        <button onclick="closeDocModal()" class="text-on-surface-variant hover:text-error transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Historical Snapshot Disclaimer Callout -->
+      <div class="bg-amber-50 border-b border-amber-200 p-3 flex items-center gap-2 text-amber-900 text-xs font-bold">
+        <span class="material-symbols-outlined text-[18px] text-amber-800">lock</span>
+        <span>لقطة تاريخية مثبتة (Historical Snapshot): قيم هذا المستند أصلية ولن تتأثر بأي تعديلات مستقبليّة لأسعار الاتفاقيات.</span>
+      </div>
+      
+      <div id="doc-modal-body" class="p-5 space-y-4 text-xs">
+        <!-- Content inserted dynamically by JS -->
+      </div>
+      
+      <div class="p-4 border-t border-outline-variant bg-surface-variant/30 flex justify-end">
+        <button onclick="closeDocModal()" class="px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container transition-colors shadow-sm">إغلاق المستند</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: PAYMENT REGISTRATION MODAL (تسجيل دفعة للأطراف: مورد / مقاول / محطة) -->
+  <div id="payment-modal" class="hidden fixed inset-0 z-[100] bg-on-surface/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-rose-50 border-rose-200">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[22px] text-rose-800">payments</span>
+          <h3 class="font-bold text-rose-900 text-sm">تسجيل دفعة جديدة</h3>
+        </div>
+        <button onclick="closePaymentModal()" class="text-on-surface-variant hover:text-error transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
+      <form onsubmit="submitPaymentForm(event)" class="p-5 space-y-4 text-xs">
+        <div class="bg-surface-variant/40 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[10px] text-outline font-medium">الطرف المستفيد (معين تلقائياً من الكشف):</span>
+          <div id="modal-pay-party-name" class="font-bold text-primary text-sm">شركة الخير الزراعية</div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">مبلغ الدفعة المدفوع (ج.م) <span class="text-rose-600">*</span></label>
+          <div class="relative">
+            <input id="pay-amount-input" type="number" step="100" required placeholder="0.00" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 pl-12 font-mono font-bold text-sm focus:outline-none focus:border-primary"/>
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-outline">ج.م</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">طريقة الدفع والحساب <span class="text-rose-600">*</span></label>
+          <select id="pay-method-select" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-bold focus:outline-none focus:border-primary">
+            <option value="خزينة رئيسية">خزينة رئيسية - نقدية</option>
+            <option value="تحويل بنكي - البنك الأهلي">تحويل بنكي - البنك الأهلي المصري</option>
+            <option value="شيك بنكي صادرة">شيك بنكي مقبول الدفع</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">ملاحظات اختيارية / رقم المرجع</label>
+          <input id="pay-notes-input" type="text" placeholder="مثال: سداد جزء من مستحق توريد خام شهر أغسطس" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closePaymentModal()" class="px-4 py-2 bg-surface border border-outline-variant rounded-lg text-xs font-bold hover:bg-surface-variant transition-colors">إلغاء</button>
+          <button type="submit" class="px-5 py-2 bg-rose-700 text-white rounded-lg text-xs font-bold hover:bg-rose-800 transition-all shadow-sm">تأكيد وتسجيل الدفعة</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: COLLECTION REGISTRATION MODAL (تحصيل دفعة من عميل) -->
+  <div id="collection-modal" class="hidden fixed inset-0 z-[100] bg-on-surface/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+      <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-emerald-50 border-emerald-200">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[22px] text-emerald-800">savings</span>
+          <h3 class="font-bold text-emerald-900 text-sm">تسجيل تحصيل دفعة من عميل</h3>
+        </div>
+        <button onclick="closeCollectionModal()" class="text-on-surface-variant hover:text-error transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
+      <form onsubmit="submitCollectionForm(event)" class="p-5 space-y-4 text-xs">
+        <div class="bg-surface-variant/40 p-3 rounded-lg border border-outline-variant/60 space-y-1">
+          <span class="text-[10px] text-outline font-medium">العميل المحصل منه (معين تلقائياً من الكشف):</span>
+          <div id="modal-collect-party-name" class="font-bold text-primary text-sm">شركة سما للتجارة والتصدير</div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">مبلغ التحصيل المقبوض (ج.م) <span class="text-rose-600">*</span></label>
+          <div class="relative">
+            <input id="collect-amount-input" type="number" step="100" required placeholder="0.00" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 pl-12 font-mono font-bold text-sm focus:outline-none focus:border-primary"/>
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-outline">ج.م</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">طريقة المقبوضات والحساب <span class="text-rose-600">*</span></label>
+          <select id="collect-method-select" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 font-bold focus:outline-none focus:border-primary">
+            <option value="تحويل بنكي - البنك الأهلي">تحويل بنكي - البنك الأهلي المصري</option>
+            <option value="خزينة رئيسية">خزينة رئيسية - نقدية</option>
+            <option value="خطاب اعتماد مستندي">اعتماد مستندي LC</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-semibold text-on-surface-variant">ملاحظات اختيارية / رقم الحوالة</label>
+          <input id="collect-notes-input" type="text" placeholder="مثال: دفعة تحت حساب شحنة SH-000125" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeCollectionModal()" class="px-4 py-2 bg-surface border border-outline-variant rounded-lg text-xs font-bold hover:bg-surface-variant transition-colors">إلغاء</button>
+          <button type="submit" class="px-5 py-2 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 transition-all shadow-sm">تأكيد وتسجيل التحصيل</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+// --- DYNAMICALLY BUILD MASTER PARTIES FROM ERPSTATE ---
+let masterParties = [];
+let sourceDocMap = {};
+
+function refreshMasterPartiesFromState() {
+  const state = ERPState.load();
+  masterParties = [];
+  sourceDocMap = {};
+
+  // 1. Customers
+  (state.customers || []).forEach(c => {
+    const custTxns = (state.financialTransactions || []).filter(t => t.partyName === c.name);
+    let totalInvoices = 0;
+    let totalPaid = 0;
+    const txList = custTxns.map(t => {
+      const isCollection = t.type.includes("تحصيل") || t.type.includes("Inflow");
+      const isInvoice = t.type.includes("مبيعات") || t.type.includes("AR") || t.type.includes("استحقاق");
+      const amt = isInvoice ? (t.amountEgp || 0) : 0;
+      const paid = isCollection ? (t.amountEgp || 0) : 0;
+      totalInvoices += amt;
+      totalPaid += paid;
+
+      if (t.refDoc) {
+        sourceDocMap[t.refDoc] = {
+          title: `مستند: ${t.refDoc}`,
+          party: c.name,
+          customer: c.name,
+          station: "محطة النخيل",
+          product: "فراولة مجمدة IQF",
+          packaging: "كرتونة 10 كجم",
+          netWeight: "4,000 كجم",
+          sellingPrice: "1.85 EUR (53.20 EGP)",
+          totalRevenue: `${(t.amountEgp || 0).toLocaleString()} ج.م`,
+          stationCost: "12,000 ج.م",
+          contractorCost: "9,600 ج.م",
+          amount: `${(t.amountEgp || 0).toLocaleString()} ج.م`,
+          method: "تحويل بنكي",
+          date: t.date,
+          status: "معتمد ومصدر",
+          notes: t.description
+        };
+      }
+
+      return {
+        date: t.date,
+        type: isInvoice ? "فاتورة شحنة تصدير" : "سند تحصيل",
+        desc: t.description || (isInvoice ? "فاتورة مبيعات تصدير" : "تحصيل دفعة"),
+        doc: t.refDoc || t.txnId,
+        amount: amt,
+        paid: paid
+      };
+    });
+
+    masterParties.push({
+      id: c.id,
+      name: c.name,
+      type: "CUSTOMER",
+      typeLabel: "عميل تصدير",
+      totalAmount: totalInvoices,
+      paidAmount: totalPaid,
+      lastDate: txList.length > 0 ? txList[0].date : "2026-08-25",
+      transactions: txList
+    });
+  });
+
+  // 2. Suppliers
+  (state.suppliers || []).forEach(s => {
+    const suppTxns = (state.financialTransactions || []).filter(t => t.partyName === s.name);
+    let totalPurchases = 0;
+    let totalPaid = 0;
+    const txList = suppTxns.map(t => {
+      const isPayment = t.type.includes("سداد") || t.type.includes("Outflow") || t.type.includes("دفع");
+      const isPayable = t.type.includes("استحقاق") || t.type.includes("AP") || t.type.includes("توريد") || t.type.includes("شراء");
+      const amt = isPayable ? (t.amountEgp || 0) : 0;
+      const paid = isPayment ? (t.amountEgp || 0) : 0;
+      totalPurchases += amt;
+      totalPaid += paid;
+
+      if (t.refDoc) {
+        sourceDocMap[t.refDoc] = {
+          title: `مستند وارد: ${t.refDoc}`,
+          party: s.name,
+          station: "محطة النخيل",
+          product: s.product || "خام زراعي",
+          quantity: "8,000 كجم",
+          unitPrice: "18.50 ج.م / كجم",
+          transport: "1,500 ج.م",
+          total: `${(t.amountEgp || 0).toLocaleString()} ج.م`,
+          date: t.date,
+          status: "مستلم ومفحوص معتمد",
+          notes: t.description
+        };
+      }
+
+      return {
+        date: t.date,
+        type: isPayable ? "استحقاق توريد خام / بضاعة" : "سند سداد",
+        desc: t.description || (isPayable ? "استحقاق توريد" : "سداد دفعة"),
+        doc: t.refDoc || t.txnId,
+        amount: amt,
+        paid: paid
+      };
+    });
+
+    masterParties.push({
+      id: s.id,
+      name: s.name,
+      type: "SUPPLIER",
+      typeLabel: s.type || "مورد خام",
+      totalAmount: totalPurchases,
+      paidAmount: totalPaid,
+      lastDate: txList.length > 0 ? txList[0].date : "2026-08-20",
+      transactions: txList
+    });
+  });
+
+  // 3. Contractors
+  (state.contractors || []).forEach(con => {
+    const conTxns = (state.financialTransactions || []).filter(t => t.partyName === con.name);
+    let totalFees = 0;
+    let totalPaid = 0;
+    const txList = conTxns.map(t => {
+      const isPayment = t.type.includes("سداد") || t.type.includes("Outflow");
+      const isPayable = t.type.includes("استحقاق") || t.type.includes("AP") || t.type.includes("تشغيل");
+      const amt = isPayable ? (t.amountEgp || 0) : 0;
+      const paid = isPayment ? (t.amountEgp || 0) : 0;
+      totalFees += amt;
+      totalPaid += paid;
+
+      return {
+        date: t.date,
+        type: isPayable ? "استحقاق أتعاب تشغيل" : "سند صرف أجور",
+        desc: t.description || "أتعاب تشغيل وفرز",
+        doc: t.refDoc || t.txnId,
+        amount: amt,
+        paid: paid
+      };
+    });
+
+    masterParties.push({
+      id: con.id,
+      name: con.name,
+      type: "CONTRACTOR",
+      typeLabel: "مقاول عمالة",
+      totalAmount: totalFees,
+      paidAmount: totalPaid,
+      lastDate: txList.length > 0 ? txList[0].date : "2026-08-21",
+      transactions: txList
+    });
+  });
+}
+
+let currentFilterType = 'ALL';
+let currentSelectedParty = null;
+
+// Render Overview KPI Cards dynamically
+function renderOverviewKPIs() {
+  const totals = ERPState.getFinancialStatementsTotals();
+  document.getElementById('overview-total-receivables').innerHTML = `${Math.round(totals.totalReceivables).toLocaleString()} <span class="text-xs font-normal">ج.م</span>`;
+  document.getElementById('overview-total-payables').innerHTML = `${Math.round(totals.totalPayables).toLocaleString()} <span class="text-xs font-normal">ج.م</span>`;
+  document.getElementById('overview-total-collections').innerHTML = `${Math.round(totals.totalCollections).toLocaleString()} <span class="text-xs font-normal">ج.م</span>`;
+  document.getElementById('overview-total-payments').innerHTML = `${Math.round(totals.totalPayments).toLocaleString()} <span class="text-xs font-normal">ج.م</span>`;
+}
+
+// Render Master Accounts Table
+function renderAccountsSummary() {
+  refreshMasterPartiesFromState();
+  const tbody = document.getElementById('accounts-summary-tbody');
+  tbody.innerHTML = '';
+
+  const searchVal = (document.getElementById('search-party-input')?.value || '').toLowerCase().trim();
+  const statusFilter = document.getElementById('filter-status-select')?.value || 'ALL';
+
+  const filtered = masterParties.filter(p => {
+    const matchesType = (currentFilterType === 'ALL' || p.type === currentFilterType);
+    const matchesSearch = !searchVal || p.name.toLowerCase().includes(searchVal) || p.typeLabel.toLowerCase().includes(searchVal);
+    const remaining = p.totalAmount - p.paidAmount;
+    
+    let matchesStatus = true;
+    if (statusFilter === 'OUTSTANDING') matchesStatus = remaining > 0;
+    else if (statusFilter === 'SETTLED') matchesStatus = remaining === 0;
+
+    return matchesType && matchesSearch && matchesStatus;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-on-surface-variant">لا توجد حسابات مطابقة لخيارات الفلترة</td></tr>`;
+    return;
+  }
+
+  filtered.forEach(p => {
+    const remaining = p.totalAmount - p.paidAmount;
+    let statusBadge = '';
+    
+    if (p.type === 'CUSTOMER') {
+      statusBadge = remaining > 0 
+        ? `<span class="bg-rose-100 text-rose-900 border border-rose-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">مستحق عليه (${remaining.toLocaleString()} ج.م)</span>`
+        : `<span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">مسدد بالكامل</span>`;
+    } else {
+      statusBadge = remaining > 0 
+        ? `<span class="bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">مستحق له (${remaining.toLocaleString()} ج.م)</span>`
+        : `<span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[10px]">مسدد بالكامل</span>`;
+    }
+
+    tbody.innerHTML += `
+      <tr class="hover:bg-surface-variant/40 transition-colors cursor-pointer" onclick="selectParty('${p.id}')">
+        <td class="p-3">
+          <div class="font-bold text-primary text-sm">${p.name}</div>
+          <span class="text-[10px] text-on-surface-variant font-mono">${p.id}</span>
+        </td>
+        <td class="p-3">
+          <span class="bg-surface-variant text-primary px-2 py-0.5 rounded font-bold text-[11px]">${p.typeLabel}</span>
+        </td>
+        <td class="p-3 font-mono font-bold text-primary">${p.totalAmount.toLocaleString()} ج.م</td>
+        <td class="p-3 font-mono text-emerald-700 font-bold">${p.paidAmount.toLocaleString()} ج.م</td>
+        <td class="p-3 font-mono font-bold text-sm ${remaining > 0 ? (p.type === 'CUSTOMER' ? 'text-rose-600' : 'text-amber-800') : 'text-gray-600'}">
+          ${remaining.toLocaleString()} ج.م
+        </td>
+        <td class="p-3 font-mono text-on-surface-variant text-[11px]">${p.lastDate}</td>
+        <td class="p-3 text-center">${statusBadge}</td>
+        <td class="p-3 text-center" onclick="event.stopPropagation()">
+          <button onclick="selectParty('${p.id}')" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all">
+            عرض كشف الحساب
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// Render Open Balances Table
+function renderOpenBalances() {
+  refreshMasterPartiesFromState();
+  const tbody = document.getElementById('open-balances-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  masterParties.forEach(p => {
+    const remaining = p.totalAmount - p.paidAmount;
+    if (remaining <= 0) return;
+
+    let statusText = p.type === 'CUSTOMER' ? `مستحق عليه (${remaining.toLocaleString()} ج.م)` : `مستحق له (${remaining.toLocaleString()} ج.م)`;
+    let statusClass = p.type === 'CUSTOMER' ? 'bg-rose-100 text-rose-900 border-rose-300' : 'bg-amber-100 text-amber-900 border-amber-300';
+
+    tbody.innerHTML += `
+      <tr class="hover:bg-surface-variant/40 transition-colors">
+        <td class="p-3 font-bold text-primary">${p.name}</td>
+        <td class="p-3 text-on-surface-variant font-bold">${p.typeLabel}</td>
+        <td class="p-3 font-mono font-bold">${p.totalAmount.toLocaleString()} ج.م</td>
+        <td class="p-3 font-mono text-emerald-700 font-bold">${p.paidAmount.toLocaleString()} ج.م</td>
+        <td class="p-3 font-mono text-rose-600 font-bold text-sm">${remaining.toLocaleString()} ج.م</td>
+        <td class="p-3 font-mono text-[11px]">${p.lastDate}</td>
+        <td class="p-3 text-center"><span class="text-[11px] px-2.5 py-0.5 rounded-full font-bold border ${statusClass}">${statusText}</span></td>
+        <td class="p-3 text-center">
+          <button onclick="selectParty('${p.id}')" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-2.5 py-1 rounded text-[11px] font-bold border border-outline-variant">
+            كشف الحساب
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// Select a specific party and show detail statement view
+function selectParty(partyId) {
+  refreshMasterPartiesFromState();
+  const party = masterParties.find(p => p.id === partyId || p.name === partyId);
+  if (!party) return;
+
+  currentSelectedParty = party;
+
+  document.getElementById('accounts-summary-wrapper').classList.add('hidden');
+  document.getElementById('open-balances-section').classList.add('hidden');
+  document.getElementById('account-detail-section').classList.remove('hidden');
+
+  document.getElementById('detail-party-name').innerText = party.name;
+  document.getElementById('detail-party-type-badge').innerText = party.typeLabel;
+
+  const remaining = party.totalAmount - party.paidAmount;
+
+  // Show/Hide Payment vs Collection Buttons
+  const payBtn = document.getElementById('action-pay-btn');
+  const collectBtn = document.getElementById('action-collect-btn');
+
+  if (party.type === 'CUSTOMER') {
+    payBtn.classList.add('hidden');
+    collectBtn.classList.remove('hidden');
+  } else {
+    payBtn.classList.remove('hidden');
+    collectBtn.classList.add('hidden');
+  }
+
+  // Summary Cards per Party Type
+  const cardsContainer = document.getElementById('detail-summary-cards');
+  cardsContainer.innerHTML = '';
+
+  let totalLabel = party.type === 'CUSTOMER' ? 'إجمالي المبيعات' : (party.type === 'SUPPLIER' ? 'إجمالي المشتريات' : 'إجمالي أجور التشغيل');
+  let paidLabel = party.type === 'CUSTOMER' ? 'إجمالي التحصيلات' : 'إجمالي المدفوع';
+  let statusBadgeText = remaining > 0 ? (party.type === 'CUSTOMER' ? `عليه ${remaining.toLocaleString()} ج.م` : `له ${remaining.toLocaleString()} ج.م`) : 'متعادل (0 ج.م)';
+  let statusBadgeClass = remaining > 0 ? (party.type === 'CUSTOMER' ? 'bg-rose-100 text-rose-900 border-rose-300' : 'bg-amber-100 text-amber-900 border-amber-300') : 'bg-emerald-100 text-emerald-900 border-emerald-300';
+
+  cardsContainer.innerHTML = `
+    <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60">
+      <span class="text-[11px] text-outline font-medium block">${totalLabel}</span>
+      <div class="text-xl font-bold text-primary font-mono mt-1">${party.totalAmount.toLocaleString()} <span class="text-xs font-normal">ج.م</span></div>
+    </div>
+    <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60">
+      <span class="text-[11px] text-outline font-medium block">${paidLabel}</span>
+      <div class="text-xl font-bold text-emerald-700 font-mono mt-1">${party.paidAmount.toLocaleString()} <span class="text-xs font-normal">ج.م</span></div>
+    </div>
+    <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60">
+      <span class="text-[11px] text-outline font-medium block">الرصيد القائم المتبقي</span>
+      <div class="text-xl font-bold ${remaining > 0 ? 'text-rose-600' : 'text-emerald-700'} font-mono mt-1">${remaining.toLocaleString()} <span class="text-xs font-normal">ج.م</span></div>
+    </div>
+    <div class="bg-surface-variant/30 p-3.5 rounded-lg border border-outline-variant/60 flex flex-col justify-center">
+      <span class="text-[11px] text-outline font-medium block mb-1">الحالة التراكمية الحالية</span>
+      <div><span class="text-xs px-3 py-1 rounded-full font-bold border ${statusBadgeClass}">${statusBadgeText}</span></div>
+    </div>
+  `;
+
+  // Render Detailed Statement Table with Running Balances
+  const statementTbody = document.getElementById('statement-tbody');
+  statementTbody.innerHTML = '';
+
+  let runningBalance = 0;
+  party.transactions.forEach(t => {
+    runningBalance += (t.amount - t.paid);
+
+    statementTbody.innerHTML += `
+      <tr class="hover:bg-surface-variant/40 transition-colors">
+        <td class="p-3 font-mono font-bold text-on-surface-variant">${t.date}</td>
+        <td class="p-3 font-bold text-primary">${t.type}</td>
+        <td class="p-3 text-on-surface">${t.desc}</td>
+        <td class="p-3">
+          <button onclick="openDocTraceModal('${t.doc}')" class="bg-blue-50 text-secondary hover:bg-blue-100 border border-blue-200 px-2.5 py-1 rounded text-xs font-mono font-bold flex items-center gap-1 transition-colors">
+            <span class="material-symbols-outlined text-[14px]">description</span>
+            ${t.doc}
+          </button>
+        </td>
+        <td class="p-3 font-mono font-bold ${t.amount > 0 ? 'text-rose-600' : 'text-gray-400'}">${t.amount > 0 ? t.amount.toLocaleString() + ' ج.م' : '-'}</td>
+        <td class="p-3 font-mono font-bold ${t.paid > 0 ? 'text-emerald-700' : 'text-gray-400'}">${t.paid > 0 ? t.paid.toLocaleString() + ' ج.م' : '-'}</td>
+        <td class="p-3 font-mono font-bold text-sm text-primary">${runningBalance.toLocaleString()} ج.م</td>
+      </tr>
+    `;
+  });
+}
+
+function closeAccountDetail() {
+  currentSelectedParty = null;
+  document.getElementById('account-detail-section').classList.add('hidden');
+  document.getElementById('accounts-summary-wrapper').classList.remove('hidden');
+  document.getElementById('open-balances-section').classList.remove('hidden');
+}
+
+function resetToOverview() {
+  currentFilterType = 'ALL';
+  if (document.getElementById('filter-status-select')) document.getElementById('filter-status-select').value = 'ALL';
+  if (document.getElementById('filter-date-from')) document.getElementById('filter-date-from').value = '';
+  if (document.getElementById('filter-date-to')) document.getElementById('filter-date-to').value = '';
+
+  document.querySelectorAll('.party-tab-btn').forEach(btn => {
+    btn.classList.remove('bg-primary', 'text-white');
+    btn.classList.add('bg-surface-variant/60', 'text-on-surface');
+  });
+
+  const allBtn = document.querySelectorAll('.party-tab-btn')[0];
+  if (allBtn) {
+    allBtn.classList.remove('bg-surface-variant/60', 'text-on-surface');
+    allBtn.classList.add('bg-primary', 'text-white');
+  }
+
+  closeAccountDetail();
+  renderOverviewKPIs();
+  renderAccountsSummary();
+  renderOpenBalances();
+}
+
+function filterPartyType(type, btnElement) {
+  currentFilterType = type;
+
+  document.querySelectorAll('.party-tab-btn').forEach(btn => {
+    btn.classList.remove('bg-primary', 'text-white');
+    btn.classList.add('bg-surface-variant/60', 'text-on-surface');
+  });
+
+  btnElement.classList.remove('bg-surface-variant/60', 'text-on-surface');
+  btnElement.classList.add('bg-primary', 'text-white');
+
+  closeAccountDetail();
+  renderAccountsSummary();
+}
+
+function applyFilters() {
+  renderAccountsSummary();
+}
+
+// Modal 1: Open Source Document Traceability Modal
+function openDocTraceModal(docId) {
+  const doc = sourceDocMap[docId];
+  const titleEl = document.getElementById('doc-modal-title');
+  const bodyEl = document.getElementById('doc-modal-body');
+
+  titleEl.innerText = doc ? doc.title : `مستند رقم: ${docId}`;
+
+  if (!doc) {
+    bodyEl.innerHTML = `
+      <div class="p-4 bg-gray-50 text-gray-700 rounded-lg text-center font-bold">
+        تفاصيل المستند (${docId}) مسجلة في سجل الحركات المالية المركزي.
+      </div>
+    `;
+  } else if (docId.startsWith('LOT') || docId.startsWith('REC')) {
+    bodyEl.innerHTML = `
+      <div class="grid grid-cols-2 gap-3 bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60">
+        <div><span class="text-outline">المورد الأصلي:</span> <strong class="text-primary block">${doc.party}</strong></div>
+        <div><span class="text-outline">المحطة المستلمة:</span> <strong class="text-primary block">${doc.station}</strong></div>
+        <div><span class="text-outline">الصنف المستلم:</span> <strong class="text-primary block">${doc.product}</strong></div>
+        <div><span class="text-outline">الكمية المقبوضة:</span> <strong class="text-emerald-700 font-mono block">${doc.quantity}</strong></div>
+        <div><span class="text-outline">سعر الكيلو:</span> <strong class="font-mono block">${doc.unitPrice}</strong></div>
+        <div><span class="text-outline">إجمالي الاستحقاق:</span> <strong class="text-rose-600 font-mono block text-sm">${doc.total}</strong></div>
+      </div>
+    `;
+  } else if (docId.startsWith('SHP') || docId.startsWith('SH')) {
+    bodyEl.innerHTML = `
+      <div class="grid grid-cols-2 gap-3 bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60">
+        <div><span class="text-outline">العميل المستورد:</span> <strong class="text-primary block">${doc.customer}</strong></div>
+        <div><span class="text-outline">محطة المعالجة:</span> <strong class="text-primary block">${doc.station}</strong></div>
+        <div><span class="text-outline">المنتج والتعبئة:</span> <strong class="text-primary block">${doc.product} (${doc.packaging})</strong></div>
+        <div><span class="text-outline">الوزن الصافي المعبأ:</span> <strong class="text-emerald-700 font-mono block">${doc.netWeight}</strong></div>
+        <div><span class="text-outline">سعر البيع بالكيلو:</span> <strong class="font-mono block">${doc.sellingPrice}</strong></div>
+        <div><span class="text-outline">إجمالي ايراد الشحنة:</span> <strong class="text-emerald-700 font-mono block text-sm">${doc.totalRevenue}</strong></div>
+      </div>
+    `;
+  } else {
+    bodyEl.innerHTML = `
+      <div class="space-y-2 bg-surface-variant/30 p-3 rounded-lg border border-outline-variant/60">
+        <div><span class="text-outline">الطرف:</span> <strong class="text-primary">${doc.party}</strong></div>
+        <div><span class="text-outline">المبلغ المدفوع/المحصل:</span> <strong class="text-emerald-700 font-mono">${doc.amount}</strong></div>
+        <div><span class="text-outline">التاريخ والبيان:</span> <span>${doc.date} — ${doc.notes || ''}</span></div>
+      </div>
+    `;
+  }
+
+  document.getElementById('doc-trace-modal').classList.remove('hidden');
+}
+
+function closeDocModal() {
+  document.getElementById('doc-trace-modal').classList.add('hidden');
+}
+
+// Modal 2: Payment Modal Handlers
+function openPaymentModal() {
+  if (!currentSelectedParty) return;
+  document.getElementById('modal-pay-party-name').innerText = currentSelectedParty.name;
+  document.getElementById('pay-amount-input').value = '';
+  document.getElementById('payment-modal').classList.remove('hidden');
+}
+
+function closePaymentModal() {
+  document.getElementById('payment-modal').classList.add('hidden');
+}
+
+function submitPaymentForm(e) {
+  e.preventDefault();
+  const amt = parseFloat(document.getElementById('pay-amount-input').value) || 0;
+  const method = document.getElementById('pay-method-select').value;
+  const notes = document.getElementById('pay-notes-input').value;
+
+  if (amt <= 0 || !currentSelectedParty) return;
+
+  ERPState.addFinancialTransaction({
+    type: "سند دفع (Outflow)",
+    partyType: currentSelectedParty.typeLabel,
+    partyName: currentSelectedParty.name,
+    amountEgp: amt,
+    description: `سداد دفعة (${method}) — ${notes || 'تسوية مستحقات'}`
+  });
+
+  closePaymentModal();
+  renderOverviewKPIs();
+  renderAccountsSummary();
+  renderOpenBalances();
+  selectParty(currentSelectedParty.id);
+
+  showToast(`تم تسجيل دفعة بقيمة ${amt.toLocaleString()} ج.م لـ ${currentSelectedParty.name} بنجاح!`, 'success');
+}
+
+// Modal 3: Collection Modal Handlers
+function openCollectionModal() {
+  if (!currentSelectedParty) return;
+  document.getElementById('modal-collect-party-name').innerText = currentSelectedParty.name;
+  document.getElementById('collect-amount-input').value = '';
+  document.getElementById('collection-modal').classList.remove('hidden');
+}
+
+function closeCollectionModal() {
+  document.getElementById('collection-modal').classList.add('hidden');
+}
+
+function submitCollectionForm(e) {
+  e.preventDefault();
+  const amt = parseFloat(document.getElementById('collect-amount-input').value) || 0;
+  const method = document.getElementById('collect-method-select').value;
+  const notes = document.getElementById('collect-notes-input').value;
+
+  if (amt <= 0 || !currentSelectedParty) return;
+
+  ERPState.addFinancialTransaction({
+    type: "سند تحصيل (Inflow)",
+    partyType: currentSelectedParty.typeLabel,
+    partyName: currentSelectedParty.name,
+    amountEgp: amt,
+    description: `تحصيل مقبوضات (${method}) — ${notes || 'تحصيل تحت حساب الفواتير'}`
+  });
+
+  closeCollectionModal();
+  renderOverviewKPIs();
+  renderAccountsSummary();
+  renderOpenBalances();
+  selectParty(currentSelectedParty.id);
+
+  showToast(`تم تسجيل تحصيل دفعة بقيمة ${amt.toLocaleString()} ج.م من ${currentSelectedParty.name} بنجاح!`, 'success');
+}
+
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast-alert');
+  const toastMsg = document.getElementById('toast-alert-msg');
+  toastMsg.innerText = msg;
+  toast.classList.remove('hidden');
+  setTimeout(() => {
+    toast.classList.add('hidden');
+  }, 3500);
+}
+
+// Initial Load
+document.addEventListener('DOMContentLoaded', () => {
+  renderOverviewKPIs();
+  renderAccountsSummary();
+  renderOpenBalances();
+});
+</script>
+</body>
+</html>

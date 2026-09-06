@@ -1,0 +1,858 @@
+[
+  {
+    "folder": "_1",
+    "title": "Raw Inventory Dashboard",
+    "headings": [
+      "نظام التصدير",
+      "المخزون الخام"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_2",
+    "title": "نظام التصدير المصري - إضافة شحنة جديدة",
+    "headings": [
+      "person بيانات العميل والمنتج",
+      "factory بيانات المحطة والمخزون",
+      "inventory_2 المخازن المتاحة",
+      "conveyor_belt بيانات الإنتاج",
+      "done_all تأكيد إنشاء الشحنة"
+    ],
+    "navItemsCount": 0,
+    "sampleNav": [],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_3",
+    "title": "مراقبة الهالك - نظام التصدير",
+    "headings": [
+      "نظام التصدير",
+      "مراقبة الهالك",
+      "سجل الهالك التفصيلي"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_4",
+    "title": "تكلفة الشحنات والربحية - نظام التصدير",
+    "headings": [
+      "نظام التصدير",
+      "تكلفة الشحنات والربحية",
+      "تفاصيل الشحنات"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_5",
+    "title": "إضافة وارد خام - نظام التصدير المصري",
+    "headings": [
+      "نظام التصدير",
+      "إضافة وارد خام",
+      "1. المعلومات الأساسية",
+      "2. الكمية والسعر",
+      "3. النقل"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_6",
+    "title": "نظام التصدير المصري - إنشاء شحنة جديدة",
+    "headings": [
+      "نظام التصدير المصري",
+      "إنشاء شحنة جديدة",
+      "person بيانات العميل",
+      "inventory تفاصيل المنتج"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "الرئيسية"
+      },
+      {
+        "href": "#",
+        "text": "التنبيهات"
+      },
+      {
+        "href": "#",
+        "text": "المهام"
+      },
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_7",
+    "title": "تفاصيل الشحنة",
+    "headings": [
+      "نظام التصدير",
+      "#SHP-2023-001",
+      "info المعلومات العامة والمسار",
+      "scale ميزان الخامات",
+      "delete_outline تتبع الهالك (Waste)"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_8",
+    "title": "الموردين - نظام التصدير المصري",
+    "headings": [
+      "نظام التصدير",
+      "الموردين",
+      "قائمة الموردين"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_9",
+    "title": "مشتريات الخامات - نظام التصدير",
+    "headings": [
+      "نظام التصدير",
+      "مشتريات الخامات",
+      "إدخال إيصال استلام جديد",
+      "receipt_long ملخص التكلفة",
+      "التتبع (Traceability)"
+    ],
+    "navItemsCount": 8,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_10",
+    "title": "إضافة مقاول جديد",
+    "headings": [
+      "إضافة مقاول",
+      "البيانات الأساسية",
+      "معدلات الأداء والتسعير",
+      "ملاحظات إضافية"
+    ],
+    "navItemsCount": 0,
+    "sampleNav": [],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_11",
+    "title": "إضافة وارد مستلزمات",
+    "headings": [
+      "إضافة وارد مستلزمات",
+      "info البيانات الأساسية",
+      "location_on التوجيه والصنف",
+      "calculate الكميات والأسعار",
+      "receipt_long ملخص الفاتورة"
+    ],
+    "navItemsCount": 0,
+    "sampleNav": [],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_12",
+    "title": "المقاولون - نظام التصدير",
+    "headings": [
+      "نظام التصدير",
+      "نظام التصدير المصري",
+      "المقاولون",
+      "قائمة المقاولين",
+      "مقاول النور"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_13",
+    "title": "إضافة منتج للمورد",
+    "headings": [
+      "نظام التصدير",
+      "نظام التصدير المصري",
+      "إضافة منتج للمورد",
+      "تفاصيل الربط والتسعير"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_14",
+    "title": "إضافة محطة جديدة",
+    "headings": [
+      "نظام التصدير",
+      "إضافة محطة جديدة",
+      "البيانات الأساسية",
+      "الافتراضيات والتسعير"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_15",
+    "title": "محطات المعالجة - نظام التصدير",
+    "headings": [
+      "نظام التصدير",
+      "إدارة المحطات",
+      "قائمة المحطات",
+      "إعدادات محطة النور",
+      "warehouse المستودعات المرتبطة (تلقائي)"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_16",
+    "title": "نظام التصدير - المخزون (الكراتين)",
+    "headings": [
+      "نظام التصدير",
+      "إدارة التعبئة والتغليف (الكراتين)",
+      "add_box إضافة صنف جديد"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_17",
+    "title": "إضافة مورد جديد",
+    "headings": [
+      "إضافة مورد جديد",
+      "البيانات الأساسية",
+      "معلومات التواصل",
+      "ملاحظات إضافية"
+    ],
+    "navItemsCount": 0,
+    "sampleNav": [],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_18",
+    "title": "Dashboard - Frozen Food Export ERP",
+    "headings": [
+      "نظام التصدير",
+      "المبيعات مقابل التكاليف",
+      "الهالك لكل محطة",
+      "أحدث العمليات"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "الرئيسية"
+      },
+      {
+        "href": "#",
+        "text": "التنبيهات"
+      },
+      {
+        "href": "#",
+        "text": "المهام"
+      },
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_19",
+    "title": "المنتجات - نظام التصدير المصري",
+    "headings": [
+      "نظام التصدير",
+      "نظام التصدير المصري",
+      "المنتجات",
+      "قائمة المنتجات (فراولة)"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": true,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_20",
+    "title": "شاشة العملاء - نظام التصدير المصري",
+    "headings": [
+      "نظام التصدير",
+      "إدارة العملاء والاتفاقيات",
+      "groups قائمة العملاء",
+      "تفاصيل اتفاقيات العميل: شركة سما للتجارة",
+      "handshake المنتجات والأسعار المتفق عليها"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": true,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_21",
+    "title": "إضافة منتج جديد - نظام التصدير",
+    "headings": [
+      "إضافة منتج جديد"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "الرئيسية"
+      },
+      {
+        "href": "#",
+        "text": "التنبيهات"
+      },
+      {
+        "href": "#",
+        "text": "المهام"
+      },
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_22",
+    "title": "إضافة عميل جديد - نظام التصدير المصري",
+    "headings": [
+      "إضافة عميل جديد",
+      "corporate_fare البيانات الأساسية",
+      "contact_mail معلومات التواصل",
+      "note_alt ملاحظات إضافية"
+    ],
+    "navItemsCount": 1,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "arrow_forward"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_23",
+    "title": "إضافة منتج للعميل",
+    "headings": [
+      "نظام التصدير",
+      "إضافة منتج للعميل"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "الرئيسية"
+      },
+      {
+        "href": "#",
+        "text": "التنبيهات"
+      },
+      {
+        "href": "#",
+        "text": "المهام"
+      },
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  },
+  {
+    "folder": "_24",
+    "title": "إضافة صنف تعبئة - نظام التصدير",
+    "headings": [
+      "نظام التصدير",
+      "إضافة صنف تعبئة",
+      "بيانات الكرتونة الأساسية"
+    ],
+    "navItemsCount": 10,
+    "sampleNav": [
+      {
+        "href": "#",
+        "text": "dashboard لوحة القيادة"
+      },
+      {
+        "href": "#",
+        "text": "inventory_2 المخزون"
+      },
+      {
+        "href": "#",
+        "text": "database البيانات الأساسية"
+      },
+      {
+        "href": "#",
+        "text": "conveyor_belt العمليات"
+      },
+      {
+        "href": "#",
+        "text": "account_balance_wallet المالية"
+      }
+    ],
+    "features": {
+      "hasModal": false,
+      "hasDrawer": false,
+      "hasTable": false,
+      "hasTabs": true,
+      "fontAwesomeOrMaterial": "material-symbols"
+    }
+  }
+]

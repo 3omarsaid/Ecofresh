@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إدارة وتدقيق المحطات - نظام تجميد للتصدير</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #c4c6cd; border-radius: 4px; }
+        .tab-active { border-bottom: 3px solid #041627; color: #041627; font-weight: 700; }
+        .station-card { transition: all 0.2s ease-in-out; }
+        .station-card:hover { transform: translateY(-2px); border-color: #041627; box-shadow: 0 8px 20px -4px rgba(4, 22, 39, 0.08); }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+
+<!-- SideNavBar Navigation -->
+<nav class="fixed right-0 top-0 h-screen w-[280px] z-50 flex flex-col bg-primary text-on-primary shadow-xl border-l border-outline-variant/10">
+    <div class="h-toolbar-height flex flex-col justify-center px-6 border-b border-outline-variant/20 py-4 bg-primary shrink-0">
+        <h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">نظام تجميد للتصدير</h1>
+        <p class="font-label-sm text-label-sm text-primary-fixed-dim">Glacier Ledger ERP</p>
+    </div>
+    <div class="flex-1 overflow-y-auto py-3 px-3">
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>لوحة القيادة التنفيذية</span>
+                </a>
+            </li>
+            <li>
+                <a href="supplies.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>المستلزمات (Supplies Management)</span>
+                </a>
+            </li>
+            <li>
+                <a href="stations-management.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold bg-secondary-container text-on-secondary-container border-r-4 border-surface-variant transition-all">
+                    <span class="material-symbols-outlined">factory</span>
+                    <span>إدارة وتدقيق المحطات (Stations Hub)</span>
+                </a>
+            </li>
+            <li>
+                <a href="treasury-payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>الموردون والتوريدات</span>
+                </a>
+            </li>
+            <li>
+                <a href="raw-materials.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>مخزن المواد الخام (Raw Inventory)</span>
+                </a>
+            </li>
+            <li>
+                <a href="processing-operations.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">autorenew</span>
+                    <span>عمليات التدوير (Processing)</span>
+                </a>
+            </li>
+            <li>
+                <a href="finished-goods.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory</span>
+                    <span>مخزن المنتج الجاهز (Finished Goods)</span>
+                </a>
+            </li>
+            <li>
+                <a href="employees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">badge</span>
+                    <span>إدارة الموظفين (Employees)</span>
+                </a>
+            </li>
+            <li>
+                <a href="create-shipment.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>إنشاء شحنة تصدير</span>
+                </a>
+            </li>
+            <li>
+                <a href="client-orders.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>طلبات العملاء والاتفاقيات</span>
+                </a>
+            </li>
+            <li>
+                <a href="new-operation.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">conveyor_belt</span>
+                    <span>عملية تشغيل جديدة</span>
+                </a>
+            </li>
+            <li>
+                <a href="exports-contractors.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>إدارة المقاولين والصادرات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="p-4 border-t border-outline-variant/20 shrink-0 bg-primary-container/30">
+        <div class="flex items-center gap-3 text-xs text-primary-fixed-dim">
+            <span class="material-symbols-outlined text-green-400 text-base">check_circle</span>
+            <span>مركز تشغيل وتدقيق المحطات active</span>
+        </div>
+    </div>
+</nav>
+
+<!-- TopNavBar -->
+<header class="bg-surface fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding border-b border-outline-variant">
+    <div class="flex items-center gap-4">
+        <h2 class="font-title-sm text-title-sm font-black text-primary">نظام تجميد للتصدير - إدارة وتدقيق المحطات (Stations Operational Hub)</h2>
+        <span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-xs font-bold font-data-mono">PROTOTYPE ONLY</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative hidden lg:block">
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input id="topSearchInput" class="bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-4 pr-10 text-body-md font-body-md focus:outline-none focus:border-primary w-64 text-on-surface" placeholder="بحث بالمحطة، الكود، المسؤول..." type="text" onkeyup="filterStationsGrid()"/>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" title="التنبيهات">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" onclick="resetStationsPrototypeData()" title="إعادة ضبط البيانات">
+                <span class="material-symbols-outlined">restart_alt</span>
+            </button>
+        </div>
+        <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant shrink-0">
+            <img alt="صورة المستخدم" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByztzte-7HG582Cqe_OCtfzP-23PrUqNwLlLKTTX96RHPgxCDROx15p3gKfgy7bRsiZyRSy2CJKPAAoU4Ap_Jra0RLti2ZthCxcTyK472-hCGMhTug7bvSfpiuQQJJmpTgix3-ONAd5-2TDY04W1GHPZQla8t5urxJCFKTNJOzmSgZpWcD4ynve2FL4nv6CqOvLC5wEm8-Nnc1qpYBThQnSXMJfYQuQATCq16IC8ALWBY2xm5FkfaO"/>
+        </div>
+    </div>
+</header>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Main Content Canvas -->
+<main class="mr-[280px] pt-toolbar-height min-h-screen p-container-padding">
+    <div class="space-y-6 max-w-[1440px] mx-auto pb-16">
+
+        <!-- 1. PAGE HEADER -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="font-display-lg text-display-lg text-primary flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">factory</span>
+                    <span>إدارة وتدقيق المحطات (Stations Operational Hub)</span>
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-1">متابعة أداء ومؤشرات تشغيل محطات التجميد والتعديل ورصد نسبة استغلال الطاقة والتكاليف</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openAddStationModal()" class="bg-primary hover:bg-primary-container text-on-primary font-title-sm text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">add_business</span>
+                    <span>+ إضافة محطة جديدة</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. KPI SUMMARY (5 KEY METRICS) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- KPI 1 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي المحطات</span>
+                    <span class="material-symbols-outlined text-primary text-xl">factory</span>
+                </div>
+                <div id="kpiTotalStations" class="text-2xl font-bold text-on-surface font-data-mono">5</div>
+                <span class="text-[11px] text-on-surface-variant">محطة مسجلة بالنظام</span>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">المحطات النشطة</span>
+                    <span class="material-symbols-outlined text-green-600 text-xl">check_circle</span>
+                </div>
+                <div id="kpiActiveStations" class="text-2xl font-bold text-green-700 font-data-mono">4</div>
+                <span class="text-[11px] text-on-surface-variant">خطوط تعمل الآن</span>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي الإنتاج</span>
+                    <span class="material-symbols-outlined text-tertiary-container text-xl">inventory</span>
+                </div>
+                <div id="kpiTotalFgKg" class="text-lg font-bold text-tertiary-container font-data-mono">210,000</div>
+                <span class="text-[11px] text-on-surface-variant">كيلو جرام منتج جاهز</span>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي الخامات</span>
+                    <span class="material-symbols-outlined text-primary text-xl">scale</span>
+                </div>
+                <div id="kpiTotalRawKg" class="text-lg font-bold text-primary font-data-mono">285,000</div>
+                <span class="text-[11px] text-on-surface-variant">كيلو خام بالمخازن</span>
+            </div>
+            <!-- KPI 5 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">تكلفة التشغيل</span>
+                    <span class="material-symbols-outlined text-red-600 text-xl">payments</span>
+                </div>
+                <div id="kpiMonthlyCostEgp" class="text-lg font-bold text-red-700 font-data-mono">1,250,000</div>
+                <span class="text-[11px] text-on-surface-variant">جنيه مصري هذا الشهر</span>
+            </div>
+        </div>
+
+        <!-- 3. FILTERS / SEARCH TOOLBAR -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center">
+            <!-- Search Input -->
+            <div class="relative w-full md:w-80">
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                <input id="stSearchInput" type="text" onkeyup="filterStationsGrid()" placeholder="بحث باسم المحطة، الكود، المسؤول..." class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 text-xs font-body-md focus:outline-none focus:border-primary"/>
+            </div>
+
+            <!-- Filters dropdowns -->
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto text-xs">
+                <!-- Status Filter -->
+                <div>
+                    <select id="filterStatus" onchange="filterStationsGrid()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 focus:outline-none focus:border-primary">
+                        <option value="">الكل (الحالة)</option>
+                        <option value="نشطة">نشطة</option>
+                        <option value="متوقفة">متوقفة</option>
+                        <option value="تحت الصيانة">تحت الصيانة</option>
+                    </select>
+                </div>
+
+                <!-- Station Type Filter -->
+                <div>
+                    <select id="filterType" onchange="filterStationsGrid()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 focus:outline-none focus:border-primary">
+                        <option value="">كل أنواع المحطات</option>
+                        <option value="محطة تجهيز وتعبئة">محطة تجهيز وتعبئة</option>
+                        <option value="محطة فرز وتعبئة">محطة فرز وتعبئة</option>
+                        <option value="محطة تجميد وتبريد">محطة تجميد وتبريد</option>
+                        <option value="محطة تعبئة وتغليف">محطة تعبئة وتغليف</option>
+                        <option value="محطة تخزين وتجميد">محطة تخزين وتجميد</option>
+                    </select>
+                </div>
+
+                <!-- City Filter -->
+                <div>
+                    <select id="filterCity" onchange="filterStationsGrid()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 focus:outline-none focus:border-primary">
+                        <option value="">كل المدن والمواقع</option>
+                        <option value="السادات">السادات</option>
+                        <option value="المنوفية">المنوفية</option>
+                        <option value="البحيرة">البحيرة</option>
+                        <option value="كفر الشيخ">كفر الشيخ</option>
+                        <option value="الدقهلية">الدقهلية</option>
+                    </select>
+                </div>
+
+                <!-- Sort By -->
+                <div class="flex items-center gap-1.5 border-r pr-3 border-outline-variant">
+                    <span class="text-on-surface-variant font-bold">ترتيب:</span>
+                    <select id="sortBy" onchange="filterStationsGrid()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 font-bold text-primary focus:outline-none focus:border-primary">
+                        <option value="name">الاسم</option>
+                        <option value="inventory">إجمالي المخزون</option>
+                        <option value="activity">النشاط اليومي</option>
+                        <option value="cost">التكلفة الشهرية</option>
+                    </select>
+                </div>
+
+                <button onclick="clearAllFilters()" class="px-3 py-2 text-on-surface-variant hover:text-primary font-bold border border-outline-variant rounded-lg hover:bg-surface-variant">مسح الفلاتر</button>
+            </div>
+        </div>
+
+        <!-- 4. STATIONS OPERATIONAL CARD GRID (DIRECTLY UNDER FILTERS) -->
+        <div id="stationsCardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch pt-1">
+            <!-- Rendered dynamically by JavaScript on page load -->
+        </div>
+
+    </div>
+</main>
+
+<!-- ADD STATION MODAL -->
+<div id="addStationModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden max-h-[92vh]">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-tertiary-fixed">add_business</span>
+                <span>إضافة محطة تشغيل وتجهيز جديدة (Add Station)</span>
+            </h3>
+            <button onclick="closeAddStationModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اسم المحطة *</label>
+                    <input id="stName" type="text" placeholder="مثال: محطة البركة للتجميد" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">كود المحطة (Station Code) *</label>
+                    <input id="stCode" type="text" value="ST-006" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">نوع المحطة *</label>
+                    <select id="stType" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="محطة تجهيز وتعبئة">محطة تجهيز وتعبئة</option>
+                        <option value="محطة فرز وتعبئة">محطة فرز وتعبئة</option>
+                        <option value="محطة تجميد وتبريد">محطة تجميد وتبريد</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المسؤول عن المحطة *</label>
+                    <input id="stManager" type="text" placeholder="أحمد علي" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface font-body-md">الطاقة التشغيلية اليومية (KG/Day) *</label>
+                    <input id="stCapacity" type="number" value="15000" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رسوم الأرضية / المحطة (Ground Fee) *</label>
+                    <input id="stFee" type="text" value="0.75 EGP / KG" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">العنوان والمدينة</label>
+                    <input id="stLocation" type="text" placeholder="السادات" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+
+            <div class="p-3 bg-surface border rounded-xl space-y-1 font-bold text-primary">
+                <span class="block">سيتم ربط وإنشاء 3 مخازن تابعة تلقائياً للمحطة:</span>
+                <div class="text-[11px] font-normal text-on-surface-variant flex gap-4">
+                    <span>1. مخزن الخام</span>
+                    <span>2. مخزن المستلزمات</span>
+                    <span>3. مخزن المنتج الجاهز</span>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closeAddStationModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmSaveStation()" class="px-6 py-2.5 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">حفظ وتفعيل المحطة</button>
+        </div>
+    </div>
+</div>
+
+<!-- 5. STATION DETAILS DRAWER (COMPLETE WORKSPACE) -->
+<div id="stationDetailsDrawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end hidden">
+    <div class="bg-surface-container-lowest w-full max-w-5xl h-full flex flex-col shadow-2xl overflow-hidden border-r border-outline-variant">
+        <!-- Drawer Header -->
+        <div class="p-5 bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg border border-primary-fixed-dim">
+                    <span id="drawerStInitials">ن</span>
+                </div>
+                <div>
+                    <h3 id="drawerStName" class="text-xl font-bold">محطة النخيل للتجهيز</h3>
+                    <p id="drawerStSubtitle" class="text-xs text-primary-fixed-dim">ST-001 • المسؤول: أحمد علي • الموقع: السادات</p>
+                </div>
+            </div>
+            <button onclick="closeStationDrawer()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Drawer Sub-tabs -->
+        <div class="bg-surface-container border-b border-outline-variant px-6 flex gap-4 text-xs font-bold shrink-0 overflow-x-auto">
+            <button onclick="switchStDrawerSubtab('overview')" id="stSub-overview" class="py-3 tab-active">معلومات المحطة والأداء</button>
+            <button onclick="switchStDrawerSubtab('raw')" id="stSub-raw" class="py-3 text-on-surface-variant">مخزن الخام والوارد</button>
+            <button onclick="switchStDrawerSubtab('supplies')" id="stSub-supplies" class="py-3 text-on-surface-variant">مخزن المستلزمات والهالك</button>
+            <button onclick="switchStDrawerSubtab('fg')" id="stSub-fg" class="py-3 text-on-surface-variant">مخزن المنتج الجاهز</button>
+            <button onclick="switchStDrawerSubtab('processing')" id="stSub-processing" class="py-3 text-on-surface-variant">التدوير والعمليات</button>
+            <button onclick="switchStDrawerSubtab('shipments')" id="stSub-shipments" class="py-3 text-on-surface-variant">الشحنات</button>
+            <button onclick="switchStDrawerSubtab('contractors')" id="stSub-contractors" class="py-3 text-on-surface-variant">المقاولون والعمالة</button>
+            <button onclick="switchStDrawerSubtab('financial')" id="stSub-financial" class="py-3 text-on-surface-variant">المالية والمصروفات</button>
+            <button onclick="switchStDrawerSubtab('history')" id="stSub-history" class="py-3 text-on-surface-variant">آخر الحركات</button>
+        </div>
+
+        <!-- Drawer Body -->
+        <div id="stDrawerBody" class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-outline-variant bg-surface-container flex justify-between items-center shrink-0">
+            <div id="drawerStStatusBadge"></div>
+            <div class="flex gap-2">
+                <a href="processing-operations.html" class="px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-xl shadow hover:bg-primary-container">
+                    + بدء عملية تدوير بهذه المحطة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT MOCK DATA & RENDER ENGINE -->
+<script>
+// REALISTIC STATIONS LIST (5 STATIONS AS DEMANDED)
+const DEFAULT_STATIONS = [
+    {
+        id: "ST-001",
+        code: "ST-001",
+        name: "محطة النخيل للتجهيز",
+        type: "محطة تجهيز وتعبئة",
+        manager: "أحمد علي",
+        phone: "01012345678",
+        location: "السادات",
+        status: "نشطة",
+        dailyProdKg: 12500,
+        dailyCapacityKg: 15000,
+        utilizationPct: 83,
+        procToday: 8,
+        shipToday: 12,
+        rawKg: 85000,
+        suppliesUnits: 12500,
+        fgKg: 42000,
+        todayExpense: 12500,
+        todayRevenue: 45000,
+        netOperating: 32500,
+        monthlyCost: 185000,
+        outstanding: 35000,
+        alerts: ["⚠ كرتون X منخفض"]
+    },
+    {
+        id: "ST-002",
+        code: "ST-002",
+        name: "محطة السلام للفرز",
+        type: "محطة فرز وتعبئة",
+        manager: "محمد حسن",
+        phone: "01198765432",
+        location: "المنوفية",
+        status: "نشطة",
+        dailyProdKg: 9500,
+        dailyCapacityKg: 12000,
+        utilizationPct: 79,
+        procToday: 5,
+        shipToday: 7,
+        rawKg: 62000,
+        suppliesUnits: 9200,
+        fgKg: 31000,
+        todayExpense: 8500,
+        todayRevenue: 34000,
+        netOperating: 25500,
+        monthlyCost: 145000,
+        outstanding: 18000,
+        alerts: []
+    },
+    {
+        id: "ST-003",
+        code: "ST-003",
+        name: "محطة الأمل للتبريد",
+        type: "محطة تجميد وتبريد",
+        manager: "محمود السيد",
+        phone: "01234567890",
+        location: "البحيرة",
+        status: "نشطة",
+        dailyProdKg: 14000,
+        dailyCapacityKg: 16000,
+        utilizationPct: 88,
+        procToday: 4,
+        shipToday: 4,
+        rawKg: 40000,
+        suppliesUnits: 7000,
+        fgKg: 11000,
+        todayExpense: 6000,
+        todayRevenue: 28000,
+        netOperating: 22000,
+        monthlyCost: 95000,
+        outstanding: 25000,
+        alerts: ["⚠ مستحقات مقاول قيد الاعتماد"]
+    },
+    {
+        id: "ST-004",
+        code: "ST-004",
+        name: "محطة المستقبل للتعبئة",
+        type: "محطة تعبئة وتغليف",
+        manager: "خالد أحمد",
+        phone: "01099887766",
+        location: "كفر الشيخ",
+        status: "متوقفة",
+        dailyProdKg: 0,
+        dailyCapacityKg: 10000,
+        utilizationPct: 0,
+        procToday: 0,
+        shipToday: 0,
+        rawKg: 15000,
+        suppliesUnits: 2000,
+        fgKg: 5000,
+        todayExpense: 1000,
+        todayRevenue: 0,
+        netOperating: -1000,
+        monthlyCost: 40000,
+        outstanding: 8000,
+        alerts: ["⚠ المحطة متوقفة مؤقتاً للمعاينة"]
+    },
+    {
+        id: "ST-005",
+        code: "ST-005",
+        name: "محطة الخير للتخزين",
+        type: "محطة تخزين وتجميد",
+        manager: "إبراهيم حسن",
+        phone: "01155443322",
+        location: "الدقهلية",
+        status: "نشطة",
+        dailyProdKg: 11000,
+        dailyCapacityKg: 14000,
+        utilizationPct: 78,
+        procToday: 6,
+        shipToday: 9,
+        rawKg: 72000,
+        suppliesUnits: 10800,
+        fgKg: 38000,
+        todayExpense: 9000,
+        todayRevenue: 38000,
+        netOperating: 29000,
+        monthlyCost: 160000,
+        outstanding: 28000,
+        alerts: []
+    }
+];
+
+let stationsState = [];
+
+function initStationsPrototype() {
+    const saved = localStorage.getItem("stitch_frozex_stations");
+    if (saved) { try { stationsState = JSON.parse(saved); } catch(e) { loadDefaultStationsData(); } } else { loadDefaultStationsData(); }
+    renderStationsCardGrid();
+    updateStationsKpis();
+}
+
+function loadDefaultStationsData() {
+    stationsState = JSON.parse(JSON.stringify(DEFAULT_STATIONS));
+    saveStationsState();
+}
+
+function saveStationsState() {
+    localStorage.setItem("stitch_frozex_stations", JSON.stringify(stationsState));
+}
+
+function resetStationsPrototypeData() {
+    if (confirm("إعادة ضبط بيانات المحطات للوضع الافتراضي؟")) {
+        loadDefaultStationsData();
+        renderStationsCardGrid();
+        updateStationsKpis();
+        showToast("تم إعادة ضبط بيانات المحطات بنجاح", "info");
+    }
+}
+
+function updateStationsKpis() {
+    const totalSt = stationsState.length;
+    const activeSt = stationsState.filter(s => s.status === "نشطة").length;
+    const totalFgKg = stationsState.reduce((acc, curr) => acc + (curr.fgKg || 0), 0);
+    const totalRawKg = stationsState.reduce((acc, curr) => acc + (curr.rawKg || 0), 0);
+    const totalMonthlyCost = stationsState.reduce((acc, curr) => acc + (curr.monthlyCost || 0), 0);
+
+    document.getElementById("kpiTotalStations").innerText = totalSt;
+    document.getElementById("kpiActiveStations").innerText = activeSt;
+    document.getElementById("kpiTotalFgKg").innerText = totalFgKg.toLocaleString();
+    document.getElementById("kpiTotalRawKg").innerText = totalRawKg.toLocaleString();
+    document.getElementById("kpiMonthlyCostEgp").innerText = Math.round(totalMonthlyCost).toLocaleString();
+}
+
+// GUARANTEED STATIONS CARD GRID RENDERER
+function renderStationsCardGrid() {
+    const grid = document.getElementById("stationsCardGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const searchText = (document.getElementById("stSearchInput")?.value || document.getElementById("topSearchInput")?.value || "").toLowerCase();
+    const filterStatus = document.getElementById("filterStatus")?.value || "";
+    const filterType = document.getElementById("filterType")?.value || "";
+    const filterCity = document.getElementById("filterCity")?.value || "";
+    const sortBy = document.getElementById("sortBy")?.value || "name";
+
+    let filtered = stationsState.filter(s => {
+        const matchesStatus = !filterStatus || s.status === filterStatus;
+        const matchesType = !filterType || s.type === filterType;
+        const matchesCity = !filterCity || s.location === filterCity;
+        const matchesText = s.name.toLowerCase().includes(searchText) || s.code.toLowerCase().includes(searchText) || s.manager.toLowerCase().includes(searchText) || s.location.toLowerCase().includes(searchText);
+        return matchesStatus && matchesType && matchesCity && matchesText;
+    });
+
+    // Sorting logic
+    filtered.sort((a, b) => {
+        if (sortBy === 'inventory') return (b.rawKg + b.fgKg) - (a.rawKg + a.fgKg);
+        if (sortBy === 'activity') return (b.procToday + b.shipToday) - (a.procToday + a.shipToday);
+        if (sortBy === 'cost') return b.monthlyCost - a.monthlyCost;
+        return a.name.localeCompare(b.name, 'ar');
+    });
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full bg-surface-container-lowest border border-outline-variant rounded-2xl p-12 text-center text-on-surface-variant font-medium">
+                <span class="material-symbols-outlined text-4xl text-outline mb-2">error_outline</span>
+                <p class="text-sm font-bold text-primary mb-3">لا توجد محطات مطابقة</p>
+                <button onclick="clearAllFilters()" class="px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-xl shadow">مسح الفلاتر</button>
+            </div>
+        `;
+        return;
+    }
+
+    filtered.forEach(s => {
+        // Status indicator dot & badge
+        let dotColor = "bg-green-500";
+        let badgeStyle = "bg-green-50 text-green-800 border-green-200";
+        if (s.status === 'تحت الصيانة') { dotColor = "bg-amber-500"; badgeStyle = "bg-amber-50 text-amber-800 border-amber-200"; }
+        if (s.status === 'متوقفة') { dotColor = "bg-red-500"; badgeStyle = "bg-red-50 text-red-800 border-red-200"; }
+
+        // Formatted metrics
+        const rawTon = (s.rawKg / 1000).toFixed(0);
+        const fgTon = (s.fgKg / 1000).toFixed(0);
+        const suppK = (s.suppliesUnits / 1000).toFixed(1);
+        const utilPct = s.utilizationPct || 80;
+
+        const card = document.createElement("div");
+        card.className = "station-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 shadow-xs flex flex-col justify-between cursor-pointer";
+        card.onclick = () => openStationDrawer(s.id);
+
+        card.innerHTML = `
+            <div>
+                <!-- HEADER: Status badge, Name, Code, Three-dot menu -->
+                <div class="flex justify-between items-start gap-2 mb-3">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full ${dotColor} inline-block"></span>
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-bold border ${badgeStyle}">● ${s.status}</span>
+                        </div>
+                        <h3 class="font-bold text-base text-primary leading-tight">${s.name}</h3>
+                        <span class="text-xs font-bold font-data-mono text-on-surface-variant">${s.code}</span>
+                    </div>
+                    <button onclick="event.stopPropagation(); openStationDrawer('${s.id}')" class="text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-variant" title="خيارات المحطة">
+                        <span class="material-symbols-outlined text-lg">more_vert</span>
+                    </button>
+                </div>
+
+                <!-- STATION INFO: Manager & Location -->
+                <div class="grid grid-cols-2 gap-2 text-xs text-on-surface-variant mb-3 font-body-md">
+                    <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm text-outline">person</span>
+                        <span>المسؤول: <strong class="text-on-surface font-semibold">${s.manager}</strong></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm text-outline">location_on</span>
+                        <span>الموقع: <strong class="text-on-surface font-semibold">${s.location}</strong></span>
+                    </div>
+                </div>
+
+                <hr class="border-outline-variant/60 my-2.5"/>
+
+                <!-- OPERATIONAL METRICS & PROGRESS BAR -->
+                <div class="space-y-2 mb-3">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-on-surface-variant">الإنتاج اليومي: <strong class="text-primary font-bold font-data-mono">${(s.dailyProdKg || 12500).toLocaleString()} كجم</strong></span>
+                        <span class="text-on-surface-variant">الطاقة: <strong class="text-on-surface font-bold font-data-mono">${(s.dailyCapacityKg || 15000).toLocaleString()} كجم/يوم</strong></span>
+                    </div>
+
+                    <!-- CAPACITY UTILIZATION PROGRESS BAR -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[11px] font-bold">
+                            <span class="text-on-surface-variant">نسبة استغلال الطاقة:</span>
+                            <span class="text-primary font-data-mono">${utilPct}%</span>
+                        </div>
+                        <div class="w-full bg-surface-container rounded-full h-2 overflow-hidden border border-outline-variant/30">
+                            <div class="bg-primary h-full rounded-full" style="width: ${utilPct}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INVENTORY SNAPSHOT (3 COLUMNS) -->
+                <div class="grid grid-cols-3 gap-2 text-center text-xs mb-3">
+                    <div class="bg-surface p-2 rounded-lg border border-outline-variant/40">
+                        <span class="text-[10px] text-on-surface-variant block font-body-md">المواد الخام</span>
+                        <strong class="text-xs text-green-700 font-data-mono font-bold">${rawTon} طن</strong>
+                    </div>
+                    <div class="bg-surface p-2 rounded-lg border border-outline-variant/40">
+                        <span class="text-[10px] text-on-surface-variant block font-body-md">المستلزمات</span>
+                        <strong class="text-xs text-amber-800 font-data-mono font-bold">${suppK}K</strong>
+                    </div>
+                    <div class="bg-surface p-2 rounded-lg border border-outline-variant/40">
+                        <span class="text-[10px] text-on-surface-variant block font-body-md">المنتج الجاهز</span>
+                        <strong class="text-xs text-tertiary-container font-data-mono font-bold">${fgTon} طن</strong>
+                    </div>
+                </div>
+
+                <!-- ACTIVITY (TODAY) -->
+                <div class="grid grid-cols-2 gap-2 text-xs mb-3 font-data-mono bg-surface p-2 rounded-lg border border-outline-variant/40">
+                    <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-primary text-base">autorenew</span>
+                        <div>
+                            <span class="text-[10px] text-on-surface-variant block font-body-md">التدوير اليوم:</span>
+                            <strong class="font-bold text-on-surface">${s.procToday} عمليات</strong>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-primary text-base">local_shipping</span>
+                        <div>
+                            <span class="text-[10px] text-on-surface-variant block font-body-md">الشحنات اليوم:</span>
+                            <strong class="font-bold text-on-surface">${s.shipToday} شحنة</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-outline-variant/60 my-2.5"/>
+
+                <!-- FINANCIAL SUMMARY -->
+                <div class="grid grid-cols-3 gap-2 text-xs font-data-mono mb-3">
+                    <div>
+                        <span class="text-[10px] text-on-surface-variant block font-body-md">مصروف اليوم:</span>
+                        <strong class="text-xs text-red-700 font-bold">${(s.todayExpense || 12500).toLocaleString()} ج.م</strong>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-[10px] text-on-surface-variant block font-body-md">إيراد الإنتاج:</span>
+                        <strong class="text-xs text-green-700 font-bold">${(s.todayRevenue || 45000).toLocaleString()} ج.م</strong>
+                    </div>
+                    <div class="text-left">
+                        <span class="text-[10px] text-on-surface-variant block font-body-md">صافي التشغيل:</span>
+                        <strong class="text-xs text-tertiary-container font-bold">+${(s.netOperating || 32500).toLocaleString()} ج.م</strong>
+                    </div>
+                </div>
+
+                <!-- ALERTS SECTION -->
+                <div class="mb-3">
+                    ${s.alerts && s.alerts.length > 0 ? `
+                        <div class="p-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-bold flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm text-amber-700">warning</span>
+                            <span class="truncate">${s.alerts[0]}</span>
+                        </div>
+                    ` : `
+                        <div class="p-2 rounded-lg bg-surface border border-outline-variant/40 text-on-surface-variant text-[11px] flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm text-green-600">check_circle</span>
+                            <span>✓ لا توجد تنبيهات</span>
+                        </div>
+                    `}
+                </div>
+            </div>
+
+            <!-- FOOTER ACTION LINK -->
+            <div class="pt-3 border-t border-outline-variant/60 flex justify-between items-center text-xs font-bold text-primary group">
+                <span>عرض تفاصيل المحطة</span>
+                <span class="material-symbols-outlined text-base transition-transform group-hover:-translate-x-1">arrow_left</span>
+            </div>
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+function filterStationsGrid() { renderStationsCardGrid(); }
+
+function clearAllFilters() {
+    if (document.getElementById("stSearchInput")) document.getElementById("stSearchInput").value = "";
+    if (document.getElementById("topSearchInput")) document.getElementById("topSearchInput").value = "";
+    if (document.getElementById("filterStatus")) document.getElementById("filterStatus").value = "";
+    if (document.getElementById("filterType")) document.getElementById("filterType").value = "";
+    if (document.getElementById("filterCity")) document.getElementById("filterCity").value = "";
+    if (document.getElementById("sortBy")) document.getElementById("sortBy").value = "name";
+    renderStationsCardGrid();
+}
+
+// MODAL LOGIC
+function openAddStationModal() { document.getElementById("addStationModal").classList.remove("hidden"); }
+function closeAddStationModal() { document.getElementById("addStationModal").classList.add("hidden"); }
+function confirmSaveStation() {
+    const name = document.getElementById("stName").value.trim();
+    const code = document.getElementById("stCode").value.trim();
+
+    if (!name) { showToast("أدخل اسم المحطة", "error"); return; }
+
+    stationsState.unshift({
+        id: code || ("ST-00" + (stationsState.length + 1)),
+        code: code || ("ST-00" + (stationsState.length + 1)),
+        name: name,
+        type: document.getElementById("stType").value,
+        manager: document.getElementById("stManager").value || "مسؤول المحطة",
+        location: document.getElementById("stLocation").value || "السادات",
+        dailyProdKg: 10000,
+        dailyCapacityKg: parseFloat(document.getElementById("stCapacity").value) || 15000,
+        utilizationPct: 66,
+        groundFeeStr: document.getElementById("stFee").value,
+        rawKg: 0,
+        suppliesUnits: 0,
+        fgKg: 0,
+        procToday: 0,
+        shipToday: 0,
+        todayExpense: 0,
+        todayRevenue: 0,
+        netOperating: 0,
+        monthlyCost: 0,
+        outstanding: 0,
+        alerts: [],
+        status: "نشطة"
+    });
+
+    saveStationsState();
+    renderStationsCardGrid();
+    updateStationsKpis();
+    closeAddStationModal();
+    showToast(`تم إضافة وتفعيل المحطة الجديدة ${name} بنجاح!`, "success");
+}
+
+// FULL STATION DETAILS DRAWER LOGIC (WITH COMPLETE WORKSPACE)
+let activeDrawerStation = null;
+function openStationDrawer(stId) {
+    activeDrawerStation = stationsState.find(s => s.id === stId);
+    if (!activeDrawerStation) return;
+
+    const s = activeDrawerStation;
+    document.getElementById("drawerStInitials").innerText = s.name.substring(5, 7) || "ن";
+    document.getElementById("drawerStName").innerText = s.name;
+    document.getElementById("drawerStSubtitle").innerText = `${s.code} • المسؤول: ${s.manager} • الموقع: ${s.location}`;
+
+    document.getElementById("drawerStStatusBadge").innerHTML = `<span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-800 font-bold">الحالة: ${s.status}</span>`;
+
+    switchStDrawerSubtab('overview');
+    document.getElementById("stationDetailsDrawer").classList.remove("hidden");
+}
+function closeStationDrawer() { document.getElementById("stationDetailsDrawer").classList.add("hidden"); }
+
+function switchStDrawerSubtab(subName) {
+    ['overview', 'raw', 'supplies', 'fg', 'processing', 'shipments', 'contractors', 'financial', 'history'].forEach(t => {
+        const btn = document.getElementById(`stSub-${t}`);
+        if (btn) btn.className = t === subName ? "py-3 tab-active" : "py-3 text-on-surface-variant";
+    });
+
+    const body = document.getElementById("stDrawerBody");
+    const s = activeDrawerStation;
+    if (!s) return;
+
+    if (subName === 'overview') {
+        body.innerHTML = `
+            <div class="grid grid-cols-4 gap-4 text-xs font-data-mono">
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block font-body-md">إنتاج اليوم:</span>
+                    <strong class="text-sm text-primary font-bold">${(s.dailyProdKg || 12500).toLocaleString()} كجم</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block font-body-md">الطاقة الإنتاجية:</span>
+                    <strong class="text-sm font-bold text-on-surface">${(s.dailyCapacityKg || 15000).toLocaleString()} كجم/يوم</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block font-body-md">نسبة التشغيل:</span>
+                    <strong class="text-sm text-green-700 font-bold">${s.utilizationPct || 83}%</strong>
+                </div>
+                <div class="bg-surface p-3.5 rounded-xl border">
+                    <span class="text-on-surface-variant block font-body-md">عدد العمليات:</span>
+                    <strong class="text-sm font-bold text-on-surface">${s.procToday || 8} عمليات</strong>
+                </div>
+            </div>
+            <div class="bg-surface p-4 rounded-xl border space-y-3 text-xs">
+                <h4 class="font-bold text-primary text-sm">الأدادات والمخزون الحالي بالمحطة:</h4>
+                <div class="grid grid-cols-3 gap-4 font-data-mono">
+                    <div>مخزون الخام: <strong class="text-green-700">${s.rawKg.toLocaleString()} KG</strong></div>
+                    <div>المستلزمات: <strong class="text-amber-800">${s.suppliesUnits.toLocaleString()} وحدة</strong></div>
+                    <div>المنتج الجاهز: <strong class="text-tertiary-container">${s.fgKg.toLocaleString()} KG</strong></div>
+                </div>
+            </div>
+        `;
+    } else if (subName === 'raw') {
+        body.innerHTML = `
+            <div class="border rounded-xl overflow-hidden text-xs">
+                <table class="w-full text-right">
+                    <thead class="bg-surface-container font-bold"><tr><th class="p-2">الصنف</th><th class="p-2">المورد صاحب الحصة</th><th class="p-2">الرصيد المتاح</th><th class="p-2">الإجراء</th></tr></thead>
+                    <tbody class="divide-y font-data-mono">
+                        <tr><td class="p-2.5 font-bold">فراولة خام</td><td class="p-2.5 font-body-md font-bold text-primary">شركة الخير للتوريدات</td><td class="p-2.5 font-bold text-green-700">15,000 KG</td><td class="p-2.5"><a href="raw-materials.html" class="px-2 py-1 bg-surface border rounded text-[11px]">سحب خام</a></td></tr>
+                        <tr><td class="p-2.5 font-bold">فراولة خام</td><td class="p-2.5 font-body-md font-bold text-primary">أحمد السيد لتوريد الخامات</td><td class="p-2.5 font-bold text-green-700">12,000 KG</td><td class="p-2.5"><a href="raw-materials.html" class="px-2 py-1 bg-surface border rounded text-[11px]">سحب خام</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+    } else {
+        body.innerHTML = `<p class="text-xs text-on-surface-variant">يتم محاكاة وعرض التبيينات المخزنية والتشغيلية المخصصة لـ ${s.name} بداخل النظام.</p>`;
+    }
+}
+
+// TOAST HELPERS
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// DOM LOADED GUARANTEE
+document.addEventListener("DOMContentLoaded", () => {
+    initStationsPrototype();
+});
+</script>
+
+</body>
+</html>

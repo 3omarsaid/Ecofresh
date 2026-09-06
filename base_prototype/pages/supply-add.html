@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إضافة مستلزم جديد - نظام الـ ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- Top Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">add_box</span>
+            إضافة مستلزم جديد
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">تعريف صنف بـ دليل المستلزمات</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">قم باختيار فئة المستلزم وإدخال المواصفات لتتلاءم الحقول تلقائياً مع الفئة المختارة</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="supplies.html" class="bg-surface border border-outline-variant text-on-surface hover:bg-surface-variant px-4 py-2 rounded-lg text-xs font-bold transition-all">
+          إلغاء
+        </a>
+        <button onclick="submitNewSupply(event)" class="bg-primary text-white hover:bg-primary-container px-5 py-2 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">save</span>
+          حفظ المستلزم
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast Alert -->
+    <div id="add-supply-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="add-supply-toast-msg">تمت إضافة المستلزم بنجاح!</span>
+    </div>
+
+    <!-- FORM -->
+    <form id="new-supply-form" onsubmit="submitNewSupply(event)" class="space-y-6">
+      
+      <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <div class="border-b border-outline-variant/60 pb-3 flex justify-between items-center">
+          <h2 class="text-base font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">category</span>
+            1. الفئة والبيانات العامة للمستلزم
+          </h2>
+          <span class="text-[11px] bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-bold">نموذج المستلزم الموحد</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Supply Category -->
+          <div class="flex flex-col gap-1 md:col-span-2">
+            <label class="text-xs font-semibold text-on-surface-variant">فئة المستلزم الرئيسي <span class="text-rose-600">*</span></label>
+            <select id="inp-category" onchange="onCategoryChange(this.value)" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary">
+              <option value="كراتين" selected>كراتين (تغليف خارجي)</option>
+              <option value="أكياس">أكياس (تعبئة داهلية)</option>
+              <option value="لزق">لزق (تغليق ورولات)</option>
+              <option value="أخرى">أخرى (مستلزمات تشغيل وتثبيت)</option>
+            </select>
+          </div>
+
+          <!-- Supply Name -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-on-surface-variant">اسم المستلزم / الصنف <span class="text-rose-600">*</span></label>
+            <input id="inp-name" type="text" required placeholder="مثال: كرتونة سما 10 كجم" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary"/>
+          </div>
+
+          <!-- Unit -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-on-surface-variant">الوحدة القياسية <span class="text-rose-600">*</span></label>
+            <select id="inp-unit" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary">
+              <option value="كرتونة">كرتونة (قطعة)</option>
+              <option value="كيس">كيس (قطعة)</option>
+              <option value="رول">رول (لفة)</option>
+              <option value="لفافة">لفافة</option>
+              <option value="طن">طن</option>
+            </select>
+          </div>
+
+          <!-- Default Price -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-on-surface-variant">سعر الشراء الافتراضي (ج.م)</label>
+            <div class="relative">
+              <input id="inp-price" type="number" step="0.5" placeholder="15.00" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 pl-12 text-xs font-mono font-bold focus:outline-none focus:border-primary"/>
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-outline">ج.م</span>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-on-surface-variant">الحالة</label>
+            <select id="inp-status" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary">
+              <option value="ACTIVE" selected>نشط</option>
+              <option value="INACTIVE">غير نشط</option>
+            </select>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECTION 2: ADAPTIVE CATEGORY SPECIFICATIONS -->
+      <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-primary border-b border-outline-variant/60 pb-3 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">tune</span>
+          2. المواصفة الفنية المخصصة للفئة (<span id="cat-spec-title" class="text-secondary font-bold">كراتين</span>)
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1 md:col-span-2">
+            <label id="spec-label" class="text-xs font-semibold text-on-surface-variant">السعة / الحجم / مقاس الكرتونة</label>
+            <input id="inp-spec" type="text" placeholder="مثال: 10 KG - كرتونة مضلع ثلاثي مقوى" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-xs text-on-surface font-bold focus:outline-none focus:border-primary"/>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: NOTES -->
+      <section class="bg-surface rounded-xl border border-outline-variant p-5 shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-primary border-b border-outline-variant/60 pb-3 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">notes</span>
+          3. ملاحظات إضافية
+        </h2>
+        <textarea id="inp-notes" rows="3" placeholder="أدخل أي ملاحظات خاصة بجودة التوريد أو المواصفات القياسية التصديرية..." class="w-full bg-surface border border-outline-variant rounded-lg p-3 text-xs text-on-surface font-semibold focus:outline-none focus:border-primary"></textarea>
+      </section>
+
+      <!-- SUBMIT -->
+      <div class="flex justify-end gap-3 pt-2">
+        <a href="supplies.html" class="px-5 py-2.5 bg-surface border border-outline-variant rounded-lg text-xs font-bold hover:bg-surface-variant transition-colors">إلغاء</a>
+        <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-container transition-all shadow-md flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">check_circle</span>
+          حفظ المستلزم بالسجل
+        </button>
+      </div>
+
+    </form>
+
+  </main>
+
+<script>
+function onCategoryChange(cat) {
+  document.getElementById('cat-spec-title').innerText = cat;
+  const specLabel = document.getElementById('spec-label');
+  const specInp = document.getElementById('inp-spec');
+  const unitSelect = document.getElementById('inp-unit');
+
+  if (cat === 'كراتين') {
+    specLabel.innerText = 'السعة / سعة الوزن للكرتونة';
+    specInp.placeholder = 'مثال: 10 KG كرتونة تصدير مضلعة';
+    unitSelect.value = 'كرتونة';
+  } else if (cat === 'أكياس') {
+    specLabel.innerText = 'سعة الكيس والسُمك (ميكرون)';
+    specInp.placeholder = 'مثال: 5 KG (بوليثين شفاف 80 ميكرون)';
+    unitSelect.value = 'كيس';
+  } else if (cat === 'لزق') {
+    specLabel.innerText = 'اللون والعرض والطول';
+    specInp.placeholder = 'مثال: أزرق (عرض 5 سم × 100 متر)';
+    unitSelect.value = 'رول';
+  } else {
+    specLabel.innerText = 'المواصفة الفنية أو وصف الصنف';
+    specInp.placeholder = 'أدخل المواصفة الفنية للمستلزم';
+    unitSelect.value = 'لفافة';
+  }
+}
+
+function submitNewSupply(e) {
+  e.preventDefault();
+  const name = document.getElementById('inp-name').value;
+  const cat = document.getElementById('inp-category').value;
+  if (!name) {
+    alert('يرجى كتابة اسم المستلزم!');
+    return;
+  }
+
+  const toast = document.getElementById('add-supply-toast');
+  document.getElementById('add-supply-toast-msg').innerText = `تم حفظ المستلزم "${name}" ضمن فئة (${cat}) بنجاح!`;
+  toast.classList.remove('hidden');
+
+  setTimeout(() => {
+    window.location.href = 'supplies.html';
+  }, 1200);
+}
+</script>
+</body>
+</html>

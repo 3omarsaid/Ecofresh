@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مخزن المنتج الجاهز - نظام تجميد للتصدير</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-low": "#eff4ff",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed-dim": "#88d982",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed": "#002204",
+                        "surface": "#f8f9ff",
+                        "outline-variant": "#c4c6cd",
+                        "on-surface": "#0b1c30",
+                        "outline": "#74777d",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#005312",
+                        "on-secondary-container": "#56656e",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed": "#0b1d2d",
+                        "tertiary-container": "#003207",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#8192a7",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-container": "#53a252",
+                        "on-surface-variant": "#44474c",
+                        "secondary-container": "#d3e2ed",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1a2b3c",
+                        "primary": "#041627",
+                        "secondary-fixed": "#d6e5ef",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#0f1d25",
+                        "on-primary-fixed-variant": "#38485a",
+                        "primary-fixed": "#d2e4fb",
+                        "inverse-primary": "#b7c8de",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#4f6073",
+                        "secondary": "#526069",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-fixed": "#a3f69c",
+                        "tertiary": "#001b02"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "toolbar-height": "64px",
+                        "gutter": "16px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "data-mono": ["IBM Plex Sans Arabic"],
+                        "title-sm": ["IBM Plex Sans Arabic"],
+                        "label-sm": ["IBM Plex Sans Arabic"],
+                        "body-md": ["IBM Plex Sans Arabic"],
+                        "headline-md": ["IBM Plex Sans Arabic"],
+                        "display-lg": ["IBM Plex Sans Arabic"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #c4c6cd; border-radius: 4px; }
+        .tab-active { border-bottom: 3px solid #041627; color: #041627; font-weight: 700; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+
+<!-- SideNavBar Navigation -->
+<nav class="fixed right-0 top-0 h-screen w-[280px] z-50 flex flex-col bg-primary text-on-primary shadow-xl border-l border-outline-variant/10">
+    <div class="h-toolbar-height flex flex-col justify-center px-6 border-b border-outline-variant/20 py-4 bg-primary shrink-0">
+        <h1 class="font-headline-md text-headline-md font-bold text-surface-container-lowest">نظام تجميد للتصدير</h1>
+        <p class="font-label-sm text-label-sm text-primary-fixed-dim">Glacier Ledger ERP</p>
+    </div>
+    <div class="flex-1 overflow-y-auto py-3 px-3">
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>لوحة القيادة التنفيذية</span>
+                </a>
+            </li>
+            <li>
+                <a href="supplies.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>إدارة المستلزمات (Supplies)</span>
+                </a>
+            </li>
+            <li>
+                <a href="finished-goods.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold bg-secondary-container text-on-secondary-container border-r-4 border-surface-variant transition-all">
+                    <span class="material-symbols-outlined">inventory</span>
+                    <span>مخزن المنتج الجاهز (Finished Goods)</span>
+                </a>
+            </li>
+            <li>
+                <a href="processing-operations.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">autorenew</span>
+                    <span>عمليات التدوير (Processing)</span>
+                </a>
+            </li>
+            <li>
+                <a href="raw-materials.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>مخزن المواد الخام (Raw Inventory)</span>
+                </a>
+            </li>
+            <li>
+                <a href="employees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">badge</span>
+                    <span>إدارة الموظفين (Employees)</span>
+                </a>
+            </li>
+            <li>
+                <a href="create-shipment.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>إنشاء شحنة تصدير</span>
+                </a>
+            </li>
+            <li>
+                <a href="client-orders.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span>طلبات العملاء والاتفاقيات</span>
+                </a>
+            </li>
+            <li>
+                <a href="new-operation.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">conveyor_belt</span>
+                    <span>عملية تشغيل جديدة</span>
+                </a>
+            </li>
+            <li>
+                <a href="suppliers.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>الموردون</span>
+                </a>
+            </li>
+            <li>
+                <a href="treasury-payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span>الخزينة والمدفوعات</span>
+                </a>
+            </li>
+            <li>
+                <a href="stations-management.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">factory</span>
+                    <span>إدارة المحطات</span>
+                </a>
+            </li>
+            <li>
+                <a href="exports-contractors.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-primary hover:bg-primary-fixed-variant/40 transition-colors">
+                    <span class="material-symbols-outlined">handshake</span>
+                    <span>إدارة المقاولين والصادرات</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="p-4 border-t border-outline-variant/20 shrink-0 bg-primary-container/30">
+        <div class="flex items-center gap-3 text-xs text-primary-fixed-dim">
+            <span class="material-symbols-outlined text-green-400 text-base">check_circle</span>
+            <span>ربط التدوير بالشحنات active</span>
+        </div>
+    </div>
+</nav>
+
+<!-- TopNavBar -->
+<header class="bg-surface fixed top-0 left-0 right-[280px] h-toolbar-height z-40 flex justify-between items-center px-container-padding border-b border-outline-variant">
+    <div class="flex items-center gap-4">
+        <h2 class="font-title-sm text-title-sm font-black text-primary">نظام تجميد للتصدير - مخزن المنتج الجاهز (Finished Goods ERP)</h2>
+        <span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container text-xs font-bold font-data-mono">PROTOTYPE ONLY</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative hidden lg:block">
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input id="topSearchInput" class="bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-4 pr-10 text-body-md font-body-md focus:outline-none focus:border-primary w-64 text-on-surface" placeholder="بحث بالمنتج، اللوط، أو طلبية العميل..." type="text" onkeyup="filterFinishedInventoryTable()"/>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" title="التنبيهات">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-surface-container-highest" onclick="resetFinishedPrototypeData()" title="إعادة ضبط البيانات التجريبية">
+                <span class="material-symbols-outlined">restart_alt</span>
+            </button>
+        </div>
+        <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant shrink-0">
+            <img alt="صورة المستخدم" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByztzte-7HG582Cqe_OCtfzP-23PrUqNwLlLKTTX96RHPgxCDROx15p3gKfgy7bRsiZyRSy2CJKPAAoU4Ap_Jra0RLti2ZthCxcTyK472-hCGMhTug7bvSfpiuQQJJmpTgix3-ONAd5-2TDY04W1GHPZQla8t5urxJCFKTNJOzmSgZpWcD4ynve2FL4nv6CqOvLC5wEm8-Nnc1qpYBThQnSXMJfYQuQATCq16IC8ALWBY2xm5FkfaO"/>
+        </div>
+    </div>
+</header>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- Main Content Canvas -->
+<main class="mr-[280px] pt-toolbar-height min-h-screen p-container-padding">
+    <div class="space-y-gutter max-w-[1440px] mx-auto">
+
+        <!-- Page Header & Top Actions -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h1 class="font-display-lg text-display-lg text-primary flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">inventory</span>
+                    <span>مخزن المنتج الجاهز (Finished Goods Warehouse)</span>
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-1">إدارة ومتابعة المنتجات الجاهزة للشحن والتصدير وتتبع التكلفة واللوطات وتخصيص حجوزات العملاء</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openReserveModal()" class="bg-tertiary-container hover:bg-primary text-on-tertiary-container hover:text-white font-title-sm text-title-sm px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">bookmark_add</span>
+                    <span>حجز كمية لطلبية</span>
+                </button>
+                <button onclick="openAddFinishedModal()" class="bg-primary hover:bg-primary-container text-on-primary font-title-sm text-title-sm px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
+                    <span class="material-symbols-outlined">add_box</span>
+                    <span>+ إضافة منتج جاهز</span>
+                </button>
+                <button onclick="openTransferModal()" class="bg-surface border border-outline-variant hover:bg-surface-variant font-title-sm text-title-sm px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition-all">
+                    <span class="material-symbols-outlined">swap_horiz</span>
+                    <span>تحويل بين المحطات</span>
+                </button>
+                <button onclick="openAdjustmentModal()" class="bg-surface border border-outline-variant hover:bg-surface-variant font-title-sm text-title-sm px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition-all">
+                    <span class="material-symbols-outlined">balance</span>
+                    <span>تسوية مخزون</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ERP Business Flow Context Banner -->
+        <div class="bg-surface-container-low border border-outline-variant p-4 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 shadow-xs">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center font-bold text-lg shrink-0">
+                    <span class="material-symbols-outlined">alt_route</span>
+                </div>
+                <div class="text-xs text-on-surface">
+                    <strong class="text-primary text-sm block">سلسلة الإمداد المترابطة (Finished Goods Bridge):</strong>
+                    <span>مخزن الخام ➔ عمليات التدوير (Processing) ➔ <strong>مخزن المنتج الجاهز (FG)</strong> ➔ طلبات العملاء والحجز ➔ شحنات التصدير</span>
+                </div>
+            </div>
+            <a href="processing-operations.html" class="bg-surface border border-outline-variant hover:bg-surface-variant text-primary font-bold px-3.5 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 shrink-0">
+                <span>تصفح عمليات التدوير المعتمدة</span>
+                <span class="material-symbols-outlined text-sm">arrow_left</span>
+            </a>
+        </div>
+
+        <!-- KPI Summary Cards (6 Metrics) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+            <!-- KPI 1 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">إجمالي المنتج الجاهز</span>
+                    <span class="material-symbols-outlined text-primary text-xl">inventory_2</span>
+                </div>
+                <div id="kpiTotalFgKg" class="text-2xl font-bold text-on-surface font-data-mono">185,400</div>
+                <span class="text-[11px] text-on-surface-variant">كيلو جرام تام</span>
+            </div>
+            <!-- KPI 2 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">المتاح للشحن</span>
+                    <span class="material-symbols-outlined text-green-600 text-xl">check_circle</span>
+                </div>
+                <div id="kpiAvailableKg" class="text-2xl font-bold text-green-700 font-data-mono">142,000</div>
+                <span class="text-[11px] text-on-surface-variant">كيلو حر بالمخزن</span>
+            </div>
+            <!-- KPI 3 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">المحجوز للطلبيات</span>
+                    <span class="material-symbols-outlined text-amber-600 text-xl">bookmark</span>
+                </div>
+                <div id="kpiReservedKg" class="text-2xl font-bold text-amber-700 font-data-mono">43,400</div>
+                <span class="text-[11px] text-on-surface-variant">مخصص لعملاء</span>
+            </div>
+            <!-- KPI 4 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">قيمة مخزون الجاهز</span>
+                    <span class="material-symbols-outlined text-tertiary-container text-xl">payments</span>
+                </div>
+                <div id="kpiTotalInventoryVal" class="text-lg font-bold text-tertiary-container font-data-mono">8,450,000</div>
+                <span class="text-[11px] text-on-surface-variant">تكلفة تصنيع فعلية (EGP)</span>
+            </div>
+            <!-- KPI 5 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">عدد الأصناف</span>
+                    <span class="material-symbols-outlined text-primary text-xl">category</span>
+                </div>
+                <div id="kpiTotalProducts" class="text-2xl font-bold text-on-surface font-data-mono">24</div>
+                <span class="text-[11px] text-on-surface-variant">صنف مجهز</span>
+            </div>
+            <!-- KPI 6 -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center text-on-surface-variant mb-2">
+                    <span class="text-xs font-semibold">عدد الـ Batches</span>
+                    <span class="material-symbols-outlined text-primary text-xl">qr_code_2</span>
+                </div>
+                <div id="kpiTotalBatches" class="text-2xl font-bold text-on-surface font-data-mono">87</div>
+                <span class="text-[11px] text-on-surface-variant">لوط تشغيل مسجل</span>
+            </div>
+        </div>
+
+        <!-- Filter & Search Control Panel -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input id="fgSearchInput" type="text" onkeyup="filterFinishedInventoryTable()" placeholder="بحث بالمنتج، الكود، اللوط، عملية التدوير..." class="w-full bg-surface border border-outline-variant rounded-lg py-2 pr-10 pl-4 text-sm focus:outline-none focus:border-primary"/>
+                </div>
+                <div>
+                    <select id="filterStation" onchange="filterFinishedInventoryTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل المحطات</option>
+                        <option value="محطة النخيل">محطة النخيل</option>
+                        <option value="محطة السلام">محطة السلام</option>
+                        <option value="محطة المدينة">محطة المدينة</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="filterCategory" onchange="filterFinishedInventoryTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل التصنيفات</option>
+                        <option value="فواكه مجمدة">فواكه مجمدة</option>
+                        <option value="خضار مجمد">خضار مجمد</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="filterStatus" onchange="filterFinishedInventoryTable()" class="bg-surface border border-outline-variant rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary">
+                        <option value="">كل الحالات</option>
+                        <option value="متاح">متاح</option>
+                        <option value="محجوز">محجوز</option>
+                        <option value="قرب الانتهاء">قرب الانتهاء</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="switchViewMode('products')" id="btnViewProducts" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold shadow-sm">الأصناف الرئيسية</button>
+                <button onclick="switchViewMode('batches')" id="btnViewBatches" class="px-3 py-1.5 rounded-lg border border-outline-variant hover:bg-surface-variant text-xs font-bold">تفاصيل الـ Batches</button>
+                <button onclick="switchViewMode('reservations')" id="btnViewReservations" class="px-3 py-1.5 rounded-lg border border-outline-variant hover:bg-surface-variant text-xs font-bold">حجوزات العملاء</button>
+                <button onclick="switchViewMode('movements')" id="btnViewMovements" class="px-3 py-1.5 rounded-lg border border-outline-variant hover:bg-surface-variant text-xs font-bold">حركات المخزن</button>
+            </div>
+        </div>
+
+        <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+        <div id="mainFinishedContainer">
+            <!-- Rendered dynamically depending on active view mode -->
+        </div>
+
+    </div>
+</main>
+
+<!-- RESERVE STOCK FOR CUSTOMER ORDER MODAL -->
+<div id="reserveModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-xl flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-4 bg-tertiary-container text-on-tertiary-container flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <span class="material-symbols-outlined">bookmark_add</span>
+                    <span>حجز كمية منتج جاهز لطلبية عميل (Reserve Stock)</span>
+                </h3>
+                <p class="text-xs text-on-tertiary-container/80 mt-0.5">ربط المنتج المتاح بطلب شراء مؤكد لمنع تصديره لطلب آخر</p>
+            </div>
+            <button onclick="closeReserveModal()" class="text-on-tertiary-container hover:opacity-80"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 space-y-4 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">العميل المستهدف *</label>
+                    <select id="resCustomer" onchange="updateCustomerOrdersDropdown()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="شركة ABC للتجارة الدولية">شركة ABC للتجارة الدولية</option>
+                        <option value="شركة النور للتصدير">شركة النور للتصدير</option>
+                        <option value="Global Foods Demo">Global Foods Demo</option>
+                        <option value="Frozen Market Demo">Frozen Market Demo</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">طلب العميل (Customer Order) *</label>
+                    <select id="resOrder" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono font-bold focus:border-primary">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المنتج الجاهز *</label>
+                    <select id="resProduct" onchange="updateBatchOptionsForReserve()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="فراولة مجمدة IQF">فراولة مجمدة IQF</option>
+                        <option value="مانجو مكعبات مجمدة">مانجو مكعبات مجمدة</option>
+                        <option value="بامية مجمدة">بامية مجمدة</option>
+                        <option value="بسلة مجمدة">بسلة مجمدة</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">اختر اللوط / Batch *</label>
+                    <select id="resBatch" onchange="updateReserveMaxAvailable()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Available Stock Banner -->
+            <div class="p-3 bg-surface-container rounded-xl flex justify-between items-center text-xs font-bold">
+                <span>المتاح الحقيقي للحجز من هذا اللوط:</span>
+                <strong id="resMaxAvailDisplay" class="text-sm font-data-mono text-green-700">6,000 KG</strong>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface font-body-md">الكمية المطلوبة للحجز (KG) *</label>
+                    <input id="resQty" type="number" value="4000" oninput="validateReserveInput()" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-data-mono text-primary focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ الحجز *</label>
+                    <input id="resDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-on-surface">ملاحظات الحجز</label>
+                <input id="resNotes" type="text" placeholder="حجز موثق لحين تجهيز الحاوية..." class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+            </div>
+
+            <!-- Error Box -->
+            <div id="resErrorBox" class="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 font-bold text-xs hidden"></div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closeReserveModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmReserveStock()" id="btnConfirmReserve" class="px-6 py-2.5 bg-tertiary-container text-on-tertiary-container rounded-xl text-xs font-bold shadow-md hover:bg-primary hover:text-white">تأكيد حجز الكمية</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADD FINISHED GOODS MANUAL MODAL (DEMO ONLY) -->
+<div id="addFinishedModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-xl flex flex-col shadow-2xl overflow-hidden">
+        <div class="p-4 bg-primary text-on-primary flex justify-between items-center">
+            <h3 class="font-bold text-base flex items-center gap-2">
+                <span class="material-symbols-outlined text-tertiary-fixed">add_box</span>
+                <span>إضافة منتج جاهز يدوي (Manual Finished Goods Input)</span>
+            </h3>
+            <button onclick="closeAddFinishedModal()" class="text-white/80 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="p-6 space-y-4 text-xs">
+            <div class="p-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-[11px]">
+                <strong>تنويه نظام ERP:</strong> الأصل أن المنتجات الجاهزة تضاف تلقائياً عند اعتماد "عملية التدوير". يتم استخدام هذه الشاشة للأغراض التجريبية أو تسويات الجرد المباشرة.
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المنتج الجاهز *</label>
+                    <select id="afProduct" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="فراولة مجمدة IQF">فراولة مجمدة IQF</option>
+                        <option value="فراولة شرائح مجمدة">فراولة شرائح مجمدة</option>
+                        <option value="مانجو مكعبات مجمدة">مانجو مكعبات مجمدة</option>
+                        <option value="مانجو شرائح مجمدة">مانجو شرائح مجمدة</option>
+                        <option value="بامية مجمدة">بامية مجمدة</option>
+                        <option value="بسلة مجمدة">بسلة مجمدة</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">المحطة *</label>
+                    <select id="afStation" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary">
+                        <option value="محطة النخيل">محطة النخيل</option>
+                        <option value="محطة السلام">محطة السلام</option>
+                        <option value="محطة المدينة">محطة المدينة</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface font-body-md">الكمية التامة (KG) *</label>
+                    <input id="afQty" type="number" value="8000" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface font-body-md">تكلفة الكيلو (EGP/KG) *</label>
+                    <input id="afCost" type="number" value="45.18" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-bold font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">عملية التدوير المرجعية</label>
+                    <input id="afOperation" type="text" value="PR-0029" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">رقم اللوط / Batch *</label>
+                    <input id="afBatch" type="text" value="FG-260823-005" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm font-data-mono focus:border-primary"/>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-on-surface">تاريخ الإنتاج *</label>
+                    <input id="afProdDate" type="date" value="2026-08-23" class="w-full bg-surface border border-outline-variant rounded-lg p-2.5 text-sm focus:border-primary"/>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-surface-container border-t flex justify-between items-center">
+            <button onclick="closeAddFinishedModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">إلغاء</button>
+            <button onclick="confirmAddFinishedGoods()" class="px-5 py-2 bg-primary text-on-primary rounded-xl text-xs font-bold shadow-md hover:bg-primary-container">حفظ وإضافة للمخزن</button>
+        </div>
+    </div>
+</div>
+
+<!-- FINISHED PRODUCT DETAILS DRAWER -->
+<div id="finishedProductDrawer" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end hidden">
+    <div class="bg-surface-container-lowest w-full max-w-4xl h-full flex flex-col shadow-2xl overflow-hidden border-r border-outline-variant">
+        <!-- Drawer Header -->
+        <div class="p-5 bg-primary text-on-primary flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold text-lg border border-primary-fixed-dim">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                </div>
+                <div>
+                    <h3 id="drawerFgTitle" class="text-xl font-bold">فراولة مجمدة IQF</h3>
+                    <p id="drawerFgSubtitle" class="text-xs text-primary-fixed-dim">كود: FG-FR-IQF-001 • محطة النخيل • كيس 1 KG داخل كرتونة X</p>
+                </div>
+            </div>
+            <button onclick="closeFinishedDrawer()" class="text-on-primary/80 hover:text-white p-1 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Drawer Content Tabs (5 Tabs) -->
+        <div class="bg-surface-container border-b border-outline-variant px-6 flex gap-4 text-xs font-bold shrink-0 overflow-x-auto">
+            <button onclick="switchFgDrawerTab('batches')" id="fgTab-batches" class="py-3 tab-active">أرصدة الـ Batches</button>
+            <button onclick="switchFgDrawerTab('source')" id="fgTab-source" class="py-3 text-on-surface-variant">تتبع عملية الإنتاج (Source PR)</button>
+            <button onclick="switchFgDrawerTab('reservations')" id="fgTab-reservations" class="py-3 text-on-surface-variant">الحجوزات المعتمدة</button>
+            <button onclick="switchFgDrawerTab('costHistory')" id="fgTab-costHistory" class="py-3 text-on-surface-variant">سجل تكلفة المنتج</button>
+            <button onclick="switchFgDrawerTab('movements')" id="fgTab-movements" class="py-3 text-on-surface-variant">حركات المخزن</button>
+        </div>
+
+        <!-- Drawer Body -->
+        <div id="fgDrawerBody" class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 border-t border-outline-variant bg-surface-container flex justify-between items-center shrink-0">
+            <button onclick="closeFinishedDrawer()" class="px-4 py-2 border rounded-xl text-xs font-bold">إغلاق</button>
+            <div class="flex gap-2">
+                <button onclick="openReserveModal(); closeFinishedDrawer();" class="px-4 py-2 bg-tertiary-container text-on-tertiary-container font-bold text-xs rounded-xl shadow hover:bg-primary hover:text-white">
+                    حجز كمية لعميل
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT MOCK DATA & PROTOTYPE LOGIC -->
+<script>
+const DEFAULT_FINISHED_PRODUCTS = [
+    {
+        id: "FG-001",
+        code: "FG-FR-IQF-001",
+        name: "فراولة مجمدة IQF",
+        category: "فواكه مجمدة",
+        station: "محطة النخيل",
+        unit: "KG",
+        packaging: "كيس 1 KG داخل كرتونة 10 KG",
+        minStockKg: 10000,
+        status: "متاح",
+        batches: [
+            {
+                batchId: "FG-260820-001",
+                sourceOpId: "PR-0025",
+                station: "محطة النخيل",
+                productionDate: "2026-08-20",
+                expiryDate: "2027-08-20",
+                totalQty: 8000,
+                availableQty: 4000,
+                reservedQty: 4000,
+                shippedQty: 0,
+                costPerKg: 45.18,
+                totalCost: 361440,
+                sourceRawProduct: "فراولة",
+                rawInputQty: 10000,
+                rawWasteQty: 2000,
+                yieldPct: 80.0,
+                contractor: "مقاول أحمد علي",
+                status: "متاح"
+            },
+            {
+                batchId: "FG-260821-002",
+                sourceOpId: "PR-0026",
+                station: "محطة السلام",
+                productionDate: "2026-08-21",
+                expiryDate: "2027-08-21",
+                totalQty: 10000,
+                availableQty: 10000,
+                reservedQty: 0,
+                shippedQty: 0,
+                costPerKg: 47.20,
+                totalCost: 472000,
+                sourceRawProduct: "فراولة",
+                rawInputQty: 12000,
+                rawWasteQty: 2000,
+                yieldPct: 83.3,
+                contractor: "مؤسسة التيسير",
+                status: "متاح"
+            },
+            {
+                batchId: "FG-260822-003",
+                sourceOpId: "PR-0027",
+                station: "محطة النخيل",
+                productionDate: "2026-08-22",
+                expiryDate: "2027-08-22",
+                totalQty: 14000,
+                availableQty: 11000,
+                reservedQty: 3000,
+                shippedQty: 0,
+                costPerKg: 44.90,
+                totalCost: 628600,
+                sourceRawProduct: "فراولة",
+                rawInputQty: 17000,
+                rawWasteQty: 3000,
+                yieldPct: 82.3,
+                contractor: "مقاول أحمد علي",
+                status: "متاح"
+            }
+        ]
+    },
+    {
+        id: "FG-002",
+        code: "FG-MG-CUBE-002",
+        name: "مانجو مكعبات مجمدة",
+        category: "فواكه مجمدة",
+        station: "محطة السلام",
+        unit: "KG",
+        packaging: "كرتونة 10 KG",
+        minStockKg: 8000,
+        status: "متاح",
+        batches: [
+            {
+                batchId: "FG-260815-010",
+                sourceOpId: "PR-0020",
+                station: "محطة السلام",
+                productionDate: "2026-08-15",
+                expiryDate: "2027-08-15",
+                totalQty: 12000,
+                availableQty: 8000,
+                reservedQty: 4000,
+                shippedQty: 0,
+                costPerKg: 62.50,
+                totalCost: 750000,
+                sourceRawProduct: "مانجو",
+                rawInputQty: 15000,
+                rawWasteQty: 3000,
+                yieldPct: 80.0,
+                contractor: "مؤسسة النور",
+                status: "متاح"
+            }
+        ]
+    },
+    {
+        id: "FG-003",
+        code: "FG-OK-003",
+        name: "بامية مجمدة",
+        category: "خضار مجمد",
+        station: "محطة المدينة",
+        unit: "KG",
+        packaging: "أكياس 400 جرام داخل كرتونة",
+        minStockKg: 5000,
+        status: "قرب الانتهاء",
+        batches: [
+            {
+                batchId: "FG-260701-003",
+                sourceOpId: "PR-0012",
+                station: "محطة المدينة",
+                productionDate: "2025-09-05",
+                expiryDate: "2026-09-05",
+                totalQty: 3500,
+                availableQty: 3500,
+                reservedQty: 0,
+                shippedQty: 0,
+                costPerKg: 38.00,
+                totalCost: 133000,
+                sourceRawProduct: "بامية",
+                rawInputQty: 4500,
+                rawWasteQty: 1000,
+                yieldPct: 77.7,
+                contractor: "شركة المدينة",
+                status: "قرب الانتهاء"
+            }
+        ]
+    }
+];
+
+const DEFAULT_RESERVATIONS = [
+    {
+        resId: "RES-101",
+        customer: "شركة ABC للتجارة الدولية",
+        orderId: "ORD-1025",
+        productName: "فراولة مجمدة IQF",
+        batchId: "FG-260820-001",
+        qty: 4000,
+        resDate: "2026-08-21",
+        status: "معتمد للشحن",
+        notes: "حاكمة تصدير لميناء هامبورغ"
+    },
+    {
+        resId: "RES-102",
+        customer: "شركة النور للتصدير",
+        orderId: "ORD-1040",
+        productName: "فراولة مجمدة IQF",
+        batchId: "FG-260822-003",
+        qty: 3000,
+        resDate: "2026-08-22",
+        status: "معتمد للشحن",
+        notes: "طلبية التصدير للسعودية"
+    },
+    {
+        resId: "RES-103",
+        customer: "Global Foods Demo",
+        orderId: "ORD-1052",
+        productName: "مانجو مكعبات مجمدة",
+        batchId: "FG-260815-010",
+        qty: 4000,
+        resDate: "2026-08-16",
+        status: "معتمد للشحن",
+        notes: "شحنة ممتازة إنجلترا"
+    }
+];
+
+const DEFAULT_FG_MOVEMENTS = [
+    {
+        movId: "MOV-FG-201",
+        date: "2026-08-20 16:00",
+        type: "إضافة من التدوير",
+        productName: "فراولة مجمدة IQF",
+        batchId: "FG-260820-001",
+        qty: 8000,
+        from: "عملية التدوير PR-0025",
+        to: "مخزن محطة النخيل",
+        ref: "PR-0025",
+        user: "مهندس إنتاج أحمد علي"
+    },
+    {
+        movId: "MOV-FG-202",
+        date: "2026-08-21 11:30",
+        type: "حجز كمية",
+        productName: "فراولة مجمدة IQF",
+        batchId: "FG-260820-001",
+        qty: 4000,
+        from: "متاح الشحن",
+        to: "حجز لـ شركة ABC (ORD-1025)",
+        ref: "ORD-1025",
+        user: "مسؤول المبيعات"
+    }
+];
+
+let finishedState = [];
+let reservationsState = [];
+let fgMovementsState = [];
+let currentViewMode = 'products';
+
+function initFinishedGoodsPrototype() {
+    const savedFg = localStorage.getItem("stitch_frozex_finished_goods");
+    const savedRes = localStorage.getItem("stitch_frozex_fg_reservations");
+    const savedMov = localStorage.getItem("stitch_frozex_fg_movements");
+
+    if (savedFg) {
+        try { finishedState = JSON.parse(savedFg); } catch(e) { loadDefaultFgData(); }
+    } else { loadDefaultFgData(); }
+
+    if (savedRes) {
+        try { reservationsState = JSON.parse(savedRes); } catch(e) { reservationsState = DEFAULT_RESERVATIONS; }
+    } else { reservationsState = DEFAULT_RESERVATIONS; }
+
+    if (savedMov) {
+        try { fgMovementsState = JSON.parse(savedMov); } catch(e) { fgMovementsState = DEFAULT_FG_MOVEMENTS; }
+    } else { fgMovementsState = DEFAULT_FG_MOVEMENTS; }
+
+    renderMainContent();
+    updateFgKpis();
+    updateCustomerOrdersDropdown();
+}
+
+function loadDefaultFgData() {
+    finishedState = JSON.parse(JSON.stringify(DEFAULT_FINISHED_PRODUCTS));
+    reservationsState = JSON.parse(JSON.stringify(DEFAULT_RESERVATIONS));
+    fgMovementsState = JSON.parse(JSON.stringify(DEFAULT_FG_MOVEMENTS));
+    saveFgState();
+}
+
+function saveFgState() {
+    localStorage.setItem("stitch_frozex_finished_goods", JSON.stringify(finishedState));
+    localStorage.setItem("stitch_frozex_fg_reservations", JSON.stringify(reservationsState));
+    localStorage.setItem("stitch_frozex_fg_movements", JSON.stringify(fgMovementsState));
+}
+
+function resetFinishedPrototypeData() {
+    if (confirm("هل تريد إعادة ضبط بيانات مخزن المنتج الجاهز والحجوزات التجريبية بالكامل؟")) {
+        loadDefaultFgData();
+        renderMainContent();
+        updateFgKpis();
+        showToast("تم إعادة ضبط بيانات مخزن المنتج الجاهز للوضع الافتراضي", "info");
+    }
+}
+
+// UPDATE KPIS
+function updateFgKpis() {
+    let totalKg = 0;
+    let availableKg = 0;
+    let reservedKg = 0;
+    let totalVal = 0;
+    let batchCount = 0;
+
+    finishedState.forEach(prod => {
+        prod.batches.forEach(b => {
+            batchCount++;
+            totalKg += b.totalQty;
+            availableKg += b.availableQty;
+            reservedKg += b.reservedQty;
+            totalVal += (b.totalQty * b.costPerKg);
+        });
+    });
+
+    document.getElementById("kpiTotalFgKg").innerText = totalKg.toLocaleString();
+    document.getElementById("kpiAvailableKg").innerText = availableKg.toLocaleString();
+    document.getElementById("kpiReservedKg").innerText = reservedKg.toLocaleString();
+    document.getElementById("kpiTotalInventoryVal").innerText = Math.round(totalVal).toLocaleString();
+    document.getElementById("kpiTotalProducts").innerText = finishedState.length;
+    document.getElementById("kpiTotalBatches").innerText = batchCount;
+}
+
+function switchViewMode(mode) {
+    currentViewMode = mode;
+    ['Products', 'Batches', 'Reservations', 'Movements'].forEach(m => {
+        const btn = document.getElementById(`btnView${m}`);
+        if (btn) {
+            btn.className = mode.toLowerCase() === m.toLowerCase()
+                ? "px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold shadow-sm"
+                : "px-3 py-1.5 rounded-lg border border-outline-variant hover:bg-surface-variant text-xs font-bold";
+        }
+    });
+    renderMainContent();
+}
+
+// RENDER MAIN CONTENT
+function renderMainContent() {
+    const container = document.getElementById("mainFinishedContainer");
+    container.innerHTML = "";
+
+    const searchText = (document.getElementById("fgSearchInput")?.value || document.getElementById("topSearchInput")?.value || "").toLowerCase();
+    const filterStation = document.getElementById("filterStation")?.value || "";
+    const filterCat = document.getElementById("filterCategory")?.value || "";
+    const filterStatus = document.getElementById("filterStatus")?.value || "";
+
+    if (currentViewMode === 'products') {
+        renderProductsView(container, searchText, filterStation, filterCat, filterStatus);
+    } else if (currentViewMode === 'batches') {
+        renderBatchesView(container, searchText, filterStation);
+    } else if (currentViewMode === 'reservations') {
+        renderReservationsView(container, searchText);
+    } else if (currentViewMode === 'movements') {
+        renderMovementsView(container, searchText);
+    }
+}
+
+function renderProductsView(container, searchText, filterStation, filterCat, filterStatus) {
+    const filtered = finishedState.filter(p => {
+        const matchesStation = !filterStation || p.station === filterStation;
+        const matchesCat = !filterCat || p.category === filterCat;
+        const matchesStatus = !filterStatus || p.status === filterStatus;
+        const matchesText = p.name.toLowerCase().includes(searchText) || p.code.toLowerCase().includes(searchText);
+        return matchesStation && matchesCat && matchesStatus && matchesText;
+    });
+
+    let tableHtml = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse whitespace-nowrap">
+                    <thead class="bg-surface-container border-b border-outline-variant font-label-sm text-on-surface-variant">
+                        <tr>
+                            <th class="py-3.5 px-4 font-bold">المنتج الجاهز</th>
+                            <th class="py-3.5 px-4 font-bold">الكود / التصنيف</th>
+                            <th class="py-3.5 px-4 font-bold">المحطة</th>
+                            <th class="py-3.5 px-4 font-bold">إجمالي الكمية</th>
+                            <th class="py-3.5 px-4 font-bold">المتاح للشحن</th>
+                            <th class="py-3.5 px-4 font-bold">المحجوز</th>
+                            <th class="py-3.5 px-4 font-bold">عدد ה-Batches</th>
+                            <th class="py-3.5 px-4 font-bold">متوسط التكلفة</th>
+                            <th class="py-3.5 px-4 font-bold">إجمالي القيمة</th>
+                            <th class="py-3.5 px-4 font-bold text-center">الحالة</th>
+                            <th class="py-3.5 px-4 font-bold text-left">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/60 font-body-md">
+    `;
+
+    if (filtered.length === 0) {
+        tableHtml += `<tr><td colspan="11" class="p-8 text-center text-on-surface-variant font-medium">لا توجد منتجات جاهزة مطابقة لفلتر البحث</td></tr>`;
+    } else {
+        filtered.forEach(p => {
+            const totalKg = p.batches.reduce((a, c) => a + c.totalQty, 0);
+            const availKg = p.batches.reduce((a, c) => a + c.availableQty, 0);
+            const resKg = p.batches.reduce((a, c) => a + c.reservedQty, 0);
+            const val = p.batches.reduce((a, c) => a + (c.totalQty * c.costPerKg), 0);
+            const avgCost = totalKg > 0 ? (val / totalKg).toFixed(2) : 0;
+
+            let badge = `<span class="px-2.5 py-1 rounded-full text-xs bg-green-100 text-green-800 font-bold">${p.status}</span>`;
+            if (p.status === "قرب الانتهاء") badge = `<span class="px-2.5 py-1 rounded-full text-xs bg-amber-100 text-amber-800 font-bold">قرب الانتهاء</span>`;
+
+            tableHtml += `
+                <tr class="hover:bg-surface-container-low transition-colors cursor-pointer" onclick="openFinishedDrawer('${p.id}')">
+                    <td class="py-3.5 px-4 font-bold text-primary flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base">inventory_2</span>
+                        <span>${p.name}</span>
+                    </td>
+                    <td class="py-3.5 px-4 font-data-mono text-xs">
+                        <div class="font-bold text-on-surface">${p.code}</div>
+                        <div class="text-[11px] text-on-surface-variant font-body-md">${p.category}</div>
+                    </td>
+                    <td class="py-3.5 px-4 font-medium text-xs">${p.station}</td>
+                    <td class="py-3.5 px-4 font-bold font-data-mono text-on-surface">${totalKg.toLocaleString()} KG</td>
+                    <td class="py-3.5 px-4 font-bold font-data-mono text-green-700">${availKg.toLocaleString()} KG</td>
+                    <td class="py-3.5 px-4 font-bold font-data-mono text-amber-700">${resKg.toLocaleString()} KG</td>
+                    <td class="py-3.5 px-4 font-data-mono">
+                        <span class="bg-surface-container px-2 py-0.5 rounded text-xs font-bold">${p.batches.length} Batches</span>
+                    </td>
+                    <td class="py-3.5 px-4 font-data-mono">${avgCost} EGP/KG</td>
+                    <td class="py-3.5 px-4 font-bold font-data-mono text-tertiary-container">${Math.round(val).toLocaleString()} EGP</td>
+                    <td class="py-3.5 px-4 text-center">${badge}</td>
+                    <td class="py-3.5 px-4 text-left">
+                        <div class="flex items-center gap-1 justify-end">
+                            <button onclick="event.stopPropagation(); openFinishedDrawer('${p.id}')" class="p-1.5 rounded hover:bg-surface-variant text-primary" title="عرض تفاصيل الـ Batches التكلفة">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </button>
+                            <button onclick="event.stopPropagation(); openReserveModalForProduct('${p.name}')" class="p-1.5 rounded hover:bg-tertiary-container/20 text-tertiary-container" title="حجز كمية لطلبية عميل">
+                                <span class="material-symbols-outlined text-lg">bookmark_add</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    tableHtml += `</tbody></table></div></div>`;
+    container.innerHTML = tableHtml;
+}
+
+function renderBatchesView(container, searchText, filterStation) {
+    let rows = [];
+    finishedState.forEach(p => {
+        if (filterStation && p.station !== filterStation) return;
+
+        p.batches.forEach(b => {
+            if (searchText && !b.batchId.toLowerCase().includes(searchText) && !p.name.toLowerCase().includes(searchText) && !b.sourceOpId.toLowerCase().includes(searchText)) return;
+
+            rows.push(`
+                <tr class="hover:bg-surface-container-low transition-colors">
+                    <td class="py-3 px-4 font-bold font-data-mono text-primary">${b.batchId}</td>
+                    <td class="py-3 px-4 font-bold">${p.name}</td>
+                    <td class="py-3 px-4 font-data-mono text-xs font-bold text-tertiary-container">${b.sourceOpId}</td>
+                    <td class="py-3 px-4 text-xs font-medium">${b.station}</td>
+                    <td class="py-3 px-4 font-data-mono text-xs">${b.productionDate}</td>
+                    <td class="py-3 px-4 font-data-mono text-xs">${b.expiryDate}</td>
+                    <td class="py-3 px-4 font-data-mono font-bold text-on-surface">${b.totalQty.toLocaleString()} KG</td>
+                    <td class="py-3 px-4 font-data-mono font-bold text-green-700">${b.availableQty.toLocaleString()} KG</td>
+                    <td class="py-3 px-4 font-data-mono font-bold text-amber-700">${b.reservedQty.toLocaleString()} KG</td>
+                    <td class="py-3 px-4 font-data-mono font-bold">${b.costPerKg} EGP</td>
+                    <td class="py-3 px-4 font-data-mono font-bold text-tertiary-container">${b.totalCost.toLocaleString()} EGP</td>
+                    <td class="py-3 px-4 text-left">
+                        <button onclick="openFinishedDrawer('${p.id}')" class="px-2.5 py-1 bg-surface border rounded text-xs font-bold hover:bg-surface-variant">تتبع الإنتاج</button>
+                    </td>
+                </tr>
+            `);
+        });
+    });
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">اللوط / Batch</th>
+                        <th class="p-3">المنتج الجاهز</th>
+                        <th class="p-3">عملية التدوير المصدر</th>
+                        <th class="p-3">المحطة</th>
+                        <th class="p-3">تاريخ الإنتاج</th>
+                        <th class="p-3">الانتهاء</th>
+                        <th class="p-3">إجمالي الكمية</th>
+                        <th class="p-3">المتاح</th>
+                        <th class="p-3">المحجوز</th>
+                        <th class="p-3">تكلفة الكيلو</th>
+                        <th class="p-3">إجمالي التكلفة</th>
+                        <th class="p-3 text-left">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows.join('') || '<tr><td colspan="12" class="p-6 text-center">لا توجد Batches مطابقة للبحث</td></tr>'}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+function renderReservationsView(container, searchText) {
+    let rows = reservationsState.filter(r => !searchText || r.customer.toLowerCase().includes(searchText) || r.orderId.toLowerCase().includes(searchText) || r.productName.toLowerCase().includes(searchText)).map(r => `
+        <tr class="hover:bg-surface-container-low transition-colors">
+            <td class="py-3 px-4 font-data-mono font-bold text-primary">${r.resId}</td>
+            <td class="py-3 px-4 font-bold">${r.customer}</td>
+            <td class="py-3 px-4 font-data-mono font-bold text-tertiary-container">${r.orderId}</td>
+            <td class="py-3 px-4 font-bold text-on-surface">${r.productName}</td>
+            <td class="py-3 px-4 font-data-mono text-xs">${r.batchId}</td>
+            <td class="py-3 px-4 font-data-mono font-bold text-amber-700">${r.qty.toLocaleString()} KG</td>
+            <td class="py-3 px-4 font-data-mono text-xs">${r.resDate}</td>
+            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">${r.status}</span></td>
+            <td class="py-3 px-4 text-left">
+                <button onclick="simulateShipmentFromReservation('${r.resId}')" class="px-3 py-1 bg-green-700 text-white rounded text-xs font-bold hover:bg-green-800 shadow-xs">شحن هذه الحصة</button>
+            </td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">رقم الحجز</th>
+                        <th class="p-3">العميل المستلم</th>
+                        <th class="p-3">طلب الشراء (Customer Order)</th>
+                        <th class="p-3">المنتج المحجوز</th>
+                        <th class="p-3">الـ Batch</th>
+                        <th class="p-3">الكمية المحجوزة</th>
+                        <th class="p-3">تاريخ الحجز</th>
+                        <th class="p-3">حالة الحجز</th>
+                        <th class="p-3 text-left">إجراء الشحن</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows || '<tr><td colspan="9" class="p-6 text-center">لا توجد حجوزات نشطة حالياً</td></tr>'}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+function renderMovementsView(container, searchText) {
+    let rows = fgMovementsState.filter(m => !searchText || m.productName.toLowerCase().includes(searchText) || m.batchId.toLowerCase().includes(searchText)).map(m => `
+        <tr>
+            <td class="py-3 px-4 font-data-mono text-xs">${m.date}</td>
+            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-bold bg-secondary-container text-on-secondary-container">${m.type}</span></td>
+            <td class="py-3 px-4 font-bold text-primary">${m.productName}</td>
+            <td class="py-3 px-4 font-data-mono text-xs font-bold">${m.batchId}</td>
+            <td class="py-3 px-4 font-data-mono font-bold text-on-surface">${m.qty.toLocaleString()} KG</td>
+            <td class="py-3 px-4 text-xs">${m.from}</td>
+            <td class="py-3 px-4 text-xs">${m.to}</td>
+            <td class="py-3 px-4 font-data-mono text-xs">${m.ref}</td>
+            <td class="py-3 px-4 text-xs">${m.user}</td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-right text-xs">
+                <thead class="bg-surface-container font-bold text-on-surface-variant">
+                    <tr>
+                        <th class="p-3">التاريخ والوقت</th>
+                        <th class="p-3">نوع الحركة</th>
+                        <th class="p-3">المنتج الجاهز</th>
+                        <th class="p-3">الـ Batch</th>
+                        <th class="p-3">الكمية</th>
+                        <th class="p-3">من المصدر</th>
+                        <th class="p-3">إلى الوجهة</th>
+                        <th class="p-3">المرجع</th>
+                        <th class="p-3">المستخدم</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/60 font-body-md">${rows || '<tr><td colspan="9" class="p-6 text-center">لا توجد حركات مسجلة بمخزن الجاهز</td></tr>'}</tbody>
+            </table>
+        </div>
+    `;
+}
+
+function filterFinishedInventoryTable() {
+    renderMainContent();
+}
+
+// CUSTOMER RESERVATION MODAL & WORKFLOW
+function openReserveModal() {
+    document.getElementById("reserveModal").classList.remove("hidden");
+    updateCustomerOrdersDropdown();
+    updateBatchOptionsForReserve();
+}
+function openReserveModalForProduct(prodName) {
+    document.getElementById("resProduct").value = prodName;
+    openReserveModal();
+}
+function closeReserveModal() {
+    document.getElementById("reserveModal").classList.add("hidden");
+}
+
+function updateCustomerOrdersDropdown() {
+    const cust = document.getElementById("resCustomer").value;
+    const select = document.getElementById("resOrder");
+    select.innerHTML = "";
+
+    const ordersMap = {
+        "شركة ABC للتجارة الدولية": ["ORD-1025 (40 طن فراولة ألمانيا)", "ORD-1028 (20 طن فراولة)"],
+        "شركة النور للتصدير": ["ORD-1040 (30 طن خضار مشكل)"],
+        "Global Foods Demo": ["ORD-1052 (50 طن مانجو إنجلترا)"],
+        "Frozen Market Demo": ["ORD-1060 (15 طن بامية)"]
+    };
+
+    const orders = ordersMap[cust] || ["ORD-1099 (طلبية عميل موثقة)"];
+    orders.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.split(' ')[0];
+        opt.innerText = o;
+        select.appendChild(opt);
+    });
+}
+
+function updateBatchOptionsForReserve() {
+    const prodName = document.getElementById("resProduct").value;
+    const batchSelect = document.getElementById("resBatch");
+    batchSelect.innerHTML = "";
+
+    const prod = finishedState.find(p => p.name === prodName);
+    if (!prod || !prod.batches || prod.batches.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.innerText = "لا توجد Batches متاحة لهذا المنتج";
+        batchSelect.appendChild(opt);
+        updateReserveMaxAvailable();
+        return;
+    }
+
+    prod.batches.forEach(b => {
+        const opt = document.createElement("option");
+        opt.value = b.batchId;
+        opt.innerText = `${b.batchId} (${b.station}) - متاح: ${b.availableQty.toLocaleString()} KG`;
+        batchSelect.appendChild(opt);
+    });
+
+    updateReserveMaxAvailable();
+}
+
+function updateReserveMaxAvailable() {
+    const prodName = document.getElementById("resProduct").value;
+    const batchId = document.getElementById("resBatch").value;
+    const prod = finishedState.find(p => p.name === prodName);
+
+    if (!prod) return;
+    const batch = prod.batches.find(b => b.batchId === batchId);
+
+    const maxDisp = document.getElementById("resMaxAvailDisplay");
+    if (batch) {
+        maxDisp.innerText = batch.availableQty.toLocaleString() + " KG";
+    } else {
+        maxDisp.innerText = "0 KG";
+    }
+
+    validateReserveInput();
+}
+
+function validateReserveInput() {
+    const prodName = document.getElementById("resProduct").value;
+    const batchId = document.getElementById("resBatch").value;
+    const reqQty = parseFloat(document.getElementById("resQty").value) || 0;
+    const errBox = document.getElementById("resErrorBox");
+    const btn = document.getElementById("btnConfirmReserve");
+
+    const prod = finishedState.find(p => p.name === prodName);
+    const batch = prod ? prod.batches.find(b => b.batchId === batchId) : null;
+
+    if (!batch) {
+        errBox.innerText = "لا يوجد Batch متاح للحجز لهذا المنتج.";
+        errBox.classList.remove("hidden");
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+        return;
+    }
+
+    if (reqQty <= 0) {
+        errBox.innerText = "من فضلك أدخل كمية حجز أكبر من صفر.";
+        errBox.classList.remove("hidden");
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+    } else if (reqQty > batch.availableQty) {
+        errBox.innerText = `خطأ: الكمية المطلوبة (${reqQty.toLocaleString()} KG) أكبر من الكمية المتاحة للحجز (${batch.availableQty.toLocaleString()} KG).`;
+        errBox.classList.remove("hidden");
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+    } else {
+        errBox.classList.add("hidden");
+        btn.disabled = false;
+        btn.classList.remove("opacity-50", "cursor-not-allowed");
+    }
+}
+
+function confirmReserveStock() {
+    const cust = document.getElementById("resCustomer").value;
+    const orderId = document.getElementById("resOrder").value;
+    const prodName = document.getElementById("resProduct").value;
+    const batchId = document.getElementById("resBatch").value;
+    const reqQty = parseFloat(document.getElementById("resQty").value) || 0;
+    const date = document.getElementById("resDate").value;
+    const notes = document.getElementById("resNotes").value || "حجز طلبيات تصدير";
+
+    const prod = finishedState.find(p => p.name === prodName);
+    if (!prod) return;
+    const batch = prod.batches.find(b => b.batchId === batchId);
+    if (!batch || reqQty > batch.availableQty) return;
+
+    batch.availableQty -= reqQty;
+    batch.reservedQty += reqQty;
+
+    reservationsState.unshift({
+        resId: "RES-" + (reservationsState.length + 104),
+        customer: cust,
+        orderId: orderId,
+        productName: prodName,
+        batchId: batchId,
+        qty: reqQty,
+        resDate: date,
+        status: "معتمد للشحن",
+        notes: notes
+    });
+
+    fgMovementsState.unshift({
+        movId: "MOV-FG-" + (fgMovementsState.length + 203),
+        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        type: "حجز كمية",
+        productName: prodName,
+        batchId: batchId,
+        qty: reqQty,
+        from: "متاح للشحن",
+        to: `حجز لـ ${cust} (${orderId})`,
+        ref: orderId,
+        user: "مسؤول الصادرات"
+    });
+
+    saveFgState();
+    renderMainContent();
+    updateFgKpis();
+    closeReserveModal();
+    showToast(`تم حجز ${reqQty.toLocaleString()} KG من الـ Batch ${batchId} لحساب العميل ${cust} بنجاح!`, "success");
+}
+
+function simulateShipmentFromReservation(resId) {
+    const res = reservationsState.find(r => r.resId === resId);
+    if (!res) return;
+
+    const prod = finishedState.find(p => p.name === res.productName);
+    if (!prod) return;
+    const batch = prod.batches.find(b => b.batchId === res.batchId);
+    if (!batch) return;
+
+    const shipQty = res.qty;
+    batch.totalQty -= shipQty;
+    batch.reservedQty -= shipQty;
+    batch.shippedQty = (batch.shippedQty || 0) + shipQty;
+
+    res.status = "تم الشحن بنجاح";
+
+    fgMovementsState.unshift({
+        movId: "MOV-FG-" + (fgMovementsState.length + 204),
+        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        type: "شحن وتصدير",
+        productName: res.productName,
+        batchId: res.batchId,
+        qty: shipQty,
+        from: `محجوز لـ ${res.customer}`,
+        to: "شحنة تصدير خارج البلاد",
+        ref: res.orderId,
+        user: "مدير اللوجستيات"
+    });
+
+    saveFgState();
+    renderMainContent();
+    updateFgKpis();
+    showToast(`تم تنفيذ شحن ${shipQty.toLocaleString()} KG وتخفيض الفعلي بالمخزن للعميل ${res.customer}!`, "success");
+}
+
+// ADD FINISHED GOODS MANUAL MODAL
+function openAddFinishedModal() { document.getElementById("addFinishedModal").classList.remove("hidden"); }
+function closeAddFinishedModal() { document.getElementById("addFinishedModal").classList.add("hidden"); }
+function confirmAddFinishedGoods() {
+    const name = document.getElementById("afProduct").value;
+    const station = document.getElementById("afStation").value;
+    const qty = parseFloat(document.getElementById("afQty").value) || 0;
+    const cost = parseFloat(document.getElementById("afCost").value) || 0;
+    const batchId = document.getElementById("afBatch").value || "FG-MANUAL-001";
+    const opId = document.getElementById("afOperation").value || "PR-MANUAL";
+
+    if (qty <= 0) { showToast("أدخل كمية صحيحة", "error"); return; }
+
+    let prod = finishedState.find(p => p.name === name);
+    if (!prod) {
+        prod = { id: "FG-" + (finishedState.length + 1), code: "FG-MAN-009", name: name, category: "منتجات مجهزة", station: station, unit: "KG", minStockKg: 5000, status: "متاح", batches: [] };
+        finishedState.push(prod);
+    }
+
+    prod.batches.push({
+        batchId: batchId,
+        sourceOpId: opId,
+        station: station,
+        productionDate: document.getElementById("afProdDate").value,
+        expiryDate: "2027-08-23",
+        totalQty: qty,
+        availableQty: qty,
+        reservedQty: 0,
+        shippedQty: 0,
+        costPerKg: cost,
+        totalCost: (qty * cost),
+        sourceRawProduct: name.split(' ')[0],
+        rawInputQty: qty * 1.2,
+        rawWasteQty: qty * 0.2,
+        yieldPct: 83.3,
+        contractor: "مقاول معتمد",
+        status: "متاح"
+    });
+
+    saveFgState();
+    renderMainContent();
+    updateFgKpis();
+    closeAddFinishedModal();
+    showToast(`تم تسجيل دفعة جديدة للمنتج الجاهز ${name} بمخزن ${station}!`, "success");
+}
+
+// DRAWER & DETAILS LOGIC
+let activeDrawerFgProduct = null;
+function openFinishedDrawer(fgId) {
+    activeDrawerFgProduct = finishedState.find(p => p.id === fgId);
+    if (!activeDrawerFgProduct) return;
+
+    const prod = activeDrawerFgProduct;
+    const totalKg = prod.batches.reduce((a, c) => a + c.totalQty, 0);
+    const totalVal = prod.batches.reduce((a, c) => a + (c.totalQty * c.costPerKg), 0);
+
+    document.getElementById("drawerFgTitle").innerText = prod.name;
+    document.getElementById("drawerFgSubtitle").innerText = `كود: ${prod.code} • ${prod.station} • إجمالي المخزون: ${totalKg.toLocaleString()} KG (${Math.round(totalVal).toLocaleString()} EGP)`;
+
+    switchFgDrawerTab('batches');
+    document.getElementById("finishedProductDrawer").classList.remove("hidden");
+}
+function closeFinishedDrawer() { document.getElementById("finishedProductDrawer").classList.add("hidden"); }
+
+function switchFgDrawerTab(tabName) {
+    ['batches', 'source', 'reservations', 'costHistory', 'movements'].forEach(t => {
+        const btn = document.getElementById(`fgTab-${t}`);
+        if (btn) btn.className = t === tabName ? "py-3 tab-active" : "py-3 text-on-surface-variant";
+    });
+
+    const body = document.getElementById("fgDrawerBody");
+    const prod = activeDrawerFgProduct;
+    if (!prod) return;
+
+    if (tabName === 'batches') {
+        let rows = prod.batches.map(b => `
+            <div class="bg-surface border p-4 rounded-xl space-y-2">
+                <div class="flex justify-between items-center font-bold text-sm text-primary">
+                    <span class="font-data-mono">الـ Batch: ${b.batchId}</span>
+                    <span class="text-xs bg-tertiary-container/10 text-tertiary-container px-2 py-0.5 rounded font-data-mono">عملية: ${b.sourceOpId}</span>
+                </div>
+                <div class="grid grid-cols-4 gap-2 text-xs font-data-mono text-on-surface-variant">
+                    <div>إجمالي: <strong>${b.totalQty.toLocaleString()} KG</strong></div>
+                    <div>المتاح: <strong class="text-green-700">${b.availableQty.toLocaleString()} KG</strong></div>
+                    <div>المحجوز: <strong class="text-amber-700">${b.reservedQty.toLocaleString()} KG</strong></div>
+                    <div>التكلفة: <strong>${b.costPerKg} EGP/KG</strong></div>
+                </div>
+            </div>
+        `).join('');
+        body.innerHTML = `<div class="space-y-3">${rows}</div>`;
+    } else if (tabName === 'source') {
+        const b = prod.batches[0];
+        if (!b) { body.innerHTML = "<p>لا توجد بيانات إنتاج مسجلة</p>"; return; }
+        body.innerHTML = `
+            <div class="bg-surface p-4 rounded-xl border space-y-3 text-xs">
+                <h4 class="font-bold text-sm text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">autorenew</span>
+                    <span>تفاصيل عملية التدوير المصدر (${b.sourceOpId})</span>
+                </h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>الخام المنسحب: <strong>${b.sourceRawProduct} (${b.rawInputQty.toLocaleString()} KG)</strong></div>
+                    <div>المنتج التام الناتج: <strong>${b.totalQty.toLocaleString()} KG</strong></div>
+                    <div>هالك الخام: <strong>${b.rawWasteQty.toLocaleString()} KG</strong></div>
+                    <div>نسبة التصافي (Yield): <strong>${b.yieldPct}%</strong></div>
+                    <div>المقاول المنفذ: <strong>${b.contractor}</strong></div>
+                    <div>إجمالي تكلفة التشغيل: <strong class="text-tertiary-container">${b.totalCost.toLocaleString()} EGP</strong></div>
+                </div>
+                <div class="pt-2 border-t flex justify-end">
+                    <a href="processing-operations.html" class="text-primary font-bold hover:underline flex items-center gap-1">
+                        <span>فتح شاشة عمليات التدوير</span>
+                        <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    </a>
+                </div>
+            </div>
+        `;
+    } else if (tabName === 'reservations') {
+        const resList = reservationsState.filter(r => r.productName === prod.name);
+        let rows = resList.map(r => `
+            <tr>
+                <td class="p-2.5 font-bold">${r.customer}</td>
+                <td class="p-2.5 font-data-mono">${r.orderId}</td>
+                <td class="p-2.5 font-data-mono font-bold text-amber-700">${r.qty.toLocaleString()} KG</td>
+                <td class="p-2.5 font-data-mono text-xs">${r.resDate}</td>
+            </tr>
+        `).join('');
+        body.innerHTML = `
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold"><tr><th class="p-2">العميل</th><th class="p-2">الطلبية</th><th class="p-2">الكمية المحجوزة</th><th class="p-2">التاريخ</th></tr></thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="4" class="p-4 text-center">لا توجد حجوزات لهذا المنتج حالياً</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (tabName === 'costHistory') {
+        let rows = prod.batches.map(b => `
+            <tr>
+                <td class="p-2.5 font-data-mono font-bold">${b.batchId}</td>
+                <td class="p-2.5 font-data-mono">${b.productionDate}</td>
+                <td class="p-2.5 font-data-mono font-bold">${b.totalQty.toLocaleString()} KG</td>
+                <td class="p-2.5 font-data-mono font-bold text-tertiary-container">${b.costPerKg} EGP/KG</td>
+                <td class="p-2.5 font-data-mono">${b.totalCost.toLocaleString()} EGP</td>
+            </tr>
+        `).join('');
+        body.innerHTML = `
+            <h4 class="font-bold text-xs text-primary mb-2">سجل تكلفة تصنيع المنتج عبر الـ Batches:</h4>
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold"><tr><th class="p-2">الـ Batch</th><th class="p-2">التاريخ</th><th class="p-2">الكمية التامة</th><th class="p-2">تكلفة الكيلو</th><th class="p-2">التكلفة الإجمالية</th></tr></thead>
+                    <tbody class="divide-y">${rows}</tbody>
+                </table>
+            </div>
+        `;
+    } else if (tabName === 'movements') {
+        const movs = fgMovementsState.filter(m => m.productName === prod.name);
+        let rows = movs.map(m => `
+            <tr>
+                <td class="p-2 font-data-mono text-xs">${m.date}</td>
+                <td class="p-2 font-bold">${m.type}</td>
+                <td class="p-2 font-data-mono font-bold">${m.qty.toLocaleString()} KG</td>
+                <td class="p-2 text-xs">${m.to}</td>
+            </tr>
+        `).join('');
+        body.innerHTML = `
+            <div class="border rounded-xl overflow-hidden">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-surface-container font-bold"><tr><th class="p-2">التاريخ</th><th class="p-2">النوع</th><th class="p-2">الكمية</th><th class="p-2">الجهة</th></tr></thead>
+                    <tbody class="divide-y">${rows || '<tr><td colspan="4" class="p-4 text-center">لا توجد حركات مسجلة</td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+    }
+}
+
+// TOAST HELPERS
+function showToast(msg, type = 'info') {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    let bg = "bg-primary text-white";
+    if (type === "success") bg = "bg-green-700 text-white";
+    if (type === "error") bg = "bg-red-700 text-white";
+
+    toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold transition-all transform translate-y-2 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `<span class="material-symbols-outlined text-base">info</span><span>${msg}</span>`;
+
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.remove("translate-y-2", "opacity-0"); }, 50);
+    setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
+// DOM LOADED
+document.addEventListener("DOMContentLoaded", () => {
+    initFinishedGoodsPrototype();
+});
+</script>
+
+</body>
+</html>

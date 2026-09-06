@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>الخزينة والبنوك - مركز مراقبة السيولة والحسابات</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#012d1d",
+                        "primary-container": "#1b4332",
+                        "secondary": "#0054cd",
+                        "background": "#f8f9fa",
+                        "surface": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414844",
+                        "outline": "#717973",
+                        "outline-variant": "#c1c8c2",
+                        "error": "#ba1a1a"
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="../css/global.css"/>
+<link rel="stylesheet" href="../css/custom.css"/>
+<script src="../js/navigation.js" defer></script>
+<script src="../js/interactions.js" defer></script>
+<script src="../js/app.js" defer></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen w-full flex flex-col font-['IBM_Plex_Sans_Arabic'] antialiased overflow-x-hidden">
+
+  <!-- Right Sidebar -->
+  <aside id="app-sidebar" class="fixed right-0 top-0 h-full w-[260px] bg-surface border-l border-outline-variant flex flex-col z-50 overflow-y-auto shadow-md transition-transform duration-300 transform translate-x-full md:translate-x-0"></aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full md:w-[calc(100%-260px)] md:mr-[260px] pt-16 min-h-screen flex flex-col p-4 md:p-6 space-y-6 overflow-x-hidden box-border">
+    
+    <!-- PAGE HEADER BANNER -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface p-5 rounded-xl border border-outline-variant shadow-sm">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[26px]">account_balance_wallet</span>
+            الخزينة والبنوك
+          </h1>
+          <span class="text-xs bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-0.5 rounded-full font-bold">مركز التحكم في السيولة والحسابات</span>
+        </div>
+        <p class="text-xs text-on-surface-variant">إدارة السيولة والحسابات المالية ومتابعة الأرصدة والحركات يومياً بدون تعقيد محاسبي</p>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="openAddCashModal()" class="bg-primary text-white text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-primary-container transition-all flex items-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          + إضافة خزينة
+        </button>
+        <button onclick="openAddBankModal()" class="bg-surface border border-outline-variant text-primary text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">account_balance</span>
+          + إضافة حساب بنكي
+        </button>
+        <button onclick="openTransferModal()" class="bg-surface border border-outline-variant text-primary text-xs px-3.5 py-2 rounded-lg font-bold hover:bg-surface-variant transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px]">sync_alt</span>
+          تحويل بين الحسابات
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Toast Alert -->
+    <div id="treasury-toast" class="hidden bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-3 text-emerald-900 text-xs font-bold shadow-sm">
+      <span class="material-symbols-outlined text-[20px] text-emerald-700">check_circle</span>
+      <span id="treasury-toast-msg">تم تحديث بيانات الحساب المالي بنجاح</span>
+    </div>
+
+    <!-- TOP LIQUIDITY SUMMARY CARDS (5 COMPACT CARDS) -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      
+      <!-- Card 1: إجمالي السيولة -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-xs text-on-surface-variant font-semibold">إجمالي السيولة النقدية</span>
+        <div class="text-xl font-bold text-primary font-mono">1,740,500 <span class="text-xs font-normal">ج.م</span></div>
+        <span class="text-[10px] text-emerald-700 font-bold block">+ 65,000 USD حسابات جانبية</span>
+      </div>
+
+      <!-- Card 2: الخزائن -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-xs text-on-surface-variant font-semibold">إجمالي الخزائن</span>
+        <div class="text-xl font-bold text-emerald-800 font-mono">290,500 <span class="text-xs font-normal">ج.م</span></div>
+        <span class="text-[10px] text-on-surface-variant font-medium block">2 خزينة نقدية (الرئيسية/النور)</span>
+      </div>
+
+      <!-- Card 3: الحسابات البنكية -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-xs text-on-surface-variant font-semibold">الحسابات البنكية</span>
+        <div class="text-xl font-bold text-secondary font-mono">1,450,000 <span class="text-xs font-normal">ج.م</span></div>
+        <span class="text-[10px] text-secondary font-bold block">2 حسابات بنكية متصلة</span>
+      </div>
+
+      <!-- Card 4: إجمالي الداخل اليوم -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-xs text-on-surface-variant font-semibold">إجمالي الداخل اليوم</span>
+        <div class="text-xl font-bold text-emerald-700 font-mono">+100,000 <span class="text-xs font-normal">ج.م</span></div>
+        <span class="text-[10px] text-emerald-700 font-medium block">تحصيلات عملاء موثقة</span>
+      </div>
+
+      <!-- Card 5: إجمالي الخارج اليوم -->
+      <div class="bg-surface p-4 rounded-xl border border-outline-variant shadow-sm space-y-1">
+        <span class="text-xs text-on-surface-variant font-semibold">إجمالي الخارج اليوم</span>
+        <div class="text-xl font-bold text-rose-700 font-mono">-200,000 <span class="text-xs font-normal">ج.م</span></div>
+        <span class="text-[9px] text-rose-600 font-medium block">سداد موردين ومصروفات</span>
+      </div>
+
+    </div>
+
+    <!-- SECTION 1: CASH TREASURIES GRID CARDS ("الخزائن") -->
+    <div class="space-y-4">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-2">
+        <div>
+          <h2 class="text-base font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px] text-emerald-800">payments</span>
+            الخزائن النقدية (Cash Treasuries)
+          </h2>
+          <p class="text-[11px] text-on-surface-variant">متابعة أرصدة الخزائن النقدية والحركات اليومية المباشرة</p>
+        </div>
+        <button onclick="openAddCashModal()" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg font-bold text-xs shadow-sm transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-[15px]">add_circle</span>
+          + إضافة خزينة
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Cash Treasury Card 1: CASH-001 -->
+        <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4 hover:border-primary/40 transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold">
+                  <span class="material-symbols-outlined text-[22px]">payments</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-primary text-sm"><a href="treasury-account-details.html?id=CASH-001" class="hover:underline">الخزينة الرئيسية</a></h3>
+                  <span class="font-mono text-xs text-secondary font-bold">كود: CASH-001</span>
+                </div>
+              </div>
+              <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● نشطة</span>
+            </div>
+
+            <!-- PROMINENT CURRENT BALANCE -->
+            <div class="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 text-center space-y-1">
+              <span class="text-xs text-emerald-950 font-semibold block">الرصيد الحالي المتاح</span>
+              <div class="text-3xl font-bold text-emerald-800 font-mono">245,500.00 <span class="text-xs font-normal">ج.م</span></div>
+              <span class="text-[10px] text-emerald-700 font-medium block">العملة: EGP (جنيه مصري)</span>
+            </div>
+
+            <!-- Secondary Opening & Daily Balance Indicators -->
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5">
+                <span class="text-outline text-[10px] font-semibold">الرصيد الافتتاحي</span>
+                <div class="font-mono font-bold text-primary">100,000.00 ج.م</div>
+                <span class="text-[9px] text-emerald-800 font-bold block">🔒 بداية النظام</span>
+              </div>
+              <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5">
+                <span class="text-outline text-[10px] font-semibold">حركة اليوم</span>
+                <div class="font-mono text-[11px] font-bold">
+                  <span class="text-emerald-700 block">+185,500 تحصيلات</span>
+                  <span class="text-rose-600 block">-40,000 مدفوعات</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer & Quick Actions -->
+          <div class="pt-3 border-t border-outline-variant/60 flex items-center justify-between text-xs">
+            <span class="text-[10px] text-outline font-mono">آخر حركة: اليوم 14:30</span>
+            <div class="flex items-center gap-2">
+              <a href="treasury-account-details.html?id=CASH-001" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">visibility</span>
+                عرض الحساب
+              </a>
+              <a href="treasury-account-details.html?id=CASH-001" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-outline-variant/60">
+                الحركات
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cash Treasury Card 2: CASH-002 -->
+        <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4 hover:border-primary/40 transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold">
+                  <span class="material-symbols-outlined text-[22px]">store</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-primary text-sm"><a href="treasury-account-details.html?id=CASH-002" class="hover:underline">خزينة محطة النور الفرعية</a></h3>
+                  <span class="font-mono text-xs text-secondary font-bold">كود: CASH-002</span>
+                </div>
+              </div>
+              <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● نشطة</span>
+            </div>
+
+            <div class="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 text-center space-y-1">
+              <span class="text-xs text-emerald-950 font-semibold block">الرصيد الحالي المتاح</span>
+              <div class="text-3xl font-bold text-emerald-800 font-mono">45,000.00 <span class="text-xs font-normal">ج.م</span></div>
+              <span class="text-[10px] text-emerald-700 font-medium block">خزينة المحطة المعالجة</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5">
+                <span class="text-outline text-[10px] font-semibold">الرصيد الافتتاحي</span>
+                <div class="font-mono font-bold text-primary">50,000.00 ج.م</div>
+                <span class="text-[9px] text-emerald-800 font-bold block">🔒 عهدة المحطة</span>
+              </div>
+              <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5">
+                <span class="text-outline text-[10px] font-semibold">حركة اليوم</span>
+                <div class="font-mono text-[11px] font-bold">
+                  <span class="text-emerald-700 block">+20,000 تحصيلات</span>
+                  <span class="text-rose-600 block">-25,000 مدفوعات</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-outline-variant/60 flex items-center justify-between text-xs">
+            <span class="text-[10px] text-outline font-mono">آخر حركة: 11/08/2026</span>
+            <div class="flex items-center gap-2">
+              <a href="treasury-account-details.html?id=CASH-002" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">visibility</span>
+                عرض الحساب
+              </a>
+              <a href="treasury-account-details.html?id=CASH-002" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-outline-variant/60">
+                الحركات
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 2: BANK ACCOUNTS GRID CARDS ("الحسابات البنكية") -->
+    <div class="space-y-4">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-2">
+        <div>
+          <h2 class="text-base font-bold text-primary flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px] text-secondary">account_balance</span>
+            الحسابات البنكية (Bank Accounts)
+          </h2>
+          <p class="text-[11px] text-on-surface-variant">متابعة أرصدة الحسابات البنكية والتحويلات المعتمدة</p>
+        </div>
+        <button onclick="openAddBankModal()" class="bg-surface border border-outline-variant text-primary hover:bg-surface-variant px-3 py-1.5 rounded-lg font-bold text-xs transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-[15px]">add_circle</span>
+          + إضافة حساب بنكي
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Bank Account Card 1: BANK-001 -->
+        <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4 hover:border-secondary/40 transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-secondary flex items-center justify-center font-bold">
+                  <span class="material-symbols-outlined text-[22px]">account_balance</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-primary text-sm"><a href="treasury-account-details.html?id=BANK-001" class="hover:underline">البنك الأهلي المصري - حساب التصدير</a></h3>
+                  <span class="font-mono text-xs text-secondary font-bold">كود: BANK-001</span>
+                </div>
+              </div>
+              <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● نشط</span>
+            </div>
+
+            <!-- PROMINENT BANK BALANCE -->
+            <div class="bg-blue-50/60 p-4 rounded-xl border border-blue-200 text-center space-y-1">
+              <span class="text-xs text-blue-950 font-semibold block">الرصيد الحالي المتاح</span>
+              <div class="text-3xl font-bold text-secondary font-mono">1,450,000.00 <span class="text-xs font-normal">ج.م</span></div>
+              <span class="text-[10px] font-mono text-on-surface-variant block">رقم الحساب: 1100-4820-9901</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5">
+                <span class="text-outline text-[10px] font-semibold">الرصيد الافتتاحي</span>
+                <div class="font-mono font-bold text-primary">1,000,000.00 ج.م</div>
+                <span class="text-[9px] text-emerald-800 font-bold block">🔒 بداية السنة</span>
+              </div>
+              <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5">
+                <span class="text-outline text-[10px] font-semibold">العملة وIBAN</span>
+                <div class="font-mono font-bold text-primary">EGP • متاح SWIFT</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-outline-variant/60 flex items-center justify-between text-xs">
+            <span class="text-[10px] text-outline font-mono">آخر حركة: اليوم 10:15</span>
+            <div class="flex items-center gap-2">
+              <a href="treasury-account-details.html?id=BANK-001" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">visibility</span>
+                عرض الحساب
+              </a>
+              <a href="treasury-account-details.html?id=BANK-001" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-outline-variant/60">
+                الحركات
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bank Account Card 2: BANK-002 (USD) -->
+        <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4 hover:border-secondary/40 transition-all flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-secondary flex items-center justify-center font-bold">
+                  <span class="material-symbols-outlined text-[22px]">currency_exchange</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-primary text-sm"><a href="treasury-account-details.html?id=BANK-002" class="hover:underline">بنك مصر - حساب الدولار الأمريكي</a></h3>
+                  <span class="font-mono text-xs text-secondary font-bold">كود: BANK-002</span>
+                </div>
+              </div>
+              <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] px-2.5 py-0.5 rounded-full font-bold">● نشط</span>
+            </div>
+
+            <div class="bg-blue-50/60 p-4 rounded-xl border border-blue-200 text-center space-y-1">
+              <span class="text-xs text-blue-950 font-semibold block">الرصيد الحالي المتاح</span>
+              <div class="text-3xl font-bold text-blue-900 font-mono">$65,000.00 <span class="text-xs font-normal">USD</span></div>
+              <span class="text-[10px] font-mono text-on-surface-variant block">رقم الحساب: 2200-5510-4490</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5">
+                <span class="text-outline text-[10px] font-semibold">الرصيد الافتتاحي</span>
+                <div class="font-mono font-bold text-primary">$50,000.00</div>
+                <span class="text-[9px] text-emerald-800 font-bold block">🔒 بداية السنة</span>
+              </div>
+              <div class="bg-surface-variant/30 p-2.5 rounded-lg border border-outline-variant/40 space-y-0.5">
+                <span class="text-outline text-[10px] font-semibold">العملة والحصيلة</span>
+                <div class="font-mono font-bold text-blue-800">USD • حصيلة تصدير</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-outline-variant/60 flex items-center justify-between text-xs">
+            <span class="text-[10px] text-outline font-mono">آخر حركة: 08/08/2026</span>
+            <div class="flex items-center gap-2">
+              <a href="treasury-account-details.html?id=BANK-002" class="bg-primary text-white hover:bg-primary-container px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">visibility</span>
+                عرض الحساب
+              </a>
+              <a href="treasury-account-details.html?id=BANK-002" class="bg-surface-variant text-on-surface hover:bg-outline-variant px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-outline-variant/60">
+                الحركات
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 3: RECENT FINANCIAL MOVEMENTS (COMPACT TRANSACTIONS LOG) -->
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden p-5 space-y-4">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h2 class="text-base font-bold text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">history</span>
+          آخر الحركات المالية المنفذة (Recent Financial Movements)
+        </h2>
+        <a href="payments-collections.html" class="text-xs text-secondary hover:underline font-bold">عرض جميع الحركات ←</a>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-surface-variant/40 text-on-surface-variant font-bold border-b border-outline-variant">
+            <tr>
+              <th class="p-3 font-mono">التاريخ</th>
+              <th class="p-3 font-mono">رقم الحركة</th>
+              <th class="p-3">الحساب المالي</th>
+              <th class="p-3">نوع الحركة</th>
+              <th class="p-3">الطرف / البيان</th>
+              <th class="p-3 font-mono">المبلغ</th>
+              <th class="p-3 font-mono text-base">الرصيد بعد الحركة</th>
+              <th class="p-3 font-mono">المرجع</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-outline-variant/40">
+            <tr class="hover:bg-surface-variant/40 transition-colors">
+              <td class="p-3 font-mono text-on-surface-variant">14/08/2026 14:30</td>
+              <td class="p-3 font-mono font-bold text-primary">COL-2026-001</td>
+              <td class="p-3 font-bold text-primary">الخزينة الرئيسية (CASH-001)</td>
+              <td class="p-3"><span class="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-bold">تحصيل</span></td>
+              <td class="p-3 font-bold text-primary">شركة سما للتجارة والتصدير</td>
+              <td class="p-3 font-mono font-bold text-emerald-800 text-sm">+100,000.00 ج.م</td>
+              <td class="p-3 font-mono font-bold text-primary">245,500.00 ج.م</td>
+              <td class="p-3 font-mono text-secondary"><a href="payment-details.html?id=COL-2026-001" class="hover:underline">SHP-001</a></td>
+            </tr>
+
+            <tr class="hover:bg-surface-variant/40 transition-colors">
+              <td class="p-3 font-mono text-on-surface-variant">14/08/2026 10:15</td>
+              <td class="p-3 font-mono font-bold text-primary">PAY-2026-001</td>
+              <td class="p-3 font-bold text-primary">البنك الأهلي - حساب التصدير (BANK-001)</td>
+              <td class="p-3"><span class="bg-rose-100 text-rose-900 border border-rose-300 px-2 py-0.5 rounded text-[10px] font-bold">سداد</span></td>
+              <td class="p-3 font-bold text-primary">شركة الخير للتنمية الزراعية</td>
+              <td class="p-3 font-mono font-bold text-rose-700 text-sm">-200,000.00 ج.م</td>
+              <td class="p-3 font-mono font-bold text-primary">1,450,000.00 ج.م</td>
+              <td class="p-3 font-mono text-secondary"><a href="payment-details.html?id=PAY-2026-001" class="hover:underline">REC-0001</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ADD CASH TREASURY MODAL -->
+  <div id="add-cash-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-2xl max-w-md w-full p-6 space-y-4 overflow-hidden relative">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h3 class="font-bold text-primary text-base flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-emerald-800">add_circle</span>
+          + إضافة خزينة نقدية جديدة
+        </h3>
+        <button onclick="closeAddCashModal()" class="text-on-surface-variant hover:text-primary p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="handleAccountSubmit(event, 'خزينة')" class="space-y-3 text-xs">
+        <div class="space-y-1">
+          <label class="font-bold text-primary">اسم الخزينة *</label>
+          <input type="text" placeholder="مثال: خزينة محطة السلام الفرعية" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-primary">كود الخزينة (تلقائي/فريد) *</label>
+          <input type="text" value="CASH-003" readonly class="w-full bg-surface-variant border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono text-secondary"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-primary">العملة *</label>
+            <select class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+              <option value="EGP">EGP - جنيه مصري</option>
+              <option value="USD">USD - دولار أمريكي</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">الرصيد الافتتاحي *</label>
+            <input type="number" placeholder="0.00" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono text-primary text-sm focus:outline-none focus:border-primary"/>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-primary">تاريخ الرصيد الافتتاحي *</label>
+          <input type="date" value="2026-01-01" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/60">
+          <button type="button" onclick="closeAddCashModal()" class="bg-surface-variant text-on-surface px-4 py-2 rounded-lg text-xs font-bold hover:bg-outline-variant">
+            إلغاء
+          </button>
+          <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-primary-container shadow-sm">
+            حفظ الخزينة
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD BANK ACCOUNT MODAL -->
+  <div id="add-bank-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-2xl max-w-md w-full p-6 space-y-4 overflow-hidden relative">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h3 class="font-bold text-primary text-base flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">account_balance</span>
+          + إضافة حساب بنكي جديد
+        </h3>
+        <button onclick="closeAddBankModal()" class="text-on-surface-variant hover:text-primary p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="handleAccountSubmit(event, 'حساب بنكي')" class="space-y-3 text-xs">
+        <div class="space-y-1">
+          <label class="font-bold text-primary">اسم الحساب البنكي *</label>
+          <input type="text" placeholder="مثال: البنك الأهلي - حساب التشغيل" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-primary">اسم البنك *</label>
+            <input type="text" placeholder="البنك الأهلي المصري" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary"/>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">كود الحساب (تلقائي/فريد) *</label>
+            <input type="text" value="BANK-003" readonly class="w-full bg-surface-variant border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono text-secondary"/>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-primary">رقم الحساب البنكي</label>
+          <input type="text" placeholder="1100-9900-4412" class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label class="font-bold text-primary">العملة *</label>
+            <select class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+              <option value="EGP">EGP - جنيه مصري</option>
+              <option value="USD">USD - دولار أمريكي</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-bold text-primary">الرصيد الافتتاحي *</label>
+            <input type="number" placeholder="0.00" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono text-primary text-sm focus:outline-none focus:border-primary"/>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/60">
+          <button type="button" onclick="closeAddBankModal()" class="bg-surface-variant text-on-surface px-4 py-2 rounded-lg text-xs font-bold hover:bg-outline-variant">
+            إلغاء
+          </button>
+          <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-primary-container shadow-sm">
+            حفظ الحساب البنكي
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TREASURY TRANSFER MODAL -->
+  <div id="transfer-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface rounded-xl border border-outline-variant shadow-2xl max-w-md w-full p-6 space-y-4 overflow-hidden relative">
+      <div class="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+        <h3 class="font-bold text-primary text-base flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">sync_alt</span>
+          تحويل سيولة بين الحسابات
+        </h3>
+        <button onclick="closeTransferModal()" class="text-on-surface-variant hover:text-primary p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="handleTransferSubmit(event)" class="space-y-3 text-xs">
+        <div class="space-y-1">
+          <label class="font-bold text-primary">من الحساب (المصدر)</label>
+          <select class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+            <option>الخزينة الرئيسية (رصيد: 245,500.00 ج.م)</option>
+            <option>البنك الأهلي - حساب التصدير (رصيد: 1,450,000.00 ج.م)</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-primary">إلى الحساب (الوجهة)</label>
+          <select class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold focus:outline-none focus:border-primary">
+            <option>خزينة محطة النور الفرعية (رصيد: 45,000.00 ج.م)</option>
+            <option>البنك الأهلي - حساب التصدير</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <label class="font-bold text-primary">مبلغ التحويل (ج.م)</label>
+          <input type="number" value="20000" required class="w-full bg-background border border-outline-variant rounded-lg p-2 text-xs font-bold font-mono text-primary text-sm focus:outline-none focus:border-primary"/>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/60">
+          <button type="button" onclick="closeTransferModal()" class="bg-surface-variant text-on-surface px-4 py-2 rounded-lg text-xs font-bold hover:bg-outline-variant">
+            إلغاء
+          </button>
+          <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-primary-container shadow-sm">
+            تنفيذ التحويل
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+function openAddCashModal() { document.getElementById('add-cash-modal').classList.remove('hidden'); }
+function closeAddCashModal() { document.getElementById('add-cash-modal').classList.add('hidden'); }
+
+function openAddBankModal() { document.getElementById('add-bank-modal').classList.remove('hidden'); }
+function closeAddBankModal() { document.getElementById('add-bank-modal').classList.add('hidden'); }
+
+function openTransferModal() { document.getElementById('transfer-modal').classList.remove('hidden'); }
+function closeTransferModal() { document.getElementById('transfer-modal').classList.add('hidden'); }
+
+function handleAccountSubmit(e, typeLabel) {
+  e.preventDefault();
+  closeAddCashModal();
+  closeAddBankModal();
+  const toast = document.getElementById('treasury-toast');
+  document.getElementById('treasury-toast-msg').innerText = `تمت إضافة ${typeLabel} وتثبيت الرصيد الافتتاحي بنجاح`;
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 5000);
+}
+
+function handleTransferSubmit(e) {
+  e.preventDefault();
+  closeTransferModal();
+  const toast = document.getElementById('treasury-toast');
+  document.getElementById('treasury-toast-msg').innerText = 'تم تنفيذ تحويل السيولة وتحديث أرصدة الحسابين بنجاح';
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 5000);
+}
+</script>
+</body>
+</html>
