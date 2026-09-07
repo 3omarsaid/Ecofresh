@@ -1,62 +1,71 @@
 import { z } from 'zod';
+import {
+  cleanPositiveNumber,
+  cleanNonNegativeNumber,
+  cleanOptionalPositiveNumber,
+  cleanOptionalNumber,
+} from './common';
 
-export const ProcessingSchema = z
-  .object({
-    stationId: z.string().min(1, 'المحطة مطلوبة'),
-    contractorId: z.string().min(1, 'المقاول مطلوب'),
-    rawProduct: z.string().min(1, 'المحصول الخام مطلوب'),
-    finishedProduct: z.string().min(1, 'المنتج النهائي مطلوب'),
-    date: z.string().optional(),
-    targetRawKg: z.coerce.number().positive('الكمية المطلوبة للخام يجب أن تكون أكبر من 0'),
-    rawIssues: z
-      .array(
-        z.object({
-          batchId: z.string().min(1, 'معرف اللوط مطلوب'),
-          qty: z.coerce.number().positive('كمية الخام المسحوبة يجب أن تكون أكبر من 0'),
-        })
-      )
-      .min(1, 'يجب سحب لوط خام واحد على الأقل')
-      .refine(
-        (items) => {
-          const ids = items.map((i) => i.batchId);
-          return new Set(ids).size === ids.length;
-        },
-        { message: 'لا يمكن تكرار نفس اللوط أكثر من مرة في نفس العملية' }
-      ),
-    suppliesIssues: z
-      .array(
-        z.object({
-          supplyId: z.string().min(1, 'المستلزم مطلوب'),
-          requested: z.coerce.number().positive('الكمية المطلوبة للمستلزم يجب أن تكون أكبر من 0'),
-          consumed: z.coerce.number().min(0, 'المستهلك السليم لا يمكن أن يكون سالباً'),
-          waste: z.coerce.number().min(0, 'الهالك لا يمكن أن يكون سالباً').default(0),
-          unitCost: z.coerce.number().min(0, 'سعر الوحدة لا يمكن أن يكون سالباً'),
-        })
-      )
-      .default([])
-      .refine(
-        (items) => {
-          const ids = items.map((i) => i.supplyId);
-          return new Set(ids).size === ids.length;
-        },
-        { message: 'لا يمكن تكرار نفس المستلزم أكثر من مرة في نفس العملية' }
-      )
-      .refine(
-        (items) => {
-          return items.every((i) => Math.abs((Number(i.consumed || 0) + Number(i.waste || 0)) - Number(i.requested)) < 0.001);
-        },
-        { message: 'إجمالي المنصرف (السليم + الهالك) يجب أن يطابق تماماً الكمية المطلوبة لكل مستلزم' }
-      ),
-    finishedOutputKg: z.coerce.number().min(0, 'الكمية الخارجة لا يمكن أن تكون سالبة'),
-    secondaryOutputKg: z.coerce.number().min(0).default(0),
-    otherCost: z.coerce.number().min(0).default(0),
-    notes: z.string().optional(),
-    idempotencyKey: z.string().optional(),
-  })
+export const BaseProcessingSchema = z.object({
+  stationId: z.string().min(1, 'المحطة مطلوبة'),
+  contractorId: z.string().min(1, 'المقاول مطلوب'),
+  rawProduct: z.string().min(1, 'المحصول الخام مطلوب'),
+  finishedProduct: z.string().min(1, 'المنتج النهائي مطلوب'),
+  date: z.string().optional(),
+  // targetRawKg is optional; if omitted, automatically derived from rawIssues sum
+  targetRawKg: cleanOptionalPositiveNumber(),
+  rawIssues: z
+    .array(
+      z.object({
+        batchId: z.string().min(1, 'معرف اللوط مطلوب'),
+        qty: cleanPositiveNumber('كمية الخام المسحوبة يجب أن تكون أكبر من 0'),
+      })
+    )
+    .min(1, 'يجب سحب لوط خام واحد على الأقل')
+    .refine(
+      (items) => {
+        const ids = items.map((i) => i.batchId);
+        return new Set(ids).size === ids.length;
+      },
+      { message: 'لا يمكن تكرار نفس اللوط أكثر من مرة في نفس العملية' }
+    ),
+  suppliesIssues: z
+    .array(
+      z.object({
+        supplyId: z.string().min(1, 'المستلزم مطلوب'),
+        // requested defaults to 0 and is auto-derived from consumed + waste if left 0
+        requested: cleanNonNegativeNumber('الكمية المطلوبة للمستلزم لا يمكن أن تكون سالبة', 0),
+        consumed: cleanNonNegativeNumber('المستهلك السليم لا يمكن أن يكون سالباً', 0),
+        waste: cleanNonNegativeNumber('الهالك لا يمكن أن يكون سالباً', 0),
+        unitCost: cleanNonNegativeNumber('سعر الوحدة لا يمكن أن يكون سالباً', 0),
+      })
+    )
+    .default([])
+    .refine(
+      (items) => {
+        const ids = items.map((i) => i.supplyId);
+        return new Set(ids).size === ids.length;
+      },
+      { message: 'لا يمكن تكرار نفس المستلزم أكثر من مرة في نفس العملية' }
+    ),
+  finishedOutputKg: cleanNonNegativeNumber('الكمية الخارجة لا يمكن أن تكون سالبة', 0),
+  secondaryOutputKg: cleanNonNegativeNumber('الكمية الثانوية لا يمكن أن تكون سالبة', 0),
+  otherCost: cleanNonNegativeNumber('التكاليف الأخرى لا يمكن أن تكون سالبة', 0),
+  notes: z.string().optional(),
+  idempotencyKey: z.string().optional(),
+  // Derived fields (optional in input and form state)
+  rawWasteKg: cleanOptionalNumber(),
+  yieldPercent: cleanOptionalNumber(),
+});
+
+export const ProcessingSchema = BaseProcessingSchema
   .refine(
     (data) => {
       const totalRawInput = data.rawIssues.reduce((sum, issue) => sum + Number(issue.qty || 0), 0);
-      return Math.abs(totalRawInput - Number(data.targetRawKg)) < 0.001;
+      if (data.targetRawKg !== undefined && data.targetRawKg !== null) {
+        return Math.abs(totalRawInput - Number(data.targetRawKg)) < 0.001;
+      }
+      return totalRawInput > 0;
     },
     {
       message: 'إجمالي الكمية المسحوبة من اللوطات يجب أن يطابق تماماً الكمية المطلوبة للخام',
@@ -82,6 +91,31 @@ export const ProcessingSchema = z
       message: 'الكمية الخارجة لا يمكن أن تكون أكبر من الكمية الداخلة',
       path: ['finishedOutputKg'],
     }
-  );
+  )
+  .transform((data) => {
+    const totalRawInput = data.rawIssues.reduce((sum, issue) => sum + Number(issue.qty || 0), 0);
+    const targetRawKg = data.targetRawKg ?? totalRawInput;
 
-export type ProcessingFormValues = z.infer<typeof ProcessingSchema>;
+    const suppliesIssues = data.suppliesIssues.map((item) => {
+      const computedTotal = Math.round((Number(item.consumed || 0) + Number(item.waste || 0)) * 100) / 100;
+      return {
+        ...item,
+        requested: item.requested > 0 ? item.requested : computedTotal,
+      };
+    });
+
+    const rawWasteKg = Math.max(0, Math.round((totalRawInput - data.finishedOutputKg - data.secondaryOutputKg) * 100) / 100);
+    const yieldPercent = totalRawInput > 0 ? Math.round((data.finishedOutputKg / totalRawInput) * 10000) / 100 : 0;
+
+    return {
+      ...data,
+      targetRawKg,
+      suppliesIssues,
+      rawWasteKg,
+      yieldPercent,
+    };
+  });
+
+export type ProcessingFormValues = z.infer<typeof BaseProcessingSchema>;
+export type ProcessingInput = z.input<typeof ProcessingSchema>;
+export type ProcessingOutput = z.output<typeof ProcessingSchema>;

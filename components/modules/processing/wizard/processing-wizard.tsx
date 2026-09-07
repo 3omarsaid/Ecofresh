@@ -37,12 +37,15 @@ export function ProcessingWizard({
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  const initialStationId = stations.length > 0 ? stations[0].id : "";
+  const initialContractor = contractors.find((c) => c.stationId === initialStationId);
+
   // Form State preserved across steps
   const [formData, setFormData] = useState<ProcessingFormValues>({
-    stationId: stations.length > 0 ? stations[0].id : "",
-    contractorId: contractors.length > 0 ? contractors[0].id : "",
-    rawProduct: "فراولة خام",
-    finishedProduct: products.length > 0 ? products[0].name : "فراولة مجمدة IQF",
+    stationId: initialStationId,
+    contractorId: initialContractor ? initialContractor.id : "",
+    rawProduct: "",
+    finishedProduct: products.length > 0 ? products[0].name : "",
     date: new Date().toISOString().substring(0, 10),
     targetRawKg: 0,
     rawIssues: [],
@@ -50,7 +53,7 @@ export function ProcessingWizard({
     finishedOutputKg: 0,
     secondaryOutputKg: 0,
     otherCost: 0,
-    notes: "تشغيل ممتاز، فرز درجة أولى مطابق للمواصفات التصديرية",
+    notes: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -118,6 +121,16 @@ export function ProcessingWizard({
           setStepError(`اللوط (${issue.batchId}) لا يتبع المحطة المحددة`);
           return false;
         }
+        if (
+          batch &&
+          formData.rawProduct &&
+          batch.rawProduct.trim().toLowerCase() !== formData.rawProduct.trim().toLowerCase()
+        ) {
+          setStepError(
+            `اللوط (${issue.batchId}) يتبع محصول (${batch.rawProduct}) ولا يطابق المحصول المطلوب تشغيله (${formData.rawProduct})`
+          );
+          return false;
+        }
         const available = batch ? Number(batch.availableQty) : 0;
         if (issue.qty > available) {
           setStepError(
@@ -152,7 +165,8 @@ export function ProcessingWizard({
             item.location?.stationId === formData.stationId &&
             item.location?.type === "SUPPLIES"
         );
-        const stock = ss ? Number(ss.stock) : Number(supply?.stock || 0);
+        // Strict Station Isolation: No fallback to global supply.stock
+        const stock = ss ? Number(ss.stock) : 0;
 
         const requested = Number(issue.requested || 0);
         const consumed = Number(issue.consumed || 0);
@@ -207,9 +221,12 @@ export function ProcessingWizard({
     const target = Number(formData.targetRawKg || 0);
     if (target <= 0 || formData.rawIssues.length === 0) return false;
     let sum = 0;
+    const normCrop = formData.rawProduct?.trim().toLowerCase();
     for (const issue of formData.rawIssues) {
       const batch = rawBatches.find((b) => b.batchId === issue.batchId);
-      const available = batch ? Number(batch.availableQty) : 0;
+      if (!batch || batch.stationId !== formData.stationId) return false;
+      if (normCrop && batch.rawProduct.trim().toLowerCase() !== normCrop) return false;
+      const available = Number(batch.availableQty);
       if (issue.qty <= 0 || issue.qty > available) return false;
       sum += Number(issue.qty || 0);
     }
@@ -225,7 +242,8 @@ export function ProcessingWizard({
           item.location?.stationId === formData.stationId &&
           item.location?.type === "SUPPLIES"
       );
-      const stock = ss ? Number(ss.stock) : Number(supply?.stock || 0);
+      // Strict Station Isolation: No fallback to global supply.stock
+      const stock = ss ? Number(ss.stock) : 0;
       const requested = Number(issue.requested || 0);
       const withdrawn = Math.round((Number(issue.consumed || 0) + Number(issue.waste || 0)) * 100) / 100;
       if (requested <= 0 && withdrawn <= 0) continue;
@@ -323,20 +341,49 @@ export function ProcessingWizard({
             stations={stations}
             contractors={contractors}
             products={products}
+            rawBatches={rawBatches}
             stationId={formData.stationId}
             contractorId={formData.contractorId}
             rawProduct={formData.rawProduct}
             finishedProduct={formData.finishedProduct}
             date={formData.date || ""}
             onChange={(fields) =>
-              setFormData((prev) => ({
-                ...prev,
-                ...fields,
-                // If station changes, reset rawIssues & supplies to maintain strict station isolation
-                ...(fields.stationId && fields.stationId !== prev.stationId
-                  ? { rawIssues: [], suppliesIssues: [] }
-                  : {}),
-              }))
+              setFormData((prev) => {
+                const isStationChanged = !!(fields.stationId && fields.stationId !== prev.stationId);
+                const isCropChanged = !!(
+                  fields.rawProduct &&
+                  fields.rawProduct.trim().toLowerCase() !== prev.rawProduct.trim().toLowerCase()
+                );
+
+                let nextContractorId = fields.contractorId !== undefined ? fields.contractorId : prev.contractorId;
+                if (isStationChanged) {
+                  const matchingContractor = contractors.find((c) => c.stationId === fields.stationId);
+                  nextContractorId = matchingContractor ? matchingContractor.id : "";
+                }
+
+                return {
+                  ...prev,
+                  ...fields,
+                  contractorId: nextContractorId,
+                  // If station changes, reset contractor, raw intake, supplies, target and output to maintain strict station isolation
+                  ...(isStationChanged
+                    ? {
+                        rawIssues: [],
+                        targetRawKg: 0,
+                        suppliesIssues: [],
+                        finishedOutputKg: 0,
+                        secondaryOutputKg: 0,
+                      }
+                    : isCropChanged
+                    ? {
+                        rawIssues: [],
+                        targetRawKg: 0,
+                        finishedOutputKg: 0,
+                        secondaryOutputKg: 0,
+                      }
+                    : {}),
+                };
+              })
             }
             errors={errors}
           />
@@ -345,6 +392,7 @@ export function ProcessingWizard({
         {currentStep === 2 && (
           <Step2RawIssues
             stationId={formData.stationId}
+            rawProduct={formData.rawProduct}
             stations={stations}
             rawBatches={rawBatches}
             targetRawKg={formData.targetRawKg}

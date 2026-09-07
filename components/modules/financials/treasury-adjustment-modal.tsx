@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { formatCurrency } from "@/lib/currency";
 import { adjustTreasuryAccountBalance } from "@/actions/financials";
 import {
   AlertTriangle,
@@ -122,25 +124,22 @@ export function TreasuryAdjustmentModal({
             <div className="flex justify-between">
               <span className="text-gray-500">الرصيد الدفتري الحالي:</span>
               <span className="font-mono font-bold text-[#012d1d]">
-                {currentBalance.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} {account.currency}
+                {formatCurrency(currentBalance)}
               </span>
             </div>
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="actualBal" className="text-xs font-bold text-gray-700">
-              الرصيد الفعلي الحقيقي بعد الجرد ({account.currency}) *
+              الرصيد الفعلي الحقيقي بعد الجرد (ج.م) *
             </Label>
-            <Input
+            <CurrencyInput
               id="actualBal"
-              type="number"
-              step="any"
               value={actualBalance}
-              onChange={(e) =>
-                setActualBalance(e.target.value === "" ? "" : parseFloat(e.target.value))
+              onChange={(val) =>
+                setActualBalance(typeof val === "number" ? val : "")
               }
-              placeholder="أدخل ناتج الجرد الفعلي..."
-              className="font-mono text-base font-bold text-left dir-ltr"
+              placeholder="0.00"
               required
               autoFocus
             />
@@ -160,7 +159,7 @@ export function TreasuryAdjustmentModal({
               </span>
               <span className="font-mono text-sm">
                 {isIncrease ? "+" : "-"}
-                {absDiff.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} {account.currency}
+                {formatCurrency(absDiff)}
               </span>
             </div>
           )}

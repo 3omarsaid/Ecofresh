@@ -1,9 +1,9 @@
-import { prisma } from "D:/exporting-erp-main/lib/prisma";
+import { prisma } from "../lib/prisma";
 import {
   createProcessingOperation,
   cancelProcessingOperation,
-} from "D:/exporting-erp-main/actions/processing";
-import { getStationLocation } from "D:/exporting-erp-main/lib/stock-service";
+} from "../actions/processing";
+import { getStationLocation } from "../lib/stock-service";
 import { WarehouseType } from "@prisma/client";
 
 async function runProcessingTestSuite() {
@@ -469,7 +469,7 @@ async function runProcessingTestSuite() {
   if (opRecord.rawIssues.length !== 2) {
     throw new Error(`Expected 2 OperationRawIssue records, found ${opRecord.rawIssues.length}`);
   }
-  console.log("✓ OperationRawIssue Records Created:", opRecord.rawIssues.map(r => ({
+  console.log("✓ OperationRawIssue Records Created:", opRecord.rawIssues.map((r: any) => ({
     supplier: r.supplierName,
     qtyKg: Number(r.qtyKg),
   })));

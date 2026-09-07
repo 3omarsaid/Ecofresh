@@ -12,6 +12,8 @@ import { CustomerSchema, type CustomerFormValues } from "@/lib/validations/custo
 import { createCustomer } from "@/actions/customers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { CURRENCY_CONFIG } from "@/lib/currency";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
@@ -22,14 +24,13 @@ export function CustomerForm() {
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(CustomerSchema),
     defaultValues: {
-      id: "CUST-",
-      code: "CUST-",
+      code: "",
       name: "",
       country: "",
       destinationPort: "",
       currency: "EUR",
-      paymentTerms: "30 يوماً من تاريخ التلغيم CAD",
-      creditLimit: 500000,
+      paymentTerms: "",
+      creditLimit: 0,
       contactPerson: "",
       phone: "",
       email: "",
@@ -80,7 +81,7 @@ export function CustomerForm() {
           <div>
             <CardTitle className="text-xl font-bold text-white">إضافة عميل تصدير دولي جديد</CardTitle>
             <CardDescription className="text-emerald-100 text-xs mt-1">
-              أدخل بيانات شركة الاستيراد وميناء الوصول البحرية والعملة والحد الائتماني
+              أدخل بيانات شركة الاستيراد وميناء الوصول البحرية والعملة والحد الائتماني (يتم التكويد تلقائياً)
             </CardDescription>
           </div>
         </div>
@@ -89,30 +90,15 @@ export function CustomerForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Customer ID */}
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">معرف العميل *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="مثال: CUST-004" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Code */}
+              {/* International Code (Optional) */}
               <FormField
                 control={form.control}
                 name="code"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">كود التعريف الدولي *</FormLabel>
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="font-semibold text-gray-700">كود التعريف الدولي (اختياري)</FormLabel>
                     <FormControl>
-                      <Input placeholder="مثال: CUST-GLOBAL-DE" {...field} />
+                      <Input placeholder="مثال: CUST-GLOBAL-DE (أو اتركه فارغاً للتوليد التلقائي)" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -164,22 +150,18 @@ export function CustomerForm() {
                 )}
               />
 
-              {/* Currency */}
+              {/* Currency (Fixed Unified System: EGP) */}
               <FormField
                 control={form.control}
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">عملة التعاقد الشحنات *</FormLabel>
+                    <FormLabel className="font-semibold text-gray-700">عملة الحساب المعتمدة</FormLabel>
                     <FormControl>
-                      <select
-                        {...field}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      >
-                        <option value="EUR">يورو (EUR)</option>
-                        <option value="USD">دولار أمريكي (USD)</option>
-                        <option value="GBP">جنيه استرليني (GBP)</option>
-                      </select>
+                      <div className="flex h-10 w-full items-center rounded-md border border-input bg-gray-50 px-3 py-2 text-sm text-gray-700 font-semibold cursor-not-allowed">
+                        <span>{CURRENCY_CONFIG.nameAr} ({CURRENCY_CONFIG.code}) - {CURRENCY_CONFIG.symbol}</span>
+                        <input type="hidden" {...field} value="EGP" />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -192,9 +174,9 @@ export function CustomerForm() {
                 name="creditLimit"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">الحد الائتماني الأقصى *</FormLabel>
+                    <FormLabel className="font-semibold text-gray-700">الحد الائتماني الأقصى (ج.م) *</FormLabel>
                     <FormControl>
-                      <Input type="number" step="10000" placeholder="500000" {...field} />
+                      <CurrencyInput step="10000" placeholder="500000" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

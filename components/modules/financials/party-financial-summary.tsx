@@ -21,6 +21,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PartyPaymentCollectionModal } from "./party-payment-collection-modal";
+import { formatCurrency } from "@/lib/currency";
 
 interface PartyFinancialSummaryProps {
   summary: PartySummaryType;
@@ -44,25 +45,6 @@ export function PartyFinancialSummary({
   const isDueToThem = isCustomer ? summary.remaining < 0 : summary.remaining > 0;
 
   const currentBalanceAmount = Math.abs(summary.remaining);
-  const formattedBalance = currentBalanceAmount.toLocaleString("ar-EG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-
-  const formattedDue = summary.totalDue.toLocaleString("ar-EG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-
-  const formattedPaidOrCollected = summary.totalPaidOrCollected.toLocaleString("ar-EG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-
-  const formattedRemaining = Math.abs(summary.remaining).toLocaleString("ar-EG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 
   return (
     <div className="space-y-4">
@@ -184,7 +166,7 @@ export function PartyFinancialSummary({
             </div>
             <div className="mt-2">
               <div className="text-xl md:text-2xl font-bold font-mono text-gray-900">
-                {formattedDue} <span className="text-xs font-normal text-gray-500 font-sans">ج.م</span>
+                {formatCurrency(summary.totalDue)}
               </div>
               <p className="text-[11px] text-gray-400 mt-0.5">
                 {isCustomer ? "إجمالي فواتير الشحن والاستحقاق" : "إجمالي استحقاقات التوريد أو التشغيل"}
@@ -204,8 +186,7 @@ export function PartyFinancialSummary({
             </div>
             <div className="mt-2">
               <div className="text-xl md:text-2xl font-bold font-mono text-gray-900">
-                {formattedPaidOrCollected}{" "}
-                <span className="text-xs font-normal text-gray-500 font-sans">ج.م</span>
+                {formatCurrency(summary.totalPaidOrCollected)}
               </div>
               <p className="text-[11px] text-gray-400 mt-0.5">
                 {isCustomer ? "إجمالي سندات القبض المعتمدة" : "إجمالي سندات الصرف المعتمدة"}
@@ -237,8 +218,7 @@ export function PartyFinancialSummary({
                     : "text-emerald-700"
                 }`}
               >
-                {formattedRemaining}{" "}
-                <span className="text-xs font-normal text-gray-500 font-sans">ج.م</span>
+                {formatCurrency(Math.abs(summary.remaining))}
               </div>
               <p className="text-[11px] text-gray-500 mt-0.5">
                 الفارق المالي المستحق للتسوية

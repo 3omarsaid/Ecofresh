@@ -25,6 +25,7 @@ import {
 import { EmployeeLedgerTable } from "@/components/modules/employees/EmployeeLedgerTable";
 import { AddTransactionDialog } from "@/components/modules/employees/AddTransactionDialog";
 import { EmployeeForm } from "@/components/modules/employees/EmployeeForm";
+import { formatCurrency } from "@/lib/currency";
 
 export const metadata = {
   title: "تفاصيل وكشف حساب الموظف — Nilotic Frost ERP",
@@ -89,6 +90,7 @@ export default async function EmployeeDetailsPage({ params }: PageProps) {
           <AddTransactionDialog
             employeeId={employee.id}
             employeeName={employee.name}
+            monthlySalary={summary.totalMonthlySalary}
             treasuryAccounts={accounts.map((a) => ({
               id: a.id,
               name: a.name,
@@ -110,17 +112,17 @@ export default async function EmployeeDetailsPage({ params }: PageProps) {
         <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
           <span className="text-xs font-semibold text-gray-500 block mb-1">الراتب الشهري والبدلات</span>
           <div className="text-xl font-bold text-gray-900 font-mono">
-            {summary.totalMonthlySalary.toLocaleString()} ج.م
+            {formatCurrency(summary.totalMonthlySalary)}
           </div>
           <span className="text-[11px] text-gray-400 font-mono">
-            أساسي: {summary.basicSalary.toLocaleString()} + بدلات: {summary.allowances.toLocaleString()}
+            أساسي: {formatCurrency(summary.basicSalary)} + بدلات: {formatCurrency(summary.allowances)}
           </span>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
           <span className="text-xs font-semibold text-gray-500 block mb-1">إجمالي المستحق للموظف (+)</span>
           <div className="text-xl font-bold text-emerald-700 font-mono">
-            {summary.totalDue.toLocaleString()} ج.م
+            {formatCurrency(summary.totalDue)}
           </div>
           <span className="text-[11px] text-gray-400">رواتب ومكافآت وبدلات مستحقة</span>
         </div>
@@ -128,7 +130,7 @@ export default async function EmployeeDetailsPage({ params }: PageProps) {
         <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
           <span className="text-xs font-semibold text-gray-500 block mb-1">إجمالي المنصرف والمسدد (-)</span>
           <div className="text-xl font-bold text-rose-700 font-mono">
-            {summary.totalPaidOrDeducted.toLocaleString()} ج.م
+            {formatCurrency(summary.totalPaidOrDeducted)}
           </div>
           <span className="text-[11px] text-gray-400">سلف ومصروفات وخصومات</span>
         </div>
@@ -136,7 +138,7 @@ export default async function EmployeeDetailsPage({ params }: PageProps) {
         <div className="bg-gradient-to-br from-[#012d1d] to-[#02472e] text-white rounded-xl p-4 shadow-sm">
           <span className="text-xs font-semibold text-emerald-200 block mb-1">صافي الرصيد الحالي</span>
           <div className="text-xl font-bold font-mono">
-            {Math.abs(summary.remaining).toLocaleString()} ج.م
+            {formatCurrency(Math.abs(summary.remaining))}
           </div>
           <span className="text-xs font-medium text-emerald-100">
             {summary.balanceText}

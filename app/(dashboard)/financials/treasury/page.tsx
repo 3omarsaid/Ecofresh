@@ -21,6 +21,7 @@ import { TreasuryViewWrapper } from "@/components/modules/financials/treasury-vi
 import { TreasuryActionBar } from "@/components/modules/financials/treasury-action-bar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/currency";
 
 export const metadata = {
   title: "الخزينة والحسابات البنكية — Nilotic Frost ERP",
@@ -34,22 +35,6 @@ export default async function TreasuryPage() {
   ]);
 
   const stationMap = new Map(stations.map((s) => [s.id, s.name]));
-
-  // Currency-separated liquidity values (Strictly No mixing currencies)
-  const formattedEgp = new Intl.NumberFormat("ar-EG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(metrics.totalEgpLiquidity);
-
-  const formattedEur = new Intl.NumberFormat("ar-EG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(metrics.totalEurLiquidity);
-
-  const formattedUsd = new Intl.NumberFormat("ar-EG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(metrics.totalUsdLiquidity);
 
   const todayNet = metrics.todayNetMovement;
   const isAllReconciled = metrics.reconciliationSummary.allBalanced;
@@ -120,19 +105,18 @@ export default async function TreasuryPage() {
         </div>
       </div>
 
-      {/* Currency Liquidity KPI Strip (Strict Separation) */}
+      {/* Liquidity KPI Strip (Unified EGP) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* EGP Liquidity */}
+        {/* Total Liquidity */}
         <Card className="border-gray-200 bg-gradient-to-br from-emerald-950 via-[#012d1d] to-teal-900 text-white shadow-sm">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-emerald-200">سيولة الجنيه المصري (EGP)</p>
+              <p className="text-xs font-medium text-emerald-200">إجمالي السيولة النقدية</p>
               <div className="flex items-baseline gap-2 mt-1.5 dir-ltr">
-                <span className="text-2xl font-extrabold text-white">{formattedEgp}</span>
-                <span className="text-sm font-bold text-emerald-300">ج.م</span>
+                <span className="text-2xl font-extrabold text-white">{formatCurrency(metrics.totalEgpLiquidity)}</span>
               </div>
               <p className="text-[11px] text-emerald-300/80 mt-1.5">
-                خزائن نقدية: {metrics.treasuryCashBalance.toLocaleString()} | بنوك: {metrics.bankBalance.toLocaleString()}
+                الرصيد الكلي لجميع حسابات الخزينة والبنوك
               </p>
             </div>
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-emerald-300">
@@ -141,40 +125,38 @@ export default async function TreasuryPage() {
           </CardContent>
         </Card>
 
-        {/* EUR Liquidity */}
-        <Card className="border-gray-200 bg-gradient-to-br from-slate-950 via-purple-950 to-indigo-950 text-white shadow-sm">
+        {/* Cash Treasuries */}
+        <Card className="border-gray-200 bg-gradient-to-br from-slate-900 via-[#0a3a2a] to-emerald-900 text-white shadow-sm">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-purple-200">سيولة اليورو (EUR)</p>
+              <p className="text-xs font-medium text-emerald-200">الخزائن النقدية</p>
               <div className="flex items-baseline gap-2 mt-1.5 dir-ltr">
-                <span className="text-2xl font-extrabold text-white">{formattedEur}</span>
-                <span className="text-sm font-bold text-purple-300">EUR (€)</span>
+                <span className="text-2xl font-extrabold text-white">{formatCurrency(metrics.treasuryCashBalance)}</span>
               </div>
-              <p className="text-[11px] text-purple-300/80 mt-1.5">
-                حسابات حصائل وعقود التصدير الخارجية
+              <p className="text-[11px] text-emerald-300/80 mt-1.5">
+                إجمالي النقدية المتوفرة في الخزائن
               </p>
             </div>
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-purple-300">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-emerald-300">
               <Coins className="h-6 w-6" />
             </div>
           </CardContent>
         </Card>
 
-        {/* USD Liquidity */}
-        <Card className="border-gray-200 bg-gradient-to-br from-slate-900 via-blue-950 to-cyan-950 text-white shadow-sm">
+        {/* Bank Accounts */}
+        <Card className="border-gray-200 bg-gradient-to-br from-slate-900 via-teal-950 to-emerald-950 text-white shadow-sm">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-blue-200">سيولة الدولار الأمريكي (USD)</p>
+              <p className="text-xs font-medium text-teal-200">الحسابات البنكية</p>
               <div className="flex items-baseline gap-2 mt-1.5 dir-ltr">
-                <span className="text-2xl font-extrabold text-white">{formattedUsd}</span>
-                <span className="text-sm font-bold text-blue-300">USD ($)</span>
+                <span className="text-2xl font-extrabold text-white">{formatCurrency(metrics.bankBalance)}</span>
               </div>
-              <p className="text-[11px] text-blue-300/80 mt-1.5">
-                حسابات النولون البحري ومستلزمات الاستيراد
+              <p className="text-[11px] text-teal-300/80 mt-1.5">
+                إجمالي الأرصدة المودعة بالبنوك
               </p>
             </div>
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-blue-300">
-              <DollarSign className="h-6 w-6" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-teal-300">
+              <Landmark className="h-6 w-6" />
             </div>
           </CardContent>
         </Card>
@@ -197,7 +179,7 @@ export default async function TreasuryPage() {
             <div>
               <span className="text-xs text-gray-500 font-medium block">المقبوضات / الوارد اليوم</span>
               <strong className="text-lg font-bold text-emerald-700 font-mono">
-                +{metrics.todayInflow.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                +{formatCurrency(metrics.todayInflow)}
               </strong>
             </div>
             <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
@@ -209,7 +191,7 @@ export default async function TreasuryPage() {
             <div>
               <span className="text-xs text-gray-500 font-medium block">المدفوعات / المنصرف اليوم</span>
               <strong className="text-lg font-bold text-rose-700 font-mono">
-                -{metrics.todayOutflow.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                -{formatCurrency(metrics.todayOutflow)}
               </strong>
             </div>
             <div className="w-9 h-9 rounded-lg bg-rose-100 flex items-center justify-center text-rose-700">
@@ -226,7 +208,7 @@ export default async function TreasuryPage() {
                 }`}
               >
                 {todayNet >= 0 ? "+" : ""}
-                {todayNet.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                {formatCurrency(todayNet)}
               </strong>
             </div>
             <div

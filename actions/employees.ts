@@ -6,6 +6,7 @@ import { getCurrentUser, can } from '@/lib/auth';
 import { EmployeeSchema, EmployeeTransactionSchema } from '@/lib/validations/employee';
 import { generateTxnId, revalidateFinancialImpact } from '@/actions/financials';
 import { getEmployeeFinancialSummary } from '@/lib/data/employee-ledger';
+import { formatCurrency } from '@/lib/currency';
 
 /**
  * Concurrency-safe, sequential Employee ID generator (EMP-001, EMP-002, ...)
@@ -346,7 +347,7 @@ export async function addEmployeeTransaction(employeeId: string, payload: unknow
           // Strict Overdraft Protection Check
           if (currentBalance < amount) {
             throw new Error(
-              `رصيد الحساب ${account.name} (${currentBalance.toLocaleString()} ${account.currency}) لا يكفي لسداد ${amount.toLocaleString()} ${account.currency}`
+              `رصيد الحساب ${account.name} (${formatCurrency(currentBalance)}) لا يكفي لسداد ${formatCurrency(amount)}`
             );
           }
 
@@ -385,6 +386,10 @@ export async function addEmployeeTransaction(employeeId: string, payload: unknow
           ? (data.type.includes('سلفة') ? 'سلفة موظف' : 'صرف مرتبات وأجور')
           : 'سداد سلفة / توريد نقدي';
 
+        const debit = isCashOutflow ? data.amount : 0;
+        const credit = isCashOutflow ? 0 : data.amount;
+        const paymentMethod = account.type.includes('بنك') ? 'BANK_TRANSFER' : 'CASH';
+
         await tx.financialTransaction.create({
           data: {
             txnId,
@@ -395,7 +400,12 @@ export async function addEmployeeTransaction(employeeId: string, payload: unknow
             partyName: employee.name,
             amountEgp: data.amount,
             amountCurrency: null,
-            currency: account.currency || 'EGP',
+            currency: 'EGP',
+            debit,
+            credit,
+            relatedEntityType: 'EMPLOYEE_TXN',
+            relatedEntityId: data.refDoc || `EMP-TXN-${employee.id}`,
+            paymentMethod,
             refDoc: data.refDoc || `حركة موظف ${employee.id}`,
             accountId: data.treasuryAccountId,
             accountName: account.name,
@@ -411,7 +421,7 @@ export async function addEmployeeTransaction(employeeId: string, payload: unknow
             entityType: 'transaction',
             entityId: txnId,
             action: isCashOutflow ? 'PAYMENT' : 'COLLECTION',
-            summary: `قيد سند ${finTxnType} للموظف ${employee.name} بقيمة ${amount.toLocaleString()} ${account.currency} من حساب ${account.name}`,
+            summary: `قيد سند ${finTxnType} للموظف ${employee.name} بقيمة ${formatCurrency(amount)} من حساب ${account.name}`,
             performedBy: user.id,
           },
         });

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getFinancialDashboardMetrics } from "@/actions/financials";
+import { formatCurrency } from "@/lib/currency";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -167,9 +168,9 @@ export default async function DashboardPage() {
           </div>
           <div className="flex items-baseline justify-between mt-1">
             <div className="text-2xl md:text-[26px] font-bold text-[#0054cd] font-tabular-nums leading-none">
-              {avgMarginPct}% <span className="text-xs font-medium text-gray-500">(EUR)</span>
+              {avgMarginPct}%
             </div>
-            <span className="text-xs font-bold text-emerald-700">€{avgEurPrice} / وحدة</span>
+            <span className="text-xs font-bold text-emerald-700">{formatCurrency(Number(avgEurPrice))} / وحدة</span>
           </div>
         </Card>
       </div>
@@ -271,8 +272,7 @@ export default async function DashboardPage() {
               <Users className="w-4 h-4 text-emerald-600" />
             </div>
             <div className="text-xl font-bold font-mono text-emerald-800">
-              {financialMetrics.totalArDue.toLocaleString("ar-EG", { minimumFractionDigits: 2 })}{" "}
-              <span className="text-xs font-normal font-sans">ج.م</span>
+              {formatCurrency(financialMetrics.totalArDue)}
             </div>
             <span className="text-[10px] text-emerald-700 block">ديون قائمة مطلوب تحصيلها</span>
           </div>
@@ -284,8 +284,7 @@ export default async function DashboardPage() {
               <Building2 className="w-4 h-4 text-amber-600" />
             </div>
             <div className="text-xl font-bold font-mono text-amber-800">
-              {financialMetrics.totalApDue.toLocaleString("ar-EG", { minimumFractionDigits: 2 })}{" "}
-              <span className="text-xs font-normal font-sans">ج.م</span>
+              {formatCurrency(financialMetrics.totalApDue)}
             </div>
             <span className="text-[10px] text-amber-700 block">التزامات شراء وتشغيل مسددة جزئياً</span>
           </div>
@@ -297,13 +296,10 @@ export default async function DashboardPage() {
               <Landmark className="w-4 h-4 text-blue-700" />
             </div>
             <div className="text-xl font-bold font-mono text-blue-900">
-              {(financialMetrics.treasuryCashBalance + financialMetrics.bankBalance).toLocaleString("ar-EG", {
-                minimumFractionDigits: 2,
-              })}{" "}
-              <span className="text-xs font-normal font-sans">ج.م</span>
+              {formatCurrency(financialMetrics.treasuryCashBalance + financialMetrics.bankBalance)}
             </div>
             <span className="text-[10px] text-blue-700 block">
-              نقدية: {financialMetrics.treasuryCashBalance.toLocaleString()} | بنك: {financialMetrics.bankBalance.toLocaleString()}
+              نقدية: {formatCurrency(financialMetrics.treasuryCashBalance)} | بنك: {formatCurrency(financialMetrics.bankBalance)}
             </span>
           </div>
 
@@ -321,10 +317,7 @@ export default async function DashboardPage() {
               }`}
             >
               {financialMetrics.todayInflow >= financialMetrics.todayOutflow ? "+" : ""}
-              {(financialMetrics.todayInflow - financialMetrics.todayOutflow).toLocaleString("ar-EG", {
-                minimumFractionDigits: 2,
-              })}{" "}
-              <span className="text-xs font-normal font-sans">ج.م</span>
+              {formatCurrency(financialMetrics.todayInflow - financialMetrics.todayOutflow)}
             </div>
             <span className="text-[10px] text-gray-500 block">
               وارد: +{financialMetrics.todayInflow.toLocaleString()} | منصرف: -{financialMetrics.todayOutflow.toLocaleString()}

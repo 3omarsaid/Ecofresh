@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ArrowDownLeft, ArrowUpRight, ExternalLink, FileText, Landmark } from "lucide-react";
 import { EmployeeStatementRow } from "@/lib/data/employee-ledger";
+import { formatCurrency } from "@/lib/currency";
 
 interface EmployeeLedgerTableProps {
   rows: EmployeeStatementRow[];
@@ -94,13 +95,13 @@ export function EmployeeLedgerTable({ rows }: EmployeeLedgerTableProps) {
 
                 <td className="p-3.5 font-bold text-emerald-700 whitespace-nowrap">
                   {row.dueAmount > 0
-                    ? `+${row.dueAmount.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م`
+                    ? `+${formatCurrency(row.dueAmount)}`
                     : "—"}
                 </td>
 
                 <td className="p-3.5 font-bold text-rose-700 whitespace-nowrap">
                   {row.paidAmount > 0
-                    ? `-${row.paidAmount.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م`
+                    ? `-${formatCurrency(row.paidAmount)}`
                     : "—"}
                 </td>
 
@@ -114,7 +115,7 @@ export function EmployeeLedgerTable({ rows }: EmployeeLedgerTableProps) {
                         : "text-gray-600"
                     }
                   >
-                    {row.balance.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                    {formatCurrency(row.balance)}
                   </span>
                 </td>
 

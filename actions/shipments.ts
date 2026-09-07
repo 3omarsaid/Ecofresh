@@ -8,6 +8,23 @@ import { getCurrentUser, can } from '@/lib/auth';
 import { ShipmentSchema } from '@/lib/validations/shipment';
 import { logStockMovement } from '@/lib/stock-service';
 import { WarehouseType } from '@prisma/client';
+import { formatCurrency } from '@/lib/currency';
+
+/**
+ * Concurrency-safe, collision-free Shipment ID generator
+ */
+export async function generateShipmentId(tx: any, date: Date = new Date()): Promise<string> {
+  const year = date.getFullYear();
+  const timestamp = Date.now().toString().slice(-4);
+  const random = Math.floor(100 + Math.random() * 900);
+  let shipmentId = `SHP-${year}-${timestamp}${random}`;
+
+  while (await tx.shipment.findUnique({ where: { shipmentId } })) {
+    const newRandom = Math.floor(100 + Math.random() * 900);
+    shipmentId = `SHP-${year}-${Date.now().toString().slice(-4)}${newRandom}`;
+  }
+  return shipmentId;
+}
 
 export async function createShipment(payload: unknown) {
   const user = await getCurrentUser();
@@ -42,16 +59,29 @@ export async function createShipment(payload: unknown) {
         const batch = await tx.finishedGoodsBatch.findUnique({ where: { fgBatchId: item.fgBatchId } });
         if (!batch) throw new Error(`الباتش ${item.fgBatchId} غير موجود بالمخزن`);
 
-        const available = Number(batch.availableQty);
-        if (item.qty > available) {
-          throw new Error(`الكمية المخصصة من الباتش ${item.fgBatchId} تتجاوز الرصيد المتاح`);
+        if (batch.productName !== order.productName) {
+          throw new Error(`منتج الباتش (${batch.productName}) لا يطابق منتج الطلبية (${order.productName})`);
         }
 
-        // خصم رصيد الباتش
-        await tx.finishedGoodsBatch.update({
-          where: { fgBatchId: item.fgBatchId },
-          data: { availableQty: { decrement: item.qty } },
+        const available = Number(batch.availableQty);
+        if (item.qty > available) {
+          throw new Error(`الكمية المخصصة من الباتش ${item.fgBatchId} (${item.qty} كجم) تتجاوز الرصيد المتاح بالمخزن (${available} كجم)`);
+        }
+
+        // خصم رصيد الباتش بحراسة تفاؤلية تمنع الرصيد السالب
+        const decResult = await tx.finishedGoodsBatch.updateMany({
+          where: {
+            fgBatchId: item.fgBatchId,
+            availableQty: { gte: item.qty },
+          },
+          data: {
+            availableQty: { decrement: item.qty },
+          },
         });
+
+        if (decResult.count === 0) {
+          throw new Error(`تعذر تخصيص الكمية من الباتش ${item.fgBatchId} نظراً لتغير الرصيد أثناء المعالجة المتزامنة`);
+        }
 
         // تسجيل حركة صرف شحن للخارج
         if (batch.locationId) {
@@ -114,9 +144,8 @@ export async function createShipment(payload: unknown) {
       const netProfitEgp = grossRevenueEgp - totalShipmentCost;
       const marginPercent = grossRevenueEgp > 0 ? (netProfitEgp / grossRevenueEgp) * 100 : 0;
 
-      // توليد كود الشحنة
-      const shipmentCount = await tx.shipment.count();
-      const shipmentId = `SHP-${dispatchDate.getFullYear()}-${String(shipmentCount + 1).padStart(3, '0')}`;
+      // توليد كود الشحنة بطريقة آمنة تزامناً
+      const shipmentId = await generateShipmentId(tx, dispatchDate);
 
       // 6. إنشاء سجل الشحنة وسجلات التخصيص
       await tx.shipment.create({
@@ -157,27 +186,27 @@ export async function createShipment(payload: unknown) {
         },
       });
 
-      // 7. توليد فاتورة العميل التجارية (AR) تلقائياً في دفتر الأستاذ
-      const { generateTxnId } = await import('@/actions/financials');
-      const txnId = await generateTxnId(tx, dispatchDate);
-
-      await tx.financialTransaction.create({
-        data: {
-          txnId,
+      // 7. توليد فاتورة العميل التجارية (AR) تلقائياً في دفتر الأستاذ via AccountingService
+      const { AccountingService } = await import('@/lib/accounting/accounting-service');
+      await AccountingService.recordTransaction(
+        {
           date: dispatchDate,
           type: 'استحقاق مبيعات تصدير (AR)',
           partyType: 'عميل تصدير',
           partyId: order.customerId,
           partyName: order.customer.name,
           amountEgp: grossRevenueEgp,
-          amountCurrency: shippedQty * sellingPriceEur,
-          currency: 'EUR',
+          amountCurrency: null,
+          currency: 'EGP',
+          relatedEntityType: 'SHIPMENT',
+          relatedEntityId: shipmentId,
           refDoc: shipmentId,
+          paymentMethod: 'CREDIT',
           description: `فاتورة تصدير الشحنة ${shipmentId} للحاوية ${data.containerNo} للعميل ${order.customer.name}`,
-          status: 'معتمد',
           createdById: user.id,
         },
-      });
+        tx
+      );
 
       return { shipmentId, netProfitEgp, marginPercent, grossRevenueEgp, customerId: order.customerId };
     });
@@ -191,7 +220,7 @@ export async function createShipment(payload: unknown) {
     return {
       success: true,
       data: result,
-      message: `تم اعتماد الشحنة ${result.shipmentId} بربح ${result.netProfitEgp.toLocaleString()} ج.م (هامش ${result.marginPercent.toFixed(1)}%) وتوليد فاتورة العميل!`,
+      message: `تم اعتماد الشحنة ${result.shipmentId} بربح ${formatCurrency(result.netProfitEgp)} (هامش ${result.marginPercent.toFixed(1)}%) وتوليد فاتورة العميل!`,
     };
   } catch (error: any) {
     return { success: false, error: formatActionError(error, 'حدث خطأ أثناء اعتماد الشحنة') };
@@ -322,10 +351,16 @@ export async function cancelShipment(shipmentId: string, cancelReason: string) {
       if (shipment.status === 'CANCELLED') throw new Error('الشحنة ملغاة بالفعل مسبقاً');
 
       // 🚨 CRITICAL BUSINESS CUTOFF RULE (NON-NEGOTIABLE):
-      // Once a shipment has been created and physically dispatched from the station (dispatchDate is recorded),
+      // Once a shipment has physically departed the station / port (status 'تم الشحن والإبحار' and dispatchDate is reached),
       // direct cancellation is strictly forbidden even for Admins. A formal Export Return Voucher must be used instead.
-      if (shipment.dispatchDate || shipment.status === 'تم الشحن والإبحار' || shipment.status === 'ACTIVE') {
-        throw new Error('لا يمكن إلغاء شحنة خرجت بالفعل من المحطة. استخدم سند مرتجع تصدير بدلاً من ذلك.');
+      // Shipments in preparation ('قيد التجهيز بالمحطة') or un-dispatched can be safely cancelled and reversed.
+      const isPhysicallyDispatched =
+        shipment.status === 'تم الشحن والإبحار' &&
+        shipment.dispatchDate !== null &&
+        new Date(shipment.dispatchDate) <= new Date();
+
+      if (isPhysicallyDispatched) {
+        throw new Error('لا يمكن إلغاء شحنة خرجت وأبحرت بالفعل من المحطة. استخدم سند مرتجع تصدير بدلاً من ذلك.');
       }
 
       const shippedQty = Number(shipment.shippedQtyKg);

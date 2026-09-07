@@ -9,6 +9,7 @@ import {
   Calculator,
   Percent,
 } from "lucide-react";
+import { formatCurrency } from "@/lib/currency";
 
 interface ProfitSummaryCardProps {
   shipment: ShipmentTraceabilityData;
@@ -45,11 +46,10 @@ export function ProfitSummaryCard({ shipment }: ProfitSummaryCardProps) {
             إجمالي الإيراد الصادر
           </span>
           <div className="text-xl font-bold font-mono text-emerald-950">
-            {revenueEgp.toLocaleString()}{" "}
-            <span className="text-xs font-normal">ج.م</span>
+            {formatCurrency(revenueEgp)}
           </div>
           <span className="text-[10px] text-emerald-700 font-mono block">
-            ({(sellingEur * Number(shipment.shippedQtyKg)).toLocaleString()} EUR × {fxRate.toFixed(2)})
+            ({formatCurrency(sellingEur)} × {Number(shipment.shippedQtyKg).toLocaleString()} كجم)
           </span>
         </div>
 
@@ -60,8 +60,7 @@ export function ProfitSummaryCard({ shipment }: ProfitSummaryCardProps) {
             إجمالي التكلفة الكلية
           </span>
           <div className="text-xl font-bold font-mono text-rose-950">
-            {totalCostEgp.toLocaleString()}{" "}
-            <span className="text-xs font-normal">ج.م</span>
+            {formatCurrency(totalCostEgp)}
           </div>
           <span className="text-[10px] text-rose-700 block">
             إنتاج + مصاريف لوجستية
@@ -75,8 +74,7 @@ export function ProfitSummaryCard({ shipment }: ProfitSummaryCardProps) {
             صافي الربح الصافي
           </span>
           <div className="text-xl font-bold font-mono text-blue-950">
-            +{netProfitEgp.toLocaleString()}{" "}
-            <span className="text-xs font-normal">ج.م</span>
+            +{formatCurrency(netProfitEgp)}
           </div>
           <span className="text-[10px] text-blue-700 font-bold block">
             صافي الأرباح المحققة

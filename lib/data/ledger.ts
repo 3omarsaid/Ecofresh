@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { formatCurrency } from '@/lib/currency';
 
 export interface GeneralLedgerFilter {
   tab?: 'all' | 'ar' | 'ap' | 'contractors';
@@ -244,19 +245,19 @@ export async function getPartyFinancialSummary(
     if (partyType === 'customer') {
       if (remaining > 0) {
         balanceDirection = 'party_owes_company';
-        balanceText = `عليه: ${remaining.toLocaleString('ar-EG', { minimumFractionDigits: 2 })} ج.م`;
+        balanceText = `عليه: ${formatCurrency(remaining)}`;
       } else if (remaining < 0) {
         balanceDirection = 'advance';
-        balanceText = `له رصيد دائن: ${Math.abs(remaining).toLocaleString('ar-EG', { minimumFractionDigits: 2 })} ج.م`;
+        balanceText = `له رصيد دائن: ${formatCurrency(Math.abs(remaining))}`;
       }
     } else {
       // Supplier / Contractor
       if (remaining > 0) {
         balanceDirection = 'company_owes_party';
-        balanceText = `له: ${remaining.toLocaleString('ar-EG', { minimumFractionDigits: 2 })} ج.م`;
+        balanceText = `له: ${formatCurrency(remaining)}`;
       } else if (remaining < 0) {
         balanceDirection = 'advance';
-        balanceText = `عليه (دفعة مقدمة): ${Math.abs(remaining).toLocaleString('ar-EG', { minimumFractionDigits: 2 })} ج.م`;
+        balanceText = `عليه (دفعة مقدمة): ${formatCurrency(Math.abs(remaining))}`;
       }
     }
 

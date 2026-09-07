@@ -27,34 +27,43 @@ interface SelectOption {
 interface RawArrivalFormProps {
   stations: SelectOption[];
   suppliers: SelectOption[];
+  defaultStationId?: string;
+  defaultSupplierId?: string;
+  initialData?: Partial<RawArrivalFormValues>;
 }
 
-export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
+export function RawArrivalForm({
+  stations,
+  suppliers,
+  defaultStationId,
+  defaultSupplierId,
+  initialData,
+}: RawArrivalFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<RawArrivalFormValues>({
     resolver: zodResolver(RawArrivalSchema),
     defaultValues: {
-      stationId: stations[0]?.id || "",
-      supplierId: suppliers[0]?.id || "",
-      rawProduct: "فراولة خام",
-      grossQtyKg: 5200,
-      tareQtyKg: 200,
-      unitPriceEgp: 19.5,
-      transportCostEgp: 1000,
-      brixDegree: 8.5,
-      truckPlate: "أ ب ج 1234",
-      driverName: "عمرو أحمد",
-      notes: "استلام تبريد أولي بالمحطة",
+      stationId: initialData?.stationId || defaultStationId || "",
+      supplierId: initialData?.supplierId || defaultSupplierId || "",
+      rawProduct: initialData?.rawProduct || "",
+      grossQtyKg: initialData?.grossQtyKg,
+      tareQtyKg: initialData?.tareQtyKg ?? 0,
+      unitPriceEgp: initialData?.unitPriceEgp,
+      transportCostEgp: initialData?.transportCostEgp ?? 0,
+      brixDegree: initialData?.brixDegree ?? null,
+      truckPlate: initialData?.truckPlate || "",
+      driverName: initialData?.driverName || "",
+      notes: initialData?.notes || "",
     },
   });
 
   // Watch fields for live calculations
-  const gross = form.watch("grossQtyKg") || 0;
-  const tare = form.watch("tareQtyKg") || 0;
-  const price = form.watch("unitPriceEgp") || 0;
-  const transport = form.watch("transportCostEgp") || 0;
+  const gross = Number(form.watch("grossQtyKg")) || 0;
+  const tare = Number(form.watch("tareQtyKg")) || 0;
+  const price = Number(form.watch("unitPriceEgp")) || 0;
+  const transport = Number(form.watch("transportCostEgp")) || 0;
 
   // Live Math Calculations
   const netQty = Math.max(0, gross - tare);
@@ -170,6 +179,7 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                           {...field}
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
+                          <option value="" disabled>-- اختر المحطة المستلمة --</option>
                           {stations.map((stn) => (
                             <option key={stn.id} value={stn.id}>
                               {stn.name} ({stn.location})
@@ -192,8 +202,16 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                       <FormControl>
                         <select
                           {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            const sup = suppliers.find((s) => s.id === e.target.value);
+                            if (sup && sup.mainProduct) {
+                              form.setValue("rawProduct", sup.mainProduct);
+                            }
+                          }}
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
+                          <option value="" disabled>-- اختر المورد / المزرعة --</option>
                           {suppliers.map((sup) => (
                             <option key={sup.id} value={sup.id}>
                               {sup.name} ({sup.mainProduct || sup.code})
@@ -206,15 +224,33 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                   )}
                 />
 
-                {/* Raw Product Name */}
+                {/* Raw Product Name with Datalist Suggestions */}
                 <FormField
                   control={form.control}
                   name="rawProduct"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel className="font-semibold text-gray-700">اسم الخام الزراعي المورد *</FormLabel>
+                      <FormLabel className="font-semibold text-gray-700">المحصول / الخام الزراعي المورد *</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: فراولة خام / مانجو خام" {...field} />
+                        <div className="space-y-1">
+                          <input
+                            list="raw-crops-suggestions"
+                            placeholder="اختر أو اكتب المحصول (مثال: فراولة خام / برتقال صيفي)"
+                            {...field}
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          />
+                          <datalist id="raw-crops-suggestions">
+                            <option value="فراولة خام" />
+                            <option value="برتقال صيفي خام" />
+                            <option value="برتقال أبو سرة خام" />
+                            <option value="مانجو كيت خام" />
+                            <option value="رمان خام" />
+                            <option value="بروكلي خام" />
+                            <option value="خرشوف خام" />
+                            <option value="بامية خام" />
+                            <option value="فاصوليا خضراء خام" />
+                          </datalist>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -229,7 +265,14 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">الوزن القائم للسيارة (كجم) *</FormLabel>
                       <FormControl>
-                        <Input type="number" step="10" placeholder="5200" {...field} />
+                        <Input
+                          type="number"
+                          step="10"
+                          placeholder="أدخل الوزن القائم (كجم)"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -244,7 +287,14 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">وزن السيارة فارغة (كجم) *</FormLabel>
                       <FormControl>
-                        <Input type="number" step="10" placeholder="200" {...field} />
+                        <Input
+                          type="number"
+                          step="10"
+                          placeholder="وزن السيارة فارغة (0 إذا تم استلام صافي)"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -259,7 +309,14 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">سعر شراء الكيلو (ج.م) *</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.1" placeholder="19.50" {...field} />
+                        <Input
+                          type="number"
+                          step="0.1"
+                          placeholder="0.00"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -274,7 +331,14 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">مصاريف النولون / النقل (ج.م)</FormLabel>
                       <FormControl>
-                        <Input type="number" step="50" placeholder="1000" {...field} />
+                        <Input
+                          type="number"
+                          step="50"
+                          placeholder="0.00 (اختياري)"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -292,7 +356,7 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                         <Input
                           type="number"
                           step="0.1"
-                          placeholder="8.5"
+                          placeholder="مثال: 8.5 (اختياري)"
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
                         />
@@ -310,7 +374,7 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">رقم لوحة السيارة</FormLabel>
                       <FormControl>
-                        <Input placeholder="أ ب ج 1234" value={field.value ?? ""} onChange={field.onChange} />
+                        <Input placeholder="مثال: أ ب ج 1234 (اختياري)" value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -325,7 +389,7 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">اسم سائق السيارة</FormLabel>
                       <FormControl>
-                        <Input placeholder="عمرو أحمد" value={field.value ?? ""} onChange={field.onChange} />
+                        <Input placeholder="اسم السائق (اختياري)" value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -340,7 +404,7 @@ export function RawArrivalForm({ stations, suppliers }: RawArrivalFormProps) {
                     <FormItem className="md:col-span-2">
                       <FormLabel className="font-semibold text-gray-700">ملاحظات الاستلام والفحص</FormLabel>
                       <FormControl>
-                        <Input placeholder="ملاحظات الجودة أو حالة المحصول عند الوصول..." value={field.value ?? ""} onChange={field.onChange} />
+                        <Input placeholder="ملاحظات الجودة أو حالة المحصول عند الوصول (اختياري)..." value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

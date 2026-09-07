@@ -16,6 +16,21 @@ export type ActionResult<T = any> = {
   errors?: Record<string, string[]>;
 };
 
+/**
+ * Concurrency-safe, collision-free Raw Batch ID generator
+ */
+export async function generateRawBatchId(tx: any, date: Date = new Date()): Promise<string> {
+  const dateStr = date.toISOString().substring(0, 10).replace(/-/g, '');
+  const random = Math.floor(10 + Math.random() * 90);
+  let batchId = `LOT-RAW-${dateStr}-${random}`;
+
+  while (await tx.rawBatch.findUnique({ where: { batchId } })) {
+    const newRandom = Math.floor(10 + Math.random() * 90);
+    batchId = `LOT-RAW-${dateStr}-${newRandom}`;
+  }
+  return batchId;
+}
+
 export async function addRawMaterialArrival(
   payload: unknown
 ): Promise<ActionResult<{ batchId: string; netQty: number }>> {
@@ -45,13 +60,24 @@ export async function addRawMaterialArrival(
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Resolve RAW StockLocation for target station
-      const rawLocation = await getStationLocation(tx, data.stationId, WarehouseType.RAW);
+      // 1. Validate Station & Resolve RAW StockLocation
+      const station = await tx.station.findUnique({ where: { id: data.stationId } });
+      if (!station || !station.isActive) {
+        throw new Error(`المحطة المحددة (${data.stationId}) غير موجودة أو غير نشطة`);
+      }
 
-      // 2. Generate Batch ID: LOT-RAW-YYYYMMDD-XX
-      const dateStr = receivedDate.toISOString().substring(0, 10).replace(/-/g, '');
-      const count = await tx.rawBatch.count();
-      const batchId = `LOT-RAW-${dateStr}-${String(count + 1).padStart(2, '0')}`;
+      const rawLocation = await getStationLocation(tx, data.stationId, WarehouseType.RAW);
+      if (rawLocation.stationId !== data.stationId || rawLocation.type !== WarehouseType.RAW) {
+        throw new Error('فشل التحقق من تبعية مخزن الخامات للمحطة المحددة');
+      }
+
+      // 2. Validate Supplier
+      const supplier = await tx.supplier.findUnique({ where: { id: data.supplierId } });
+      if (!supplier) throw new Error(`المورد المحدد (${data.supplierId}) غير موجود`);
+      if (supplier.status !== 'معتمد') throw new Error(`المورد (${supplier.name}) غير معتمد حالياً`);
+
+      // 3. Concurrency-safe, collision-free Batch ID generation
+      const batchId = await generateRawBatchId(tx, receivedDate);
 
       // 3. Create RawBatch record linked to locationId
       await tx.rawBatch.create({
@@ -93,27 +119,26 @@ export async function addRawMaterialArrival(
         createdById: user.id,
       });
 
-      // 5. Create AP Financial Transaction
-      const supplier = await tx.supplier.findUnique({ where: { id: data.supplierId } });
-      const { generateTxnId } = await import('@/actions/financials');
-      const txnId = await generateTxnId(tx, receivedDate);
-
-      await tx.financialTransaction.create({
-        data: {
-          txnId,
+      // 5. Create AP Financial Transaction via AccountingService
+      const { AccountingService } = await import('@/lib/accounting/accounting-service');
+      await AccountingService.recordTransaction(
+        {
           date: receivedDate,
           type: 'استحقاق توريد خام (AP)',
           partyType: 'مورد خام',
           partyId: data.supplierId,
-          partyName: supplier?.name || 'مورد زراعي',
+          partyName: supplier.name,
           amountEgp: totalPayable,
           currency: 'EGP',
+          relatedEntityType: 'RAW_BATCH',
+          relatedEntityId: batchId,
           refDoc: batchId,
+          paymentMethod: 'CREDIT',
           description: `استحقاق توريد ${netQty.toLocaleString()} كجم ${data.rawProduct} باللوط ${batchId}`,
-          status: 'معتمد',
           createdById: user.id,
         },
-      });
+        tx
+      );
 
       return { batchId, netQty, supplierId: data.supplierId };
     });

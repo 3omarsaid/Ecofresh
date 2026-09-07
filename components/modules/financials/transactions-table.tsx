@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { TransactionDetailsDrawer, TransactionDetailData } from "./transaction-details-drawer";
 import { ExpenseModal } from "./expense-modal";
 import { TreasuryTransferModal } from "./treasury-transfer-modal";
+import { formatCurrency } from "@/lib/currency";
 
 interface TransactionItem {
   txnId: string;
@@ -256,7 +257,7 @@ export function TransactionsTable({
             <ArrowUpCircle className="h-5 w-5 text-emerald-600" />
           </div>
           <div className="text-2xl font-bold text-emerald-700 font-mono">
-            {Math.round(totalCollections).toLocaleString()} <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(totalCollections)}
           </div>
           <span className="text-[11px] text-emerald-600 block">تدفقات نقدية داخلة للحسابات</span>
         </div>
@@ -268,7 +269,7 @@ export function TransactionsTable({
             <ArrowDownCircle className="h-5 w-5 text-rose-600" />
           </div>
           <div className="text-2xl font-bold text-rose-700 font-mono">
-            {Math.round(totalPayments).toLocaleString()} <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(totalPayments)}
           </div>
           <span className="text-[11px] text-rose-600 block">مدفوعات ومصروفات مسددة</span>
         </div>
@@ -284,7 +285,7 @@ export function TransactionsTable({
               netFlow >= 0 ? "text-emerald-700" : "text-rose-700"
             }`}
           >
-            {Math.round(netFlow).toLocaleString()} <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(netFlow)}
           </div>
           <span className="text-[11px] text-gray-500 block">الفارق بين القبض والصرف</span>
         </div>
@@ -355,7 +356,7 @@ export function TransactionsTable({
               <option value="ALL">جميع الحسابات</option>
               {accounts.map((acc) => (
                 <option key={acc.id} value={acc.id}>
-                  {acc.name} ({acc.currency})
+                  {acc.name}
                 </option>
               ))}
             </select>
@@ -524,18 +525,12 @@ export function TransactionsTable({
                     </td>
                     <td className="p-3 text-center font-mono font-bold text-emerald-700 whitespace-nowrap">
                       {isCollection
-                        ? Number(t.amountEgp).toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
+                        ? formatCurrency(t.amountEgp)
                         : "—"}
                     </td>
                     <td className="p-3 text-center font-mono font-bold text-rose-700 whitespace-nowrap">
                       {!isCollection
-                        ? Number(t.amountEgp).toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
+                        ? formatCurrency(t.amountEgp)
                         : "—"}
                     </td>
                     <td className="p-3 text-center whitespace-nowrap">

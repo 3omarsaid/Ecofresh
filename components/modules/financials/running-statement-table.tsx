@@ -6,6 +6,7 @@ import { StatementRow } from "@/lib/data/ledger";
 import { TransactionDetailsDrawer } from "./transaction-details-drawer";
 import { Badge } from "@/components/ui/badge";
 import { ArrowDownLeft, ArrowUpRight, ExternalLink, FileText, Info } from "lucide-react";
+import { formatCurrency } from "@/lib/currency";
 
 interface RunningStatementTableProps {
   rows: StatementRow[];
@@ -47,11 +48,7 @@ export function RunningStatementTable({
               </td>
               <td className="p-3 text-center text-gray-400 font-mono">—</td>
               <td className="p-3 text-center font-mono font-extrabold text-emerald-800">
-                {openingBalance.toLocaleString("ar-EG", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{" "}
-                ج.م
+                {formatCurrency(openingBalance)}
               </td>
               <td className="p-3 text-center font-sans">
                 <Badge variant="outline" className="bg-emerald-100/60 text-emerald-800 border-emerald-300 text-[10px]">
@@ -124,34 +121,20 @@ export function RunningStatementTable({
                     </td>
                     <td className="p-3 font-sans max-w-[220px] truncate text-gray-700 not-italic">
                       {row.description || "—"}
-                      {row.amountCurrency && row.currency && row.currency !== "EGP" && (
-                        <span className="block text-[10px] text-gray-400 font-mono">
-                          ({row.amountCurrency.toLocaleString("en-US")} {row.currency})
-                        </span>
-                      )}
                     </td>
                     <td className="p-3 text-center font-bold text-emerald-700">
                       {row.dueAmount > 0
-                        ? row.dueAmount.toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
+                        ? formatCurrency(row.dueAmount)
                         : "—"}
                     </td>
                     <td className="p-3 text-center font-bold text-blue-700">
                       {row.paidAmount > 0
-                        ? row.paidAmount.toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
+                        ? formatCurrency(row.paidAmount)
                         : "—"}
                     </td>
                     <td className="p-3 text-center font-medium text-gray-500">
                       {row.balanceBefore !== undefined && row.balanceBefore !== null
-                        ? Number(row.balanceBefore).toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
+                        ? formatCurrency(row.balanceBefore)
                         : "—"}
                     </td>
                     <td
@@ -164,15 +147,8 @@ export function RunningStatementTable({
                       }`}
                     >
                       {row.balanceAfter !== undefined && row.balanceAfter !== null
-                        ? row.balanceAfter.toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                        : Number(row.balance).toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}{" "}
-                      ج.م
+                        ? formatCurrency(row.balanceAfter)
+                        : formatCurrency(Number(row.balance) || 0)}
                     </td>
                     <td className="p-3 text-center font-sans">
                       <Badge
@@ -198,11 +174,7 @@ export function RunningStatementTable({
               </td>
               <td className="p-3 text-center text-gray-400 font-mono">—</td>
               <td className="p-3 text-center font-mono font-extrabold text-base text-gray-900">
-                {closingBalance.toLocaleString("ar-EG", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{" "}
-                ج.م
+                {formatCurrency(closingBalance)}
               </td>
               <td className="p-3 text-center font-sans">
                 <Badge variant="secondary" className="bg-gray-200 text-gray-800 text-[10px]">

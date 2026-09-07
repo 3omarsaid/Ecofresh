@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { formatCurrency } from "@/lib/currency";
 import { addFinancialTransaction } from "@/actions/financials";
 import { getTreasuryAccounts } from "@/actions/treasury";
 import {
@@ -20,7 +22,6 @@ import {
   ArrowRight,
   CheckCircle2,
   Coins,
-  DollarSign,
   Loader2,
   Receipt,
   ShieldAlert,
@@ -51,7 +52,7 @@ export function ExpenseModal({
   const [date, setDate] = useState<string>(new Date().toISOString().substring(0, 10));
   const [expenseCategory, setExpenseCategory] = useState<string>("مصروفات صيانة وتشغيل");
   const [beneficiary, setBeneficiary] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [customNotes, setCustomNotes] = useState<string>("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -79,6 +80,11 @@ export function ExpenseModal({
   const balanceAfter = treasuryBalance - numAmount;
   const isOverdraft = numAmount > treasuryBalance;
 
+  // Auto-composed accounting description
+  const autoComposedDescription = customNotes.trim()
+    ? `${expenseCategory} - ${beneficiary ? `${beneficiary}: ` : ""}${customNotes.trim()}`
+    : `${expenseCategory} لصالح ${beneficiary || "المحطة"}`;
+
   const handleProceedToConfirm = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -95,7 +101,7 @@ export function ExpenseModal({
 
     if (isOverdraft) {
       setErrorMessage(
-        `رصيد الحساب المالي (${treasuryBalance.toLocaleString()} ج.م) لا يكفي لسداد ${numAmount.toLocaleString()} ج.م`
+        `رصيد الحساب المالي (${formatCurrency(treasuryBalance)}) لا يكفي لسداد ${formatCurrency(numAmount)}`
       );
       return;
     }
@@ -114,12 +120,11 @@ export function ExpenseModal({
       partyId: "EXPENSE-GEN",
       partyName: beneficiary || expenseCategory,
       amountEgp: numAmount,
+      amountCurrency: null,
       currency: "EGP",
       refDoc: `EXP-${Date.now().toString().slice(-4)}`,
       accountId,
-      description: description
-        ? `${expenseCategory} - ${description}`
-        : `صرف ${expenseCategory} لصالح ${beneficiary || "المحطة"}`,
+      description: autoComposedDescription,
     };
 
     const res = await addFinancialTransaction(payload);
@@ -129,6 +134,8 @@ export function ExpenseModal({
       setSuccessData({
         txnId: res.data?.txnId,
         amount: numAmount,
+        currency: "EGP",
+        amountEgp: numAmount,
         accountName: selectedAccount?.name,
         newBalance: balanceAfter,
       });
@@ -145,7 +152,7 @@ export function ExpenseModal({
     setStep("INPUT");
     setAmount("");
     setBeneficiary("");
-    setDescription("");
+    setCustomNotes("");
     setErrorMessage(null);
     setSuccessData(null);
     onClose();
@@ -176,8 +183,13 @@ export function ExpenseModal({
             <form onSubmit={handleProceedToConfirm} className="space-y-4">
               {/* Treasury Selector & Current Balance */}
               <div className="space-y-1.5">
-                <Label htmlFor="account" className="text-xs font-bold text-gray-700">
-                  الحساب المالي المنصرف منه (الخزينة) *
+                <Label htmlFor="account" className="text-xs font-bold text-gray-700 flex items-center justify-between">
+                  <span>الحساب المالي المنصرف منه (الخزينة / البنك) *</span>
+                  {selectedAccount && (
+                    <Badge variant="outline" className="bg-amber-50 text-amber-900 border-amber-300 text-[10px]">
+                      جنيه مصري (ج.م)
+                    </Badge>
+                  )}
                 </Label>
                 {loadingAccounts ? (
                   <div className="text-xs text-gray-400">جاري تحميل الحسابات...</div>
@@ -191,7 +203,7 @@ export function ExpenseModal({
                   >
                     {accounts.map((acc) => (
                       <option key={acc.id} value={acc.id}>
-                        {acc.name} — رصيده: {Number(acc.balance).toLocaleString()} {acc.currency}
+                        {acc.name} — رصيده: {formatCurrency(acc.balance)}
                       </option>
                     ))}
                   </select>
@@ -203,39 +215,28 @@ export function ExpenseModal({
                 <Label htmlFor="amount" className="text-xs font-bold text-gray-700">
                   قيمة المصروف (ج.م) *
                 </Label>
-                <div className="relative">
-                  <Input
-                    id="amount"
-                    type="number"
-                    min="1"
-                    step="any"
-                    value={amount}
-                    onChange={(e) =>
-                      setAmount(e.target.value === "" ? "" : parseFloat(e.target.value))
-                    }
-                    placeholder="أدخل قيمة المصروف..."
-                    className="font-mono text-lg font-bold text-left dir-ltr pl-14"
-                    required
-                    autoFocus
-                  />
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
-                    EGP
-                  </span>
-                </div>
+                <CurrencyInput
+                  id="amount"
+                  value={amount}
+                  onChange={(val) => setAmount(typeof val === "number" ? val : "")}
+                  placeholder="0.00"
+                  required
+                  autoFocus
+                />
               </div>
 
-              {/* Live Treasury Before & After Strip */}
+              {/* Live Treasury Before & After Strip in EGP */}
               <div className="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2 text-xs">
                 <div className="flex justify-between items-center text-gray-600">
                   <span>الرصيد الحالي للخزينة:</span>
                   <span className="font-mono font-bold text-gray-800">
-                    {treasuryBalance.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(treasuryBalance)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-gray-600">
                   <span>قيمة المصروف:</span>
                   <span className="font-mono font-bold text-rose-600">
-                    - {numAmount.toLocaleString("ar-EG")} ج.م
+                    - {formatCurrency(numAmount)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t border-gray-200 font-bold">
@@ -245,7 +246,7 @@ export function ExpenseModal({
                       isOverdraft ? "text-rose-600" : "text-emerald-700"
                     }`}
                   >
-                    {balanceAfter.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(balanceAfter)}
                   </span>
                 </div>
               </div>
@@ -253,7 +254,9 @@ export function ExpenseModal({
               {isOverdraft && (
                 <div className="flex items-center gap-1.5 text-xs text-rose-700 bg-rose-50 p-2.5 rounded-lg border border-rose-200 font-bold">
                   <ShieldAlert className="w-4 h-4 shrink-0" />
-                  <span>رصيد الحساب المالي لا يكفي لتغطية هذا المصروف.</span>
+                  <span>
+                    رصيد الحساب المالي ({formatCurrency(treasuryBalance)}) لا يكفي لتغطية هذا المصروف.
+                  </span>
                 </div>
               )}
 
@@ -294,18 +297,37 @@ export function ExpenseModal({
                 </div>
               </div>
 
-              {/* Description */}
-              <div className="space-y-1">
+              {/* Details and Auto-Composed Description Preview */}
+              <div className="space-y-1.5">
                 <Label htmlFor="notes" className="text-xs font-bold text-gray-700">
-                  البيان والتفاصيل
+                  تفاصيل إضافية (اختياري)
                 </Label>
                 <Input
                   id="notes"
                   type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="وصف تفصيلي لسبب الصرف..."
+                  value={customNotes}
+                  onChange={(e) => setCustomNotes(e.target.value)}
+                  placeholder="ملاحظات تفصيلية أو رقم فاتورة..."
                   className="text-xs"
+                />
+                <div className="p-2 bg-gray-50 border border-gray-200 rounded-lg text-[11px] text-gray-600">
+                  <span className="font-semibold text-gray-700">البيان المسجل آلياً: </span>
+                  <span className="font-sans">{autoComposedDescription}</span>
+                </div>
+              </div>
+
+              {/* Date */}
+              <div className="space-y-1">
+                <Label htmlFor="date" className="text-xs font-bold text-gray-700">
+                  تاريخ الصرف
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="text-xs font-mono"
+                  required
                 />
               </div>
 
@@ -336,7 +358,7 @@ export function ExpenseModal({
               <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-1">
                 <h4 className="font-bold text-amber-900">مراجعة صرف المصروف:</h4>
                 <p className="text-amber-800">
-                  يرجى التأكد من البيانات قبل خصم المبلغ نهائياً من رصيد الخزينة.
+                  يرجى التأكد من البيانات قبل خصم المبلغ نهائياً من رصيد الحساب.
                 </p>
               </div>
 
@@ -351,20 +373,26 @@ export function ExpenseModal({
                 </div>
                 <div className="flex justify-between p-3 bg-gray-50/50">
                   <span className="text-gray-500">قيمة المصروف:</span>
-                  <span className="font-bold font-mono text-base text-rose-700">
-                    {numAmount.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
-                  </span>
+                  <div className="text-left font-mono">
+                    <span className="font-bold text-base text-rose-700 block">
+                      {formatCurrency(numAmount)}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex justify-between p-3">
-                  <span className="text-gray-500">رصيد الخزينة قبل:</span>
+                  <span className="text-gray-500">البيان المسجل:</span>
+                  <span className="font-bold text-gray-900">{autoComposedDescription}</span>
+                </div>
+                <div className="flex justify-between p-3 bg-gray-50/50">
+                  <span className="text-gray-500">رصيد الحساب قبل:</span>
                   <span className="font-mono font-bold text-gray-700">
-                    {treasuryBalance.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(treasuryBalance)}
                   </span>
                 </div>
                 <div className="flex justify-between p-3 bg-emerald-50 font-bold">
-                  <span className="text-emerald-900">رصيد الخزينة بعد الصرف:</span>
+                  <span className="text-emerald-900">رصيد الحساب بعد الصرف:</span>
                   <span className="font-mono text-sm text-emerald-800">
-                    {balanceAfter.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                    {formatCurrency(balanceAfter)}
                   </span>
                 </div>
               </div>
@@ -422,7 +450,7 @@ export function ExpenseModal({
                 <div className="flex justify-between">
                   <span className="text-gray-500">المبلغ المنصرف:</span>
                   <span className="font-mono font-bold text-rose-700">
-                    {successData.amount.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(successData.amount)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -432,8 +460,7 @@ export function ExpenseModal({
                 <div className="flex justify-between pt-2 border-t border-gray-200 font-bold">
                   <span className="text-gray-900">رصيد الحساب الجديد:</span>
                   <span className="font-mono text-emerald-700 text-sm">
-                    {successData.newBalance.toLocaleString("ar-EG", { minimumFractionDigits: 2 })}{" "}
-                    ج.م
+                    {formatCurrency(successData.newBalance)}
                   </span>
                 </div>
               </div>

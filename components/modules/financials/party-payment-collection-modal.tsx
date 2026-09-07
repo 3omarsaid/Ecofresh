@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { formatCurrency } from "@/lib/currency";
 import { addFinancialTransaction } from "@/actions/financials";
 import { getTreasuryAccounts } from "@/actions/treasury";
 import {
@@ -122,7 +124,7 @@ export function PartyPaymentCollectionModal({
 
     if (isTreasuryOverdraft) {
       setErrorMessage(
-        `رصيد الحساب المالي (${treasuryBalance.toLocaleString()} ج.م) لا يكفي لسداد ${numAmount.toLocaleString()} ج.م`
+        `رصيد الحساب المالي (${formatCurrency(treasuryBalance)}) لا يكفي لسداد ${formatCurrency(numAmount)}`
       );
       return;
     }
@@ -155,8 +157,13 @@ export function PartyPaymentCollectionModal({
       partyId,
       partyName,
       amountEgp: numAmount,
+      amountCurrency: null,
       currency: "EGP",
-      refDoc: refDoc || (isCustomer ? `COL-${Date.now().toString().slice(-4)}` : `PAY-${Date.now().toString().slice(-4)}`),
+      refDoc:
+        refDoc ||
+        (isCustomer
+          ? `COL-${Date.now().toString().slice(-4)}`
+          : `PAY-${Date.now().toString().slice(-4)}`),
       accountId,
       description:
         description ||
@@ -172,6 +179,8 @@ export function PartyPaymentCollectionModal({
       setSuccessData({
         txnId: res.data?.txnId,
         amount: numAmount,
+        currency: "EGP",
+        amountEgp: numAmount,
         newRemaining: remainingAfter,
         accountName: selectedAccount?.name,
       });
@@ -227,7 +236,7 @@ export function PartyPaymentCollectionModal({
                     {isCustomer ? "إجمالي المطلوب" : "إجمالي المستحق"}
                   </span>
                   <span className="text-sm font-bold font-mono text-gray-800">
-                    {initialDue.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(initialDue)}
                   </span>
                 </div>
 
@@ -236,7 +245,7 @@ export function PartyPaymentCollectionModal({
                     {isCustomer ? "تم تحصيله" : "تم سداده"}
                   </span>
                   <span className="text-sm font-bold font-mono text-blue-700">
-                    {initialPaidOrCollected.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(initialPaidOrCollected)}
                   </span>
                 </div>
 
@@ -253,60 +262,13 @@ export function PartyPaymentCollectionModal({
                         : "text-emerald-700"
                     }`}
                   >
-                    {remainingBefore.toLocaleString("ar-EG")} ج.م
-                  </span>
-                </div>
-              </div>
-
-              {/* Amount Input with Live Calculation */}
-              <div className="space-y-2">
-                <Label htmlFor="amount" className="text-xs font-bold text-gray-700">
-                  {isCustomer ? "مبلغ التحصيل (ج.م) *" : "مبلغ السداد (ج.م) *"}
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="amount"
-                    type="number"
-                    min="1"
-                    step="any"
-                    value={amount}
-                    onChange={(e) =>
-                      setAmount(e.target.value === "" ? "" : parseFloat(e.target.value))
-                    }
-                    placeholder="أدخل قيمة المبلغ المسدد أو المحصل..."
-                    className="font-mono text-lg font-bold text-left dir-ltr pl-14"
-                    required
-                    autoFocus
-                  />
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
-                    EGP
-                  </span>
-                </div>
-
-                {/* Over Remaining Warning */}
-                {isOverRemaining && (
-                  <div className="flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    <span>
-                      تنبيه: المبلغ المدخل ({numAmount.toLocaleString()} ج.م) أكبر من الرصيد المتبقي (
-                      {remainingBefore.toLocaleString()} ج.م). سيتحول الحساب إلى رصيد دائن مقدم.
-                    </span>
-                  </div>
-                )}
-
-                {/* Live Remaining After Badge */}
-                <div className="bg-emerald-50/80 border border-emerald-200 p-3 rounded-lg flex items-center justify-between">
-                  <span className="text-xs font-semibold text-emerald-900">
-                    {isCustomer ? "المتبقي على العميل بعد التحصيل:" : "المتبقي للطرف بعد السداد:"}
-                  </span>
-                  <span className="font-mono font-bold text-base text-emerald-800">
-                    {remainingAfter.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                    {formatCurrency(remainingBefore)}
                   </span>
                 </div>
               </div>
 
               {/* Treasury Account Selector */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="treasury" className="text-xs font-bold text-gray-700">
                   الحساب المالي (الخزينة أو البنك) *
                 </Label>
@@ -322,7 +284,7 @@ export function PartyPaymentCollectionModal({
                   >
                     {accounts.map((acc) => (
                       <option key={acc.id} value={acc.id}>
-                        {acc.name} ({acc.type}) — رصيده: {Number(acc.balance).toLocaleString()} {acc.currency}
+                        {acc.name} ({acc.type}) — رصيده: {formatCurrency(acc.balance)}
                       </option>
                     ))}
                   </select>
@@ -331,13 +293,13 @@ export function PartyPaymentCollectionModal({
                 {/* Treasury Overdraft warning for Payments */}
                 {selectedAccount && !isCustomer && (
                   <div className="flex items-center justify-between text-xs p-2 bg-gray-50 border border-gray-200 rounded-lg">
-                    <span className="text-gray-500">رصيد الخزينة بعد السداد:</span>
+                    <span className="text-gray-500">رصيد الحساب بعد السداد:</span>
                     <span
                       className={`font-mono font-bold ${
                         isTreasuryOverdraft ? "text-rose-600" : "text-gray-800"
                       }`}
                     >
-                      {treasuryAfter.toLocaleString()} ج.م
+                      {formatCurrency(treasuryAfter)}
                     </span>
                   </div>
                 )}
@@ -348,6 +310,42 @@ export function PartyPaymentCollectionModal({
                     <span>رصيد الحساب لا يكفي لإتمام السداد (حماية ضد السحب المكشوف).</span>
                   </div>
                 )}
+              </div>
+
+              {/* Amount Input */}
+              <div className="space-y-2">
+                <Label htmlFor="amount" className="text-xs font-bold text-gray-700">
+                  {isCustomer ? "مبلغ التحصيل (ج.م) *" : "مبلغ السداد (ج.م) *"}
+                </Label>
+                <CurrencyInput
+                  id="amount"
+                  value={amount}
+                  onChange={(val) => setAmount(typeof val === "number" ? val : "")}
+                  placeholder="0.00"
+                  required
+                  autoFocus
+                />
+
+                {/* Over Remaining Warning */}
+                {isOverRemaining && (
+                  <div className="flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>
+                      تنبيه: المبلغ المدخل ({formatCurrency(numAmount)}) أكبر من الرصيد المتبقي (
+                      {formatCurrency(remainingBefore)}). سيتحول الحساب إلى رصيد دائن مقدم.
+                    </span>
+                  </div>
+                )}
+
+                {/* Live Remaining After Badge */}
+                <div className="bg-emerald-50/80 border border-emerald-200 p-3 rounded-lg flex items-center justify-between">
+                  <span className="text-xs font-semibold text-emerald-900">
+                    {isCustomer ? "المتبقي على العميل بعد التحصيل:" : "المتبقي للطرف بعد السداد:"}
+                  </span>
+                  <span className="font-mono font-bold text-base text-emerald-800">
+                    {formatCurrency(remainingAfter)}
+                  </span>
+                </div>
               </div>
 
               {/* Date & Reference Row */}
@@ -445,27 +443,31 @@ export function PartyPaymentCollectionModal({
 
                 <div className="flex justify-between p-3 bg-gray-50/50">
                   <span className="text-gray-500 font-semibold">قيمة السند:</span>
-                  <span className="font-bold font-mono text-base text-emerald-700">
-                    {numAmount.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
-                  </span>
+                  <div className="text-left font-mono">
+                    <span className="font-bold text-base text-emerald-700 block">
+                      {formatCurrency(numAmount)}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex justify-between p-3">
                   <span className="text-gray-500 font-semibold">الحساب المالي:</span>
-                  <span className="font-bold text-gray-900">{selectedAccount?.name}</span>
+                  <span className="font-bold text-gray-900">
+                    {selectedAccount?.name}
+                  </span>
                 </div>
 
                 <div className="flex justify-between p-3 bg-gray-50/50">
                   <span className="text-gray-500 font-semibold">رصيد الطرف قبل السند:</span>
                   <span className="font-mono font-bold text-gray-700">
-                    {remainingBefore.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(remainingBefore)}
                   </span>
                 </div>
 
                 <div className="flex justify-between p-3 bg-emerald-50 font-bold">
                   <span className="text-emerald-900">رصيد الطرف بعد تنفيذ السند:</span>
                   <span className="font-mono text-base text-emerald-800">
-                    {remainingAfter.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                    {formatCurrency(remainingAfter)}
                   </span>
                 </div>
               </div>
@@ -524,7 +526,7 @@ export function PartyPaymentCollectionModal({
                 <div className="flex justify-between">
                   <span className="text-gray-500">المبلغ المسدد:</span>
                   <span className="font-mono font-bold text-gray-900">
-                    {successData.amount.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(successData.amount)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -534,8 +536,7 @@ export function PartyPaymentCollectionModal({
                 <div className="flex justify-between pt-2 border-t border-gray-200 font-bold">
                   <span className="text-emerald-900">الرصيد المتبقي الجديد:</span>
                   <span className="font-mono text-emerald-700 text-sm">
-                    {successData.newRemaining.toLocaleString("ar-EG", { minimumFractionDigits: 2 })}{" "}
-                    ج.م
+                    {formatCurrency(successData.newRemaining)}
                   </span>
                 </div>
               </div>

@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from 'next/cache';
+import { safeRevalidatePath } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, can } from '@/lib/auth';
 import { CustomerSchema, AgreementSchema } from '@/lib/validations/customer';
+import { generateCustomerId } from '@/lib/id-generator';
 
 export async function createCustomer(formData: FormData) {
   const user = await getCurrentUser();
@@ -18,9 +19,21 @@ export async function createCustomer(formData: FormData) {
   }
 
   try {
-    const customer = await prisma.customer.create({ data: validated.data });
-    revalidatePath('/customers');
-    return { success: true, message: `تم تسجيل العميل ${customer.name} بنجاح` };
+    const customer = await prisma.$transaction(async (tx) => {
+      const generatedId = validated.data.id || (await generateCustomerId(tx));
+      const code = validated.data.code?.trim() || generatedId;
+
+      return await tx.customer.create({
+        data: {
+          ...validated.data,
+          id: generatedId,
+          code,
+        },
+      });
+    });
+
+    safeRevalidatePath('/customers');
+    return { success: true, message: `تم تسجيل العميل ${customer.name} بالكود ${customer.code} بنجاح` };
   } catch (error: any) {
     if (error.code === 'P2002') {
       return { success: false, error: 'كود العميل مسجل مسبقاً' };
@@ -50,7 +63,7 @@ export async function addCustomerAgreement(customerId: string, formData: FormDat
         packagingSpec: validated.data.packagingSpec,
       },
     });
-    revalidatePath(`/customers/${customerId}`);
+    safeRevalidatePath(`/customers/${customerId}`);
     return { success: true, message: 'تم حفظ اتفاقية السعر بنجاح' };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -74,7 +87,7 @@ export async function getCustomersPaginated(page: number = 1, pageSize: number =
         }
       : {};
 
-    const [customers, totalCount, totalAgreementsCount, currencyStats] = await Promise.all([
+    const [customers, totalCount, totalAgreementsCount, creditLimitAgg] = await Promise.all([
       prisma.customer.findMany({
         where,
         select: {
@@ -99,18 +112,16 @@ export async function getCustomersPaginated(page: number = 1, pageSize: number =
       }),
       prisma.customer.count({ where }),
       prisma.customerAgreement.count(),
-      prisma.customer.groupBy({
-        by: ['currency'],
-        _count: { _all: true },
+      prisma.customer.aggregate({
         _sum: { creditLimit: true },
       }),
     ]);
 
-    const eurGroup = currencyStats.find((s) => s.currency === 'EUR');
-    const usdGroup = currencyStats.find((s) => s.currency === 'USD');
+    const totalCreditLimit = Number(creditLimitAgg._sum.creditLimit || 0);
 
     const formattedCustomers = customers.map((c) => ({
       ...c,
+      currency: 'EGP',
       creditLimit: Number(c.creditLimit),
       agreements: Array(c._count.agreements).fill({}),
     }));
@@ -123,9 +134,10 @@ export async function getCustomersPaginated(page: number = 1, pageSize: number =
       pageSize,
       stats: {
         totalCustomers: totalCount,
-        eurCount: eurGroup?._count._all || 0,
-        usdCount: usdGroup?._count._all || 0,
-        totalCreditLimitEur: Number(eurGroup?._sum.creditLimit || 0),
+        eurCount: 0,
+        usdCount: 0,
+        totalCreditLimitEur: totalCreditLimit,
+        totalCreditLimitEgp: totalCreditLimit,
         totalAgreementsCount,
       },
     };
@@ -142,6 +154,7 @@ export async function getCustomersPaginated(page: number = 1, pageSize: number =
         eurCount: 0,
         usdCount: 0,
         totalCreditLimitEur: 0,
+        totalCreditLimitEgp: 0,
         totalAgreementsCount: 0,
       },
     };
@@ -225,8 +238,8 @@ export async function updateCustomer(id: string, formData: FormData) {
       where: { id },
       data: validated.data,
     });
-    revalidatePath('/customers');
-    revalidatePath(`/customers/${id}`);
+    safeRevalidatePath('/customers');
+    safeRevalidatePath(`/customers/${id}`);
     return { success: true, message: `تم تعديل بيانات العميل ${customer.name} بنجاح` };
   } catch (error: any) {
     return { success: false, error: error.message || 'حدث خطأ أثناء تعديل بيانات العميل' };
@@ -243,7 +256,7 @@ export async function deleteCustomer(id: string) {
     await prisma.customer.delete({
       where: { id },
     });
-    revalidatePath('/customers');
+    safeRevalidatePath('/customers');
     return { success: true, message: 'تم حذف العميل بنجاح' };
   } catch (error: any) {
     if (error.code === 'P2003') {
@@ -263,7 +276,7 @@ export async function deleteAgreement(agreementId: number, customerId: string) {
     await prisma.customerAgreement.delete({
       where: { id: agreementId },
     });
-    revalidatePath(`/customers/${customerId}`);
+    safeRevalidatePath(`/customers/${customerId}`);
     return { success: true, message: 'تم حذف الاتفاقية بنجاح' };
   } catch (error: any) {
     return { success: false, error: error.message || 'حدث خطأ أثناء حذف الاتفاقية' };

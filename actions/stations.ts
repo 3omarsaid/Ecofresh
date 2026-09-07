@@ -4,6 +4,7 @@ import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, can } from '@/lib/auth';
 import { StationSchema } from '@/lib/validations/station';
+import { generateStationId } from '@/lib/id-generator';
 import { ensureStationLocations, logStockMovement, updateStationSupplyStock } from '@/lib/stock-service';
 import { WarehouseType } from '@prisma/client';
 import { formatActionError } from '@/lib/error-handler';
@@ -23,8 +24,12 @@ export async function createStation(formData: FormData) {
 
   try {
     const station = await prisma.$transaction(async (tx) => {
+      const generatedId = validated.data.id || (await generateStationId(tx));
       const createdStation = await tx.station.create({
-        data: validated.data,
+        data: {
+          ...validated.data,
+          id: generatedId,
+        },
       });
 
       // Provision the 3 stock locations atomically

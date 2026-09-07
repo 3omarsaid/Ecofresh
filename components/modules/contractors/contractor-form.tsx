@@ -72,41 +72,20 @@ export function ContractorForm({ stations }: ContractorFormProps) {
             </div>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {/* Contractor ID */}
-            <div className="space-y-2">
-              <Label htmlFor="id" className="text-sm font-semibold text-gray-700">
-                كود المقاول <span className="text-red-500">*</span>
-              </Label>
-              <div className="relative">
-                <Input
-                  id="id"
-                  name="id"
-                  placeholder="مثال: CONT-001"
-                  className="font-mono"
-                  required
-                />
-              </div>
-              {fieldErrors.id && (
-                <p className="text-xs text-red-500 font-medium">{fieldErrors.id[0]}</p>
-              )}
-            </div>
-
+          <div className="space-y-2">
             {/* Contractor Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
-                اسم المقاول / الشركة <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="مثال: مقاول أحمد للتجهيز"
-                required
-              />
-              {fieldErrors.name && (
-                <p className="text-xs text-red-500 font-medium">{fieldErrors.name[0]}</p>
-              )}
-            </div>
+            <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
+              اسم المقاول / الشركة <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="name"
+              name="name"
+              placeholder="مثال: مقاول أحمد للتجهيز"
+              required
+            />
+            {fieldErrors.name && (
+              <p className="text-xs text-red-500 font-medium">{fieldErrors.name[0]}</p>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -145,7 +124,7 @@ export function ContractorForm({ stations }: ContractorFormProps) {
                   type="number"
                   step="0.01"
                   min="0.01"
-                  defaultValue="2.00"
+                  placeholder="مثال: 2.00"
                   required
                 />
               </div>

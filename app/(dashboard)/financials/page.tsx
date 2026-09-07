@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { getGeneralLedger } from "@/lib/data/ledger";
 import { getFinancialDashboardMetrics } from "@/actions/financials";
+import { formatCurrency } from "@/lib/currency";
 import { GeneralLedgerTable } from "@/components/modules/financials/general-ledger-table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
   ExternalLink,
   ShieldCheck,
   AlertTriangle,
+  FileText,
 } from "lucide-react";
 import { PaginationControls } from "@/components/modules/common/pagination-controls";
 
@@ -72,6 +74,12 @@ export default async function GeneralLedgerPage({ searchParams }: PageProps) {
         </div>
 
         <div className="flex items-center gap-3">
+          <Button asChild className="gap-2 text-xs bg-[#196b24] hover:bg-[#13571d] text-white font-bold shadow-xs">
+            <Link href="/financials/statements">
+              <FileText className="w-4 h-4" />
+              كشوف الحسابات (الدفتر)
+            </Link>
+          </Button>
           <Button asChild variant="outline" className="gap-2 text-xs">
             <Link href="/reports/aging">
               <Clock className="w-4 h-4" />
@@ -102,8 +110,7 @@ export default async function GeneralLedgerPage({ searchParams }: PageProps) {
             <Users className="h-5 w-5 text-emerald-600" />
           </div>
           <div className="text-2xl font-bold text-emerald-700 font-mono">
-            {metrics.totalArDue.toLocaleString("ar-EG", { minimumFractionDigits: 2 })}{" "}
-            <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(metrics.totalArDue)}
           </div>
           <span className="text-[11px] text-emerald-600 block">ديون قائمة مطلوب تحصيلها</span>
         </div>
@@ -115,24 +122,22 @@ export default async function GeneralLedgerPage({ searchParams }: PageProps) {
             <Building2 className="h-5 w-5 text-amber-600" />
           </div>
           <div className="text-2xl font-bold text-amber-700 font-mono">
-            {metrics.totalApDue.toLocaleString("ar-EG", { minimumFractionDigits: 2 })}{" "}
-            <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(metrics.totalApDue)}
           </div>
           <span className="text-[11px] text-amber-600 block">التزامات شراء وتشغيل واجبة السداد</span>
         </div>
 
-        {/* Available Liquidity By Currency */}
+        {/* Available Liquidity */}
         <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-1.5">
           <div className="flex justify-between items-center text-gray-500">
-            <span className="text-xs font-semibold">السيولة المتاحة (EGP)</span>
+            <span className="text-xs font-semibold">السيولة المتاحة (خزائن وبنوك)</span>
             <Landmark className="h-5 w-5 text-[#012d1d]" />
           </div>
           <div className="text-2xl font-bold text-[#012d1d] font-mono">
-            {metrics.totalEgpLiquidity.toLocaleString("ar-EG", { minimumFractionDigits: 2 })}{" "}
-            <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(metrics.totalEgpLiquidity)}
           </div>
           <span className="text-[11px] text-gray-500 block font-mono">
-            EUR: {metrics.totalEurLiquidity.toLocaleString()} € | USD: {metrics.totalUsdLiquidity.toLocaleString()} $
+            نقدية: {formatCurrency(metrics.treasuryCashBalance)} | بنك: {formatCurrency(metrics.bankBalance)}
           </span>
         </div>
 
@@ -148,11 +153,10 @@ export default async function GeneralLedgerPage({ searchParams }: PageProps) {
             }`}
           >
             {todayNet >= 0 ? "+" : ""}
-            {todayNet.toLocaleString("ar-EG", { minimumFractionDigits: 2 })}{" "}
-            <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(todayNet)}
           </div>
           <span className="text-[11px] text-gray-500 block">
-            وارد: +{metrics.todayInflow.toLocaleString()} | منصرف: -{metrics.todayOutflow.toLocaleString()}
+            وارد: +{formatCurrency(metrics.todayInflow)} | منصرف: -{formatCurrency(metrics.todayOutflow)}
           </span>
         </div>
       </div>

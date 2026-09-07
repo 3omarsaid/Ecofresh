@@ -1,11 +1,18 @@
-import { getSuppliesForPurchaseSelect, getPackagingSuppliersSelect } from "@/actions/packaging-purchases";
+import {
+  getSuppliesForPurchaseSelect,
+  getPackagingSuppliersSelect,
+  getStationsForPackagingSelect,
+} from "@/actions/packaging-purchases";
 import { PackagingPurchaseForm } from "@/components/modules/procurement/packaging-purchase-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewPackagingPurchasePage() {
-  const supplies = await getSuppliesForPurchaseSelect();
-  const suppliers = await getPackagingSuppliersSelect();
+  const [supplies, suppliers, stations] = await Promise.all([
+    getSuppliesForPurchaseSelect(),
+    getPackagingSuppliersSelect(),
+    getStationsForPackagingSelect(),
+  ]);
 
   return (
     <div className="p-6 space-y-6">
@@ -16,7 +23,7 @@ export default async function NewPackagingPurchasePage() {
         </p>
       </div>
 
-      <PackagingPurchaseForm supplies={supplies} suppliers={suppliers} />
+      <PackagingPurchaseForm supplies={supplies} suppliers={suppliers} stations={stations} />
     </div>
   );
 }

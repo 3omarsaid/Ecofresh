@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, Filter, Calendar, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/currency";
 
 interface TransactionItem {
   txnId: string;
@@ -181,10 +182,7 @@ export function GeneralLedgerTable({
                     {txn.accountName || "—"}
                   </td>
                   <td className="p-3 text-center font-mono font-bold text-foreground">
-                    {txn.amountEgp.toLocaleString("ar-EG", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {formatCurrency(txn.amountEgp)}
                   </td>
                   <td className="p-3 text-center">
                     <Button asChild variant="ghost" size="sm" className="h-8 gap-1 text-primary hover:text-primary/80">

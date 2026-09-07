@@ -64,11 +64,8 @@ export async function reconcileTreasuryAccount(
       txn.type.includes('وارد') ||
       txn.type.includes('Inflow');
 
-    // Use amountCurrency if currency is not EGP and amountCurrency exists, else amountEgp
-    const amt =
-      account.currency !== 'EGP' && txn.amountCurrency
-        ? new Prisma.Decimal(txn.amountCurrency)
-        : new Prisma.Decimal(txn.amountEgp);
+    // All transactions in the unified system are in EGP
+    const amt = new Prisma.Decimal(txn.amountEgp);
 
     if (isCollection) {
       totalInflows = totalInflows.add(amt);

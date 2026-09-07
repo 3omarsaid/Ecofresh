@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrency } from "@/lib/currency";
 
 interface AgingReportViewProps {
   buckets: {
@@ -110,8 +111,7 @@ export function AgingReportView({
             <Users className="h-5 w-5 text-emerald-600" />
           </div>
           <div className="text-2xl font-bold text-emerald-700 font-mono">
-            {Math.round(buckets.totalArOutstanding).toLocaleString()}{" "}
-            <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(buckets.totalArOutstanding)}
           </div>
           <span className="text-[11px] text-emerald-600 block">إجمالي ديون العملاء المطلوب تحصيلها</span>
         </div>
@@ -123,8 +123,7 @@ export function AgingReportView({
             <Truck className="h-5 w-5 text-amber-600" />
           </div>
           <div className="text-2xl font-bold text-amber-700 font-mono">
-            {Math.round(buckets.totalApOutstanding).toLocaleString()}{" "}
-            <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(buckets.totalApOutstanding)}
           </div>
           <span className="text-[11px] text-amber-600 block">إجمالي التزامات واجبة السداد</span>
         </div>
@@ -136,8 +135,7 @@ export function AgingReportView({
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
           </div>
           <div className="text-2xl font-bold text-gray-800 font-mono">
-            {Math.round(buckets.bucket0to30).toLocaleString()}{" "}
-            <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(buckets.bucket0to30)}
           </div>
           <span className="text-[11px] text-gray-500 block">ضمن فترة الائتمان العادية</span>
         </div>
@@ -149,11 +147,10 @@ export function AgingReportView({
             <AlertTriangle className="h-5 w-5 text-rose-600" />
           </div>
           <div className="text-2xl font-bold text-rose-700 font-mono">
-            {Math.round(buckets.bucket31to60 + buckets.bucket60plus).toLocaleString()}{" "}
-            <span className="text-xs font-normal font-sans">ج.م</span>
+            {formatCurrency(buckets.bucket31to60 + buckets.bucket60plus)}
           </div>
           <span className="text-[11px] text-rose-600 block">
-            (+60 يوماً: {Math.round(buckets.bucket60plus).toLocaleString()} ج.م)
+            (+60 يوماً: {formatCurrency(buckets.bucket60plus)})
           </span>
         </div>
       </div>
@@ -274,10 +271,10 @@ export function AgingReportView({
                       </td>
                       <td className="p-3.5 text-gray-600 font-sans">{cust.country}</td>
                       <td className="p-3.5 text-center font-bold text-gray-800">
-                        {cust.totalDue.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                        {formatCurrency(cust.totalDue)}
                       </td>
                       <td className="p-3.5 text-center font-bold text-emerald-700">
-                        {cust.totalCollected.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                        {formatCurrency(cust.totalCollected)}
                       </td>
                       <td className="p-3.5 text-center">
                         <span
@@ -285,10 +282,7 @@ export function AgingReportView({
                             cust.outstandingBalance > 0 ? "text-rose-700" : "text-gray-400"
                           }`}
                         >
-                          {cust.outstandingBalance.toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          ج.م
+                          {formatCurrency(cust.outstandingBalance)}
                         </span>
                       </td>
                       <td className="p-3.5 text-center font-sans">
@@ -411,10 +405,10 @@ export function AgingReportView({
                         </span>
                       </td>
                       <td className="p-3.5 text-center font-bold text-gray-800">
-                        {item.totalDue.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                        {formatCurrency(item.totalDue)}
                       </td>
                       <td className="p-3.5 text-center font-bold text-emerald-700">
-                        {item.totalPaid.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                        {formatCurrency(item.totalPaid)}
                       </td>
                       <td className="p-3.5 text-center">
                         <span
@@ -422,10 +416,7 @@ export function AgingReportView({
                             item.outstandingBalance > 0 ? "text-amber-700" : "text-gray-400"
                           }`}
                         >
-                          {item.outstandingBalance.toLocaleString("ar-EG", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          ج.م
+                          {formatCurrency(item.outstandingBalance)}
                         </span>
                       </td>
                       <td className="p-3.5 text-center text-gray-500 font-sans text-[11px]">

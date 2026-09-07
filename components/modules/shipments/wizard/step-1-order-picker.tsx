@@ -5,6 +5,7 @@ import { ClientOrder, Customer } from "@prisma/client";
 import { Receipt, CheckCircle2, Lock, Globe, Ship, DollarSign } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { formatCurrency } from "@/lib/currency";
 
 type ExtendedClientOrder = ClientOrder & {
   customer: Customer;
@@ -57,11 +58,13 @@ export function Step1OrderPicker({
             className="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs font-bold font-mono text-[#012d1d] focus:ring-2 focus:ring-[#012d1d] focus:border-transparent outline-none transition-all"
           >
             <option value="">-- اختر طلبية التصدير --</option>
-            {clientOrders.map((order) => (
-              <option key={order.orderId} value={order.orderId}>
-                {order.orderId} - {order.customer.name} ({order.productName} - متبقي: {Number(order.unfulfilledQtyKg).toLocaleString()} كجم)
-              </option>
-            ))}
+            {clientOrders
+              .filter((order) => Number(order.unfulfilledQtyKg) > 0 || order.orderId === selectedOrderId)
+              .map((order) => (
+                <option key={order.orderId} value={order.orderId}>
+                  {order.orderId} - {order.customer.name} ({order.productName} - متبقي: {Number(order.unfulfilledQtyKg).toLocaleString()} كجم)
+                </option>
+              ))}
           </select>
           {errors.orderId && (
             <p className="text-xs text-red-600 font-semibold mt-1">
@@ -113,13 +116,13 @@ export function Step1OrderPicker({
 
             <div className="bg-white p-3 rounded-lg border border-gray-200">
               <span className="text-[11px] text-gray-500 block font-sans flex items-center gap-1">
-                <DollarSign className="h-3 w-3" /> سعر البيع بالعقد (EUR)
+                <DollarSign className="h-3 w-3" /> سعر البيع بالعقد
               </span>
               <strong className="text-xs text-emerald-700 font-bold">
-                {Number(selectedOrder.unitPriceEur).toFixed(2)} EUR / كجم
+                {formatCurrency(Number(selectedOrder.unitPriceEur))} / كجم
               </strong>
               <span className="text-[10px] text-gray-500 block">
-                سعر الصرف: {Number(selectedOrder.fxRate).toFixed(2)} ج.م
+                العملة: الجنيه المصري (EGP)
               </span>
             </div>
 

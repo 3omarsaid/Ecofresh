@@ -20,6 +20,7 @@ import {
   Wallet,
   Landmark,
   BarChart3,
+  FileText,
   LucideIcon,
 } from 'lucide-react';
 
@@ -78,7 +79,8 @@ export const navGroups: NavGroup[] = [
   {
     title: 'الماليات والتحصيلات',
     items: [
-      { title: 'كشف الحسابات العام', href: '/financials', icon: Receipt },
+      { title: 'كشوف الحسابات (الدفتر)', href: '/financials/statements', icon: FileText },
+      { title: 'دفتر الأستاذ العام', href: '/financials', icon: Receipt },
       { title: 'سندات الدفع والتحصيل', href: '/financials/transactions', icon: Wallet },
       { title: 'الخزينة والحسابات البنكية', href: '/financials/treasury', icon: Landmark },
     ],
@@ -113,7 +115,8 @@ export const pageTitleMap: Record<string, string> = {
   '/inventory/raw': 'مخزن المواد الخام',
   '/inventory/transfers': 'التحويل بين المحطات',
   '/inventory/waste': 'مراقبة وتكاليف الهالك',
-  '/financials': 'كشف الحسابات العام',
+  '/financials/statements': 'كشوف الحسابات (الدفتر)',
+  '/financials': 'دفتر الأستاذ العام',
   '/financials/transactions': 'سندات الدفع والتحصيل',
   '/financials/treasury': 'الخزينة والحسابات البنكية',
   '/reports': 'مركز التقارير الموحد',

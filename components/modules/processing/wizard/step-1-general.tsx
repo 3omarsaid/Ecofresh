@@ -16,6 +16,7 @@ interface Step1GeneralProps {
   stations: ExtendedStation[];
   contractors: Contractor[];
   products: Product[];
+  rawBatches?: any[];
   stationId: string;
   contractorId: string;
   rawProduct: string;
@@ -35,6 +36,7 @@ export function Step1General({
   stations,
   contractors,
   products,
+  rawBatches = [],
   stationId,
   contractorId,
   rawProduct,
@@ -43,10 +45,21 @@ export function Step1General({
   onChange,
   errors,
 }: Step1GeneralProps) {
-  // Filter contractors by selected station
+  // Filter contractors strictly by selected station
   const filteredContractors = stationId
-    ? contractors.filter((c) => c.stationId === stationId || !c.stationId)
-    : contractors;
+    ? contractors.filter((c) => c.stationId === stationId)
+    : [];
+
+  const availableCropsAtStation = React.useMemo(() => {
+    if (!rawBatches || rawBatches.length === 0) return [];
+    const crops = new Set<string>();
+    rawBatches
+      .filter((b) => (!stationId || b.stationId === stationId) && Number(b.availableQty) > 0)
+      .forEach((b) => {
+        if (b.rawProduct) crops.add(b.rawProduct.trim());
+      });
+    return Array.from(crops);
+  }, [rawBatches, stationId]);
 
   const selectedStation = stations.find((s) => s.id === stationId);
 
@@ -62,7 +75,7 @@ export function Step1General({
     const defaultContractor = contractors.find((c) => c.stationId === newStationId);
     onChange({
       stationId: newStationId,
-      contractorId: defaultContractor ? defaultContractor.id : contractorId,
+      contractorId: defaultContractor ? defaultContractor.id : "",
     });
   };
 
@@ -110,7 +123,11 @@ export function Step1General({
             onChange={(e) => onChange({ contractorId: e.target.value })}
             className="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#012d1d]"
           >
-            <option value="">-- اختر المقاول --</option>
+            <option value="">
+              {filteredContractors.length === 0 && stationId
+                ? "-- لا يوجد مقاول مسجل لهذه المحطة --"
+                : "-- اختر المقاول --"}
+            </option>
             {filteredContractors.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name} (تعريفة: {Number(c.tariffRatePerKg)} ج.م/كجم)
@@ -169,18 +186,34 @@ export function Step1General({
           </div>
         )}
 
-        {/* Raw Product */}
+        {/* Raw Product Select */}
         <div className="space-y-2">
           <Label className="text-sm font-semibold text-gray-700">
             المحصول / الخام المسحوب <span className="text-red-500">*</span>
           </Label>
-          <input
-            type="text"
+          <select
             value={rawProduct}
             onChange={(e) => onChange({ rawProduct: e.target.value })}
-            placeholder="مثال: فراولة خام"
             className="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#012d1d]"
-          />
+          >
+            <option value="">-- اختر المحصول المسحوب من مخزن المحطة --</option>
+            {availableCropsAtStation.length > 0 ? (
+              availableCropsAtStation.map((crop) => (
+                <option key={crop} value={crop}>
+                  {crop} (متاح بمخزن المحطة)
+                </option>
+              ))
+            ) : (
+              <>
+                <option value="فراولة خام">فراولة خام</option>
+                <option value="برتقال صيفي خام">برتقال صيفي خام</option>
+                <option value="برتقال أبو سرة خام">برتقال أبو سرة خام</option>
+                <option value="مانجو كيت خام">مانجو كيت خام</option>
+                <option value="رمان خام">رمان خام</option>
+                <option value="خضار مشكل خام">خضار مشكل خام</option>
+              </>
+            )}
+          </select>
           {errors?.rawProduct && (
             <p className="text-xs text-red-600">{errors.rawProduct[0]}</p>
           )}

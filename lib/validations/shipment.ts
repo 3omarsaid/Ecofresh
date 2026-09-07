@@ -1,31 +1,56 @@
 import { z } from 'zod';
+import {
+  cleanPositiveNumber,
+  cleanNonNegativeNumber,
+  cleanOptionalNumber,
+} from './common';
 
-export const ShipmentSchema = z.object({
+export const BaseShipmentSchema = z.object({
   orderId: z.string().min(1, 'يجب اختيار طلبية التصدير'),
   dispatchDate: z.string().optional(),
   containerNo: z.string().min(4, 'رقم الحاوية مطلوب'),
   sealNo: z.string().min(3, 'رقم الختم الجمركي مطلوب'),
   shippingLine: z.string().min(2, 'الخط الملاحي مطلوب'),
-  bookingNo: z.string().min(3, 'رقم الحجز الملاحي مطلوب'),
+  bookingNo: z.string().optional().default(''),
   allocatedBatches: z
     .array(
       z.object({
         fgBatchId: z.string().min(1, 'معرف الباتش مطلوب'),
-        qty: z.coerce.number().positive('الكمية المخصصة يجب أن تكون أكبر من 0'),
+        qty: cleanPositiveNumber('الكمية المخصصة يجب أن تكون أكبر من 0'),
       })
     )
     .min(1, 'يجب تخصيص باتش واحد على الأقل'),
   costs: z
     .object({
-      inlandTrucking: z.coerce.number().min(0).default(6500),
-      oceanFreight: z.coerce.number().min(0).default(22000),
-      customsClearance: z.coerce.number().min(0).default(4500),
-      inspectionCertificates: z.coerce.number().min(0).default(2500),
-      portTerminalCharges: z.coerce.number().min(0).default(3500),
+      inlandTrucking: cleanNonNegativeNumber('تكلفة النقل الداخلي لا يمكن أن تكون سالبة', 6500),
+      oceanFreight: cleanNonNegativeNumber('تكلفة الشحن البحري لا يمكن أن تكون سالبة', 22000),
+      customsClearance: cleanNonNegativeNumber('تكلفة التخليص الجمركي لا يمكن أن تكون سالبة', 4500),
+      inspectionCertificates: cleanNonNegativeNumber('تكلفة شهادات الفحص لا يمكن أن تكون سالبة', 2500),
+      portTerminalCharges: cleanNonNegativeNumber('رسوم الميناء لا يمكن أن تكون سالبة', 3500),
     })
-    .optional(),
+    .optional()
+    .default({
+      inlandTrucking: 6500,
+      oceanFreight: 22000,
+      customsClearance: 4500,
+      inspectionCertificates: 2500,
+      portTerminalCharges: 3500,
+    }),
   notes: z.string().optional(),
+  // Optional derived fields
+  shippedQtyKg: cleanOptionalNumber(),
+  totalShipmentCostEgp: cleanOptionalNumber(),
 });
 
-export type ShipmentInput = z.infer<typeof ShipmentSchema>;
-export type ShipmentFormValues = z.infer<typeof ShipmentSchema>;
+export const ShipmentSchema = BaseShipmentSchema.transform((data) => {
+  const shippedQtyKg = data.allocatedBatches.reduce((sum, item) => sum + item.qty, 0);
+
+  return {
+    ...data,
+    shippedQtyKg: data.shippedQtyKg ?? shippedQtyKg,
+  };
+});
+
+export type ShipmentFormValues = z.infer<typeof BaseShipmentSchema>;
+export type ShipmentInput = z.input<typeof ShipmentSchema>;
+export type ShipmentOutput = z.output<typeof ShipmentSchema>;

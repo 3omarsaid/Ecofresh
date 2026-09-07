@@ -15,11 +15,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, ArrowDownLeft, ArrowUpRight, Coins, Loader2, PlusCircle, ShieldAlert } from "lucide-react";
+import { AlertCircle, Coins, Loader2, ShieldAlert, Wallet } from "lucide-react";
 
-interface AddTransactionDialogProps {
+export interface AddTransactionDialogProps {
   employeeId: string;
   employeeName: string;
+  monthlySalary?: number;
   treasuryAccounts: Array<{ id: string; name: string; balance: number; currency: string }>;
   trigger?: React.ReactNode;
   onSuccess?: () => void;
@@ -28,6 +29,7 @@ interface AddTransactionDialogProps {
 export function AddTransactionDialog({
   employeeId,
   employeeName,
+  monthlySalary,
   treasuryAccounts = [],
   trigger,
   onSuccess,
@@ -47,28 +49,50 @@ export function AddTransactionDialog({
   const [notes, setNotes] = useState("");
 
   // Determine nature of selected type
-  const isNonCash = type === "خصم إداري" || type === "استحقاق راتب شهري" || type === "تسوية مستحقات غير نقدية";
-  const isCashOutflow = type === "سلفة" || type === "صرف راتب" || type === "مكافأة" || type === "صرف عهدة" || type === "بدل انتقال";
+  const isNonCash =
+    type === "خصم إداري" || type === "استحقاق راتب شهري" || type === "تسوية مستحقات غير نقدية";
+  const isCashOutflow =
+    type === "سلفة" || type === "صرف راتب" || type === "مكافأة" || type === "صرف عهدة" || type === "بدل انتقال";
   const isCashInflow = type === "سداد سلفة" || type === "تسوية عهدة نقدي";
 
   const selectedAccount = treasuryAccounts.find((a) => a.id === treasuryAccountId);
   const numericAmount = parseFloat(amount) || 0;
+
+  // Overdraft validation for cash outflows
   const isOverdraft = isCashOutflow && selectedAccount && numericAmount > Number(selectedAccount.balance);
+
+  // Advance ceiling validation against monthly salary
+  const isAdvance = type === "سلفة" || type.includes("سلفة");
+  const isAdvanceOverSalary =
+    isAdvance &&
+    typeof monthlySalary === "number" &&
+    monthlySalary > 0 &&
+    numericAmount > monthlySalary;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Client-side quick guard
+    // Client-side guards
     if (!isNonCash && !treasuryAccountId) {
-      setError("يجب اختيار الخزينة أو الحساب البنكي للعمليات النقدية");
+      setError("يجب اختيار الخزينة أو الحساب البنكي المصدر للعمليات النقدية");
       setLoading(false);
       return;
     }
 
-    if (isNonCash && treasuryAccountId) {
-      // Clear for non-cash submission
+    if (isOverdraft) {
+      setError("رصيد الخزينة المحددة لا يكفي لإتمام عملية الصرف");
+      setLoading(false);
+      return;
+    }
+
+    if (isAdvanceOverSalary) {
+      setError(
+        `قيمة السلفة (${numericAmount.toLocaleString()} ج.م) تتجاوز الراتب الشهري المحدد (${monthlySalary.toLocaleString()} ج.م)`
+      );
+      setLoading(false);
+      return;
     }
 
     try {
@@ -122,6 +146,13 @@ export function AddTransactionDialog({
           </DialogTitle>
         </DialogHeader>
 
+        {monthlySalary !== undefined && monthlySalary > 0 && (
+          <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs flex items-center justify-between text-emerald-900">
+            <span className="font-semibold">الراتب الشهري المسجل:</span>
+            <span className="font-mono font-bold">{monthlySalary.toLocaleString()} ج.م</span>
+          </div>
+        )}
+
         {error && (
           <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg font-medium flex items-center gap-2">
             <ShieldAlert className="h-4 w-4 shrink-0 text-red-600" />
@@ -132,7 +163,9 @@ export function AddTransactionDialog({
         <form onSubmit={handleSubmit} className="space-y-4 pt-1 text-right">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="txnType" className="text-xs font-bold text-gray-700">نوع المعاملة *</Label>
+              <Label htmlFor="txnType" className="text-xs font-bold text-gray-700">
+                نوع المعاملة *
+              </Label>
               <select
                 id="txnType"
                 value={type}
@@ -161,6 +194,16 @@ export function AddTransactionDialog({
             </div>
           </div>
 
+          {/* Advance Ceiling Warning */}
+          {isAdvanceOverSalary && (
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-semibold flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+              <span>
+                تنبيه مالي: قيمة السلفة المطلوبة ({numericAmount.toLocaleString()} ج.م) تتجاوز الراتب الشهري للموظف ({monthlySalary?.toLocaleString()} ج.م)!
+              </span>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-gray-700">تاريخ الحركة *</Label>
@@ -186,14 +229,17 @@ export function AddTransactionDialog({
 
           {/* Conditional Treasury Account Selector */}
           {!isNonCash ? (
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 space-y-2">
+            <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200 space-y-2.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="treasuryAccount" className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-                  <Coins className="h-3.5 w-3.5 text-emerald-700" />
-                  الخزينة / الحساب البنكي المتأثر *
+                <Label
+                  htmlFor="treasuryAccount"
+                  className="text-xs font-bold text-gray-800 flex items-center gap-1.5"
+                >
+                  <Wallet className="h-3.5 w-3.5 text-emerald-700" />
+                  الخزينة المصدرة / الحساب البنكي *
                 </Label>
                 {selectedAccount && (
-                  <span className="text-[11px] text-gray-500 font-mono">
+                  <span className="text-[11px] text-gray-600 font-mono font-semibold">
                     الرصيد المتاح: {Number(selectedAccount.balance).toLocaleString()} {selectedAccount.currency}
                   </span>
                 )}
@@ -203,14 +249,27 @@ export function AddTransactionDialog({
                 id="treasuryAccount"
                 value={treasuryAccountId}
                 onChange={(e) => setTreasuryAccountId(e.target.value)}
-                className="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm font-medium text-gray-800 focus:outline-none focus:border-[#012d1d]"
+                className="w-full bg-white border border-gray-300 rounded-lg p-2.5 text-xs font-bold text-gray-800 focus:outline-none focus:border-[#012d1d]"
               >
+                {treasuryAccounts.length === 0 && (
+                  <option value="">لا توجد حسابات خزينة نشطة</option>
+                )}
                 {treasuryAccounts.map((acc) => (
                   <option key={acc.id} value={acc.id}>
-                    {acc.name} — ({Number(acc.balance).toLocaleString()} {acc.currency})
+                    {acc.name} — (الرصيد المتاح: {Number(acc.balance).toLocaleString()} {acc.currency})
                   </option>
                 ))}
               </select>
+
+              {/* Dynamic balance simulation */}
+              {selectedAccount && numericAmount > 0 && !isOverdraft && (
+                <div className="text-[11px] text-emerald-700 font-medium font-mono flex items-center justify-between pt-1 border-t border-gray-200/60">
+                  <span>الرصيد التقديري بعد الخصم:</span>
+                  <span className="font-bold">
+                    {(Number(selectedAccount.balance) - numericAmount).toLocaleString()} {selectedAccount.currency}
+                  </span>
+                </div>
+              )}
 
               {isOverdraft && (
                 <div className="text-[11px] text-red-600 font-bold flex items-center gap-1">
@@ -249,7 +308,7 @@ export function AddTransactionDialog({
             </Button>
             <Button
               type="submit"
-              disabled={loading || (isOverdraft && isCashOutflow)}
+              disabled={loading || (isOverdraft && isCashOutflow) || isAdvanceOverSalary}
               className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}

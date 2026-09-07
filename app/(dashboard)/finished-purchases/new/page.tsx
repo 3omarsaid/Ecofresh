@@ -1,11 +1,20 @@
-import { getFinishedGoodsSuppliersSelect, getStationsForSelect } from "@/actions/direct-deals";
+import {
+  getFinishedGoodsSuppliersSelect,
+  getStationsForSelect,
+  getProductsForDirectDealSelect,
+  getPackagingSuppliesSelect,
+} from "@/actions/direct-deals";
 import { DirectDealForm } from "@/components/modules/procurement/direct-deal-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewFinishedPurchasePage() {
-  const suppliers = await getFinishedGoodsSuppliersSelect();
-  const stations = await getStationsForSelect();
+  const [suppliers, stations, products, packagingSupplies] = await Promise.all([
+    getFinishedGoodsSuppliersSelect(),
+    getStationsForSelect(),
+    getProductsForDirectDealSelect(),
+    getPackagingSuppliesSelect(),
+  ]);
 
   return (
     <div className="p-6 space-y-6">
@@ -16,7 +25,12 @@ export default async function NewFinishedPurchasePage() {
         </p>
       </div>
 
-      <DirectDealForm suppliers={suppliers} stations={stations} />
+      <DirectDealForm
+        suppliers={suppliers}
+        stations={stations}
+        products={products}
+        packagingSupplies={packagingSupplies}
+      />
     </div>
   );
 }

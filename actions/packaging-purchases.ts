@@ -1,6 +1,7 @@
 "use server";
 
 import { safeRevalidatePath } from '@/lib/utils';
+import { formatActionError } from '@/lib/error-handler';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, can } from '@/lib/auth';
 import { PackagingPurchaseSchema } from '@/lib/validations/purchases';
@@ -28,16 +29,21 @@ export async function addPackagingPurchase(payload: unknown) {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Resolve Target Station
-      let targetStationId = data.stationId;
-      if (!targetStationId) {
-        const firstStation = await tx.station.findFirst({ where: { isActive: true }, orderBy: { createdAt: 'asc' } });
-        if (!firstStation) throw new Error('لا توجد محطات مسجلة بالمشروع لقيد مشتريات المستلزمات عليها');
-        targetStationId = firstStation.id;
+      // 1. Resolve Target Station (Strict station isolation - no arbitrary findFirst fallback)
+      if (!data.stationId) {
+        throw new Error('يجب تحديد محطة التشغيل المستلمة للمستلزمات بدقة');
       }
+      const station = await tx.station.findUnique({ where: { id: data.stationId } });
+      if (!station || !station.isActive) {
+        throw new Error(`المحطة المحددة (${data.stationId}) غير موجودة أو غير نشطة`);
+      }
+      const targetStationId = station.id;
 
-      // 2. Resolve SUPPLIES StockLocation for target station
+      // 2. Resolve and verify SUPPLIES StockLocation for target station
       const suppliesLocation = await getStationLocation(tx, targetStationId, WarehouseType.SUPPLIES);
+      if (suppliesLocation.stationId !== targetStationId || suppliesLocation.type !== WarehouseType.SUPPLIES) {
+        throw new Error('فشل التحقق من ارتباط مخزن المستلزمات بالمحطة المحددة');
+      }
 
       // 3. Increment StationSupply stock
       const updatedStationSupply = await updateStationSupplyStock(
@@ -83,25 +89,33 @@ export async function addPackagingPurchase(payload: unknown) {
 
       // 6. AP Financial Transaction
       const supplier = await tx.supplier.findUnique({ where: { id: data.supplierId } });
-      const { generateTxnId } = await import('@/actions/financials');
-      const txnId = await generateTxnId(tx, pDate);
+      if (!supplier) {
+        throw new Error(`المورد المحدد (${data.supplierId}) غير موجود`);
+      }
+      if (supplier.status !== 'معتمد') {
+        throw new Error(`المورد (${supplier.name}) غير معتمد حالياً`);
+      }
 
-      await tx.financialTransaction.create({
-        data: {
-          txnId,
+      const { AccountingService } = await import('@/lib/accounting/accounting-service');
+      const invoiceRef = data.invoiceNo || `SUP-PUR-${Date.now().toString().slice(-4)}`;
+      await AccountingService.recordTransaction(
+        {
           date: pDate,
           type: 'استحقاق توريد مستلزمات (AP)',
           partyType: 'مورد مستلزمات',
           partyId: data.supplierId,
-          partyName: supplier?.name || 'مورد مستلزمات',
+          partyName: supplier.name,
           amountEgp: totalCost,
           currency: 'EGP',
-          refDoc: data.invoiceNo || `SUP-PUR-${Date.now().toString().slice(-4)}`,
+          relatedEntityType: 'PACKAGING_PURCHASE',
+          relatedEntityId: invoiceRef,
+          refDoc: invoiceRef,
+          paymentMethod: 'CREDIT',
           description: `شراء ${data.qty} ${supply.unit} (${supply.name}) بسعر ${data.unitPrice} ج.م`,
-          status: 'معتمد',
           createdById: user.id,
         },
-      });
+        tx
+      );
 
       return {
         newStationStock: updatedStationSupply.stock,
@@ -122,7 +136,20 @@ export async function addPackagingPurchase(payload: unknown) {
       message: `تم قيد شراء المستلزمات بنجاح ورصيد مخزن المحطة أصبح ${Number(result.newStationStock).toLocaleString()} ${result.unit}`,
     };
   } catch (error: any) {
-    return { success: false, error: error.message || 'حدث خطأ أثناء قيد شراء المستلزمات' };
+    return { success: false, error: formatActionError(error, 'حدث خطأ أثناء قيد شراء المستلزمات') };
+  }
+}
+
+export async function getStationsForPackagingSelect() {
+  try {
+    return await prisma.station.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true, location: true },
+      orderBy: { name: 'asc' },
+    });
+  } catch (error) {
+    console.error('Failed to fetch stations for packaging select:', error);
+    return [];
   }
 }
 

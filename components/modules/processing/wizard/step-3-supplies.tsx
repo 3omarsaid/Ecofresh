@@ -85,13 +85,14 @@ export function Step3Supplies({
       );
       if (match) return Number(match.stock || 0);
     }
-    // Fallback if not populated or standalone
-    return Number(supply.stock || 0);
+    // Strict Station Isolation: return 0 if this supply has no stock record in this station's SUPPLIES warehouse
+    return 0;
   };
 
   const addSupplyRow = () => {
     const selectedIds = new Set(suppliesIssues.map((s) => s.supplyId));
-    const nextSupply = supplies.find((s) => !selectedIds.has(s.id));
+    const nextSupplyWithStock = supplies.find((s) => !selectedIds.has(s.id) && getStationStock(s) > 0);
+    const nextSupply = nextSupplyWithStock || supplies.find((s) => !selectedIds.has(s.id));
 
     if (nextSupply) {
       onChange([

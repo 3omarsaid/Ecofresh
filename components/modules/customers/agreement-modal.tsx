@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FileText, Loader2, Plus } from "lucide-react";
+import { FileText, Loader2, Plus, Calendar, AlertCircle } from "lucide-react";
 
 import { AgreementSchema, type AgreementFormValues } from "@/lib/validations/customer";
 import { addCustomerAgreement } from "@/actions/customers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import {
   Dialog,
@@ -20,6 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface ProductOption {
   id: string;
@@ -31,14 +33,14 @@ interface ProductOption {
 interface AgreementModalProps {
   customerId: string;
   customerName: string;
-  currency: string;
+  currency?: string;
   products: ProductOption[];
 }
 
 export function AgreementModal({
   customerId,
   customerName,
-  currency,
+  currency = "EGP",
   products,
 }: AgreementModalProps) {
   const [open, setOpen] = useState(false);
@@ -49,18 +51,35 @@ export function AgreementModal({
     resolver: zodResolver(AgreementSchema),
     defaultValues: {
       productId: "",
-      targetPriceEur: 1.85,
-      packagingSpec: "كرتونة 10 كجم تصدير",
+      targetPriceEur: undefined,
+      currency: "EGP",
+      packagingSpec: "",
+      validFrom: new Date().toISOString().substring(0, 10),
+      validTo: "",
     },
   });
 
+  const validFrom = form.watch("validFrom");
+  const validTo = form.watch("validTo");
+  const isDateRangeInvalid = Boolean(
+    validFrom && validTo && new Date(validTo) < new Date(validFrom)
+  );
+
   async function onSubmit(values: AgreementFormValues) {
+    if (isDateRangeInvalid) {
+      toast.error("تاريخ انتهاء الاتفاقية يجب أن يكون لاحقاً لتاريخ البدء");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("productId", values.productId);
       formData.append("targetPriceEur", values.targetPriceEur.toString());
+      formData.append("currency", "EGP");
       formData.append("packagingSpec", values.packagingSpec);
+      if (values.validFrom) formData.append("validFrom", values.validFrom);
+      if (values.validTo) formData.append("validTo", values.validTo);
 
       const res = await addCustomerAgreement(customerId, formData);
       if (res.success) {
@@ -87,13 +106,18 @@ export function AgreementModal({
           <Plus className="h-4 w-4" /> إضافة اتفاقية سعر صنف
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md text-right" dir="rtl">
+      <DialogContent className="sm:max-w-lg text-right" dir="rtl">
         <DialogHeader className="text-right">
-          <DialogTitle className="flex items-center gap-2 text-lg font-bold text-gray-900">
-            <FileText className="h-5 w-5 text-emerald-700" /> إضافة اتفاقية أسعار تعاقدية
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2 text-lg font-bold text-gray-900">
+              <FileText className="h-5 w-5 text-emerald-700" /> إضافة اتفاقية أسعار تعاقدية
+            </DialogTitle>
+            <Badge variant="outline" className="text-xs font-bold text-emerald-800 border-emerald-300 bg-emerald-50">
+              العملة: جنيه مصري (ج.م)
+            </Badge>
+          </div>
           <DialogDescription className="text-xs text-gray-500 mt-1">
-            ربط صنف تصديري بسعر الكيلو التقديري المتعاقد عليه مع {customerName}
+            ربط صنف تصديري بسعر الكيلو المتعاقد عليه مع {customerName} وتحديد فترة سريان العقد
           </DialogDescription>
         </DialogHeader>
 
@@ -131,10 +155,15 @@ export function AgreementModal({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-semibold text-gray-700">
-                    السعر التعاقدي للكيلو ({currency}) *
+                    السعر التعاقدي للكيلو (ج.م) *
                   </FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" placeholder="1.85" {...field} />
+                    <CurrencyInput
+                      placeholder="0.00"
+                      value={field.value ?? ""}
+                      onChange={(val) => field.onChange(val)}
+                      step="0.01"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -156,13 +185,58 @@ export function AgreementModal({
               )}
             />
 
+            {/* Contract Date Range: validFrom & validTo */}
+            <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+                <Calendar className="h-4 w-4 text-emerald-700" />
+                <span>فترة سريان الأسعار التعاقدية</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <FormField
+                  control={form.control}
+                  name="validFrom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold text-gray-600">ساري من تاريخ</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} value={field.value ?? ""} className="text-xs font-mono" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="validTo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold text-gray-600">ساري إلى تاريخ</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} value={field.value ?? ""} className="text-xs font-mono" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {isDateRangeInvalid && (
+                <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-medium flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+                  <span>تاريخ نهاية الاتفاقية لا يمكن أن يكون سابقاً لتاريخ البداية!</span>
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center justify-end gap-2 pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 إلغاء
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isDateRangeInvalid}
                 className="bg-[#012d1d] hover:bg-[#02472e] text-white gap-2"
               >
                 {isSubmitting ? (

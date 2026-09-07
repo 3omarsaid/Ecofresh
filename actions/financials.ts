@@ -7,6 +7,7 @@ import { getCurrentUser, can } from '@/lib/auth';
 import { formatActionError } from '@/lib/error-handler';
 import { TransactionSchema, TransferSchema } from '@/lib/validations/transaction';
 import { reconcileAllTreasuryAccounts, reconcileTreasuryAccount } from '@/lib/treasury-reconciliation';
+import { formatCurrency } from '@/lib/currency';
 
 /**
  * Concurrency-safe, collision-free transaction ID generator
@@ -79,13 +80,12 @@ export async function addFinancialTransaction(payload: unknown) {
       if (!account) throw new Error(`الحساب المالي ${data.accountId} غير موجود`);
 
       const currentBalance = Number(account.balance);
-      const isAccountNonEgp = account.currency !== 'EGP';
-      const effectiveAmount = isAccountNonEgp && data.amountCurrency ? data.amountCurrency : data.amountEgp;
+      const effectiveAmount = Number(data.amountEgp);
 
       // 2. Strict Overdraft Protection (Inside Transaction)
       if (!isCollection && currentBalance < effectiveAmount) {
         throw new Error(
-          `رصيد الحساب ${account.name} (${currentBalance.toLocaleString()} ${account.currency}) لا يكفي لسداد ${effectiveAmount.toLocaleString()} ${account.currency}`
+          `رصيد الحساب ${account.name} (${formatCurrency(currentBalance)}) لا يكفي لسداد ${formatCurrency(effectiveAmount)}`
         );
       }
 
@@ -123,7 +123,31 @@ export async function addFinancialTransaction(payload: unknown) {
       // 4. Generate Unique Collision-Free Txn ID
       const txnId = await generateTxnId(tx, txnDate);
 
-      // 5. Create Financial Transaction
+      // 5. Calculate Debit, Credit & Running Balance for Party
+      const isCustomer = data.partyType.includes('عميل');
+      let debit = 0;
+      let credit = 0;
+      if (isCustomer) {
+        if (isCollection) credit = Number(data.amountEgp);
+        else debit = Number(data.amountEgp);
+      } else {
+        if (isCollection) credit = Number(data.amountEgp);
+        else debit = Number(data.amountEgp);
+      }
+
+      const priorTxns = await tx.financialTransaction.findMany({
+        where: { partyId: data.partyId, status: { not: 'ملغاة' } },
+        select: { debit: true, credit: true },
+      });
+      let partyRunning = 0;
+      for (const pt of priorTxns) {
+        if (isCustomer) partyRunning += (Number(pt.debit) - Number(pt.credit));
+        else partyRunning += (Number(pt.credit) - Number(pt.debit));
+      }
+      const balanceAfter = isCustomer ? (partyRunning + (debit - credit)) : (partyRunning + (credit - debit));
+      const paymentMethod = account.type.includes('بنك') ? 'BANK_TRANSFER' : 'CASH';
+
+      // 6. Create Financial Transaction
       await tx.financialTransaction.create({
         data: {
           txnId,
@@ -133,8 +157,14 @@ export async function addFinancialTransaction(payload: unknown) {
           partyId: data.partyId,
           partyName: data.partyName,
           amountEgp: data.amountEgp,
-          amountCurrency: data.amountCurrency || null,
-          currency: data.currency || account.currency || 'EGP',
+          amountCurrency: null,
+          currency: 'EGP',
+          debit,
+          credit,
+          balanceAfter,
+          relatedEntityType: 'PAYMENT_VOUCHER',
+          relatedEntityId: txnId,
+          paymentMethod,
           refDoc: data.refDoc || 'سند مالي مباشر',
           accountId: data.accountId,
           accountName: account.name,
@@ -150,12 +180,12 @@ export async function addFinancialTransaction(payload: unknown) {
           entityType: 'transaction',
           entityId: txnId,
           action: isCollection ? 'COLLECTION' : 'PAYMENT',
-          summary: `تسجيل ${data.type} بقيمة ${effectiveAmount.toLocaleString()} ${account.currency} لحساب ${account.name} (الطرف: ${data.partyName})`,
+          summary: `تسجيل ${data.type} بقيمة ${formatCurrency(effectiveAmount)} لحساب ${account.name} (الطرف: ${data.partyName})`,
           performedBy: user.id,
         },
       });
 
-      return { txnId, newBalance, accountName: account.name, currency: account.currency, partyType: data.partyType, partyId: data.partyId };
+      return { txnId, newBalance, accountName: account.name, currency: 'EGP', partyType: data.partyType, partyId: data.partyId };
     });
 
     await revalidateFinancialImpact(result.partyType, result.partyId);
@@ -163,7 +193,7 @@ export async function addFinancialTransaction(payload: unknown) {
     return {
       success: true,
       data: result,
-      message: `تم بنجاح قيد السند ${result.txnId} وتحديث رصيد ${result.accountName} ليصبح ${result.newBalance.toLocaleString()} ${result.currency}`,
+      message: `تم بنجاح قيد السند ${result.txnId} وتحديث رصيد ${result.accountName} ليصبح ${formatCurrency(result.newBalance)}`,
     };
   } catch (error: any) {
     return { success: false, error: formatActionError(error, 'حدث خطأ أثناء حفظ السند المالي') };
@@ -201,16 +231,10 @@ export async function transferBetweenTreasuryAccounts(payload: unknown) {
       if (!sourceAccount) throw new Error('الحساب المالي المصدر غير موجود');
       if (!destAccount) throw new Error('الحساب المالي المستلم غير موجود');
 
-      if (sourceAccount.currency !== destAccount.currency) {
-        throw new Error(
-          `لا يمكن التحويل المباشر بين حسابات بعملات مختلفة (${sourceAccount.currency} إلى ${destAccount.currency})`
-        );
-      }
-
       const sourceBalance = Number(sourceAccount.balance);
       if (sourceBalance < data.amountEgp) {
         throw new Error(
-          `رصيد الحساب المصدر (${sourceAccount.name}: ${sourceBalance.toLocaleString()} ${sourceAccount.currency}) لا يكفي لتحويل ${data.amountEgp.toLocaleString()} ${sourceAccount.currency}`
+          `رصيد الحساب المصدر (${sourceAccount.name}: ${formatCurrency(sourceBalance)}) لا يكفي لتحويل ${formatCurrency(data.amountEgp)}`
         );
       }
 
@@ -251,8 +275,8 @@ export async function transferBetweenTreasuryAccounts(payload: unknown) {
           partyId: destAccount.id,
           partyName: destAccount.name,
           amountEgp: data.amountEgp,
-          amountCurrency: sourceAccount.currency !== 'EGP' ? data.amountEgp : null,
-          currency: sourceAccount.currency,
+          amountCurrency: null,
+          currency: 'EGP',
           refDoc: transferRef,
           accountId: sourceAccount.id,
           accountName: sourceAccount.name,
@@ -273,8 +297,8 @@ export async function transferBetweenTreasuryAccounts(payload: unknown) {
           partyId: sourceAccount.id,
           partyName: sourceAccount.name,
           amountEgp: data.amountEgp,
-          amountCurrency: destAccount.currency !== 'EGP' ? data.amountEgp : null,
-          currency: destAccount.currency,
+          amountCurrency: null,
+          currency: 'EGP',
           refDoc: transferRef,
           accountId: destAccount.id,
           accountName: destAccount.name,
@@ -290,7 +314,7 @@ export async function transferBetweenTreasuryAccounts(payload: unknown) {
           entityType: 'transaction',
           entityId: transferRef,
           action: 'TRANSFER',
-          summary: `تحويل مبلغ ${data.amountEgp.toLocaleString()} ${sourceAccount.currency} من ${sourceAccount.name} إلى ${destAccount.name}`,
+          summary: `تحويل مبلغ ${formatCurrency(data.amountEgp)} من ${sourceAccount.name} إلى ${destAccount.name}`,
           performedBy: user.id,
         },
       });
@@ -300,7 +324,7 @@ export async function transferBetweenTreasuryAccounts(payload: unknown) {
         sourceName: sourceAccount.name,
         destName: destAccount.name,
         amount: data.amountEgp,
-        currency: sourceAccount.currency,
+        currency: 'EGP',
       };
     });
 
@@ -309,7 +333,7 @@ export async function transferBetweenTreasuryAccounts(payload: unknown) {
     return {
       success: true,
       data: result,
-      message: `تم بنجاح تحويل مبلغ ${result.amount.toLocaleString()} ${result.currency} من ${result.sourceName} إلى ${result.destName} بالمرجع ${result.transferRef}`,
+      message: `تم بنجاح تحويل مبلغ ${formatCurrency(result.amount)} من ${result.sourceName} إلى ${result.destName} بالمرجع ${result.transferRef}`,
     };
   } catch (error: any) {
     return { success: false, error: formatActionError(error, 'حدث خطأ أثناء إجراء التحويل المالي') };
@@ -371,12 +395,12 @@ export async function adjustTreasuryAccountBalance(payload: {
           partyId: account.id,
           partyName: account.name,
           amountEgp: absDiff,
-          amountCurrency: account.currency !== 'EGP' ? absDiff : null,
-          currency: account.currency,
+          amountCurrency: null,
+          currency: 'EGP',
           refDoc: `ADJ-${txnDate.getFullYear()}-${Date.now().toString().slice(-4)}`,
           accountId: account.id,
           accountName: account.name,
-          description: `تسوية رصيد الخزينة من ${currentBalance.toLocaleString()} إلى ${actualBalance.toLocaleString()} ${account.currency} — السبب: ${reason}`,
+          description: `تسوية رصيد الخزينة من ${formatCurrency(currentBalance)} إلى ${formatCurrency(actualBalance)} — السبب: ${reason}`,
           status: 'معتمد',
           createdById: user.id,
         },
@@ -388,7 +412,7 @@ export async function adjustTreasuryAccountBalance(payload: {
           entityType: 'treasury_account',
           entityId: account.id,
           action: 'ADJUSTMENT',
-          summary: `تسوية رصيد ${account.name} بقيمة فارق ${isIncrease ? '+' : '-'}${absDiff.toLocaleString()} ${account.currency} — السبب: ${reason}`,
+          summary: `تسوية رصيد ${account.name} بقيمة فارق ${isIncrease ? '+' : '-'}${formatCurrency(absDiff)} — السبب: ${reason}`,
           performedBy: user.id,
         },
       });
@@ -397,7 +421,7 @@ export async function adjustTreasuryAccountBalance(payload: {
         txnId,
         accountName: account.name,
         newBalance: actualBalance,
-        currency: account.currency,
+        currency: 'EGP',
       };
     });
 
@@ -405,7 +429,7 @@ export async function adjustTreasuryAccountBalance(payload: {
 
     return {
       success: true,
-      message: `تم قيد سند التسوية ${result.txnId} وتحديث رصيد ${result.accountName} ليصبح ${result.newBalance.toLocaleString()} ${result.currency}`,
+      message: `تم قيد سند التسوية ${result.txnId} وتحديث رصيد ${result.accountName} ليصبح ${formatCurrency(result.newBalance)}`,
     };
   } catch (error: any) {
     return { success: false, error: formatActionError(error, 'حدث خطأ أثناء قيد تسوية الخزينة') };
@@ -441,9 +465,7 @@ export async function cancelFinancialTransaction(txnId: string, cancelReason: st
       if (txn.accountId) {
         const account = await tx.treasuryAccount.findUnique({ where: { id: txn.accountId } });
         const currentBalance = Number(account?.balance || 0);
-        const effectiveAmount = account && account.currency !== 'EGP' && txn.amountCurrency
-          ? Number(txn.amountCurrency)
-          : amountEgp;
+        const effectiveAmount = amountEgp;
 
         const isCollection = txn.type.includes('تحصيل') || txn.type.includes('وارد') || txn.type.includes('Inflow') || txn.type.includes('تسوية زيادة');
 
@@ -451,7 +473,7 @@ export async function cancelFinancialTransaction(txnId: string, cancelReason: st
           // If it was money in, check that account has enough balance to decrement
           if (currentBalance < effectiveAmount) {
             throw new Error(
-              `لا يمكن إلغاء التحصيل لأن رصيد الحساب الحالي (${currentBalance.toLocaleString()} ${account?.currency}) أقل من قيمة السند المراد عكسه (${effectiveAmount.toLocaleString()} ${account?.currency})`
+              `لا يمكن إلغاء التحصيل لأن رصيد الحساب الحالي (${formatCurrency(currentBalance)}) أقل من قيمة السند المراد عكسه (${formatCurrency(effectiveAmount)})`
             );
           }
 
@@ -483,7 +505,7 @@ export async function cancelFinancialTransaction(txnId: string, cancelReason: st
           entityType: 'transaction',
           entityId: txnId,
           action: 'CANCEL',
-          summary: `إلغاء القيد المالي ${txnId} بقيمة ${amountEgp.toLocaleString()} ج.م — السبب: ${cancelReason}`,
+          summary: `إلغاء القيد المالي ${txnId} بقيمة ${formatCurrency(amountEgp)} — السبب: ${cancelReason}`,
           performedBy: user.id,
         },
       });
@@ -826,20 +848,15 @@ export async function getFinancialDashboardMetrics() {
       .sort((a, b) => b.remaining - a.remaining)
       .slice(0, 5);
 
-    // Currency-separated Liquidity Totals
-    const egpAccounts = treasuryAccounts.filter((a) => a.currency === 'EGP');
-    const eurAccounts = treasuryAccounts.filter((a) => a.currency === 'EUR');
-    const usdAccounts = treasuryAccounts.filter((a) => a.currency === 'USD');
-
-    const totalEgpLiquidity = egpAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
-    const totalEurLiquidity = eurAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
-    const totalUsdLiquidity = usdAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
-
-    const treasuryCashBalance = egpAccounts
+    // Unified EGP Liquidity Totals
+    const totalEgpLiquidity = treasuryAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
+    const totalEurLiquidity = 0;
+    const totalUsdLiquidity = 0;
+    const treasuryCashBalance = treasuryAccounts
       .filter((a) => !a.type.includes('بنك'))
       .reduce((sum, a) => sum + Number(a.balance), 0);
 
-    const bankBalance = egpAccounts
+    const bankBalance = treasuryAccounts
       .filter((a) => a.type.includes('بنك'))
       .reduce((sum, a) => sum + Number(a.balance), 0);
 

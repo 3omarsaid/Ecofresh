@@ -23,8 +23,6 @@ export function SupplierForm() {
   const form = useForm<SupplierFormValues>({
     resolver: zodResolver(SupplierSchema),
     defaultValues: {
-      id: "SUPP-",
-      code: "SUPP-",
       name: "",
       type: SupplierCategory.RAW_AGRICULTURAL,
       mainProduct: "",
@@ -78,7 +76,7 @@ export function SupplierForm() {
           <div>
             <CardTitle className="text-xl font-bold text-white">تسجيل مورد جديد بالدليل</CardTitle>
             <CardDescription className="text-emerald-100 text-xs mt-1">
-              أدخل بيانات المزارع أو مصانع التجهيز والكرتون ورقم التواصل والموقع الجغرافي
+              أدخل بيانات المزارع أو مصانع التجهيز والكرتون ورقم التواصل والموقع الجغرافي (يتم التكويد تلقائياً)
             </CardDescription>
           </div>
         </div>
@@ -87,35 +85,6 @@ export function SupplierForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Supplier ID */}
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">معرف المورد *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="مثال: SUPP-009" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Code */}
-              <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">كود التكود *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="مثال: SUPP-009" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               {/* Name */}
               <FormField
@@ -162,7 +131,25 @@ export function SupplierForm() {
                   <FormItem>
                     <FormLabel className="font-semibold text-gray-700">المحصول / المنتج الرئيسي</FormLabel>
                     <FormControl>
-                      <Input placeholder="مثال: فراولة / مانجو / كرتون" value={field.value ?? ""} onChange={field.onChange} />
+                      <>
+                        <Input
+                          placeholder="مثال: فراولة / مانجو / كرتون"
+                          list="crops-catalog-list"
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                        />
+                        <datalist id="crops-catalog-list">
+                          <option value="فراولة" />
+                          <option value="مانجو" />
+                          <option value="جوافة" />
+                          <option value="خرشوف" />
+                          <option value="رمان" />
+                          <option value="برتقال" />
+                          <option value="بامية" />
+                          <option value="كرتون تصدير" />
+                          <option value="أكياس بولي إيثيلين" />
+                        </datalist>
+                      </>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

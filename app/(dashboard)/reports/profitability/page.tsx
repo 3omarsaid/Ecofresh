@@ -6,6 +6,7 @@ import { ProfitabilityChart } from "@/components/modules/reports/profitability-c
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp, Ship, DollarSign, Percent } from "lucide-react";
+import { formatCurrency } from "@/lib/currency";
 
 export const metadata = {
   title: "تقرير ربحية الشحنات — Nilotic Frost ERP",
@@ -53,11 +54,7 @@ export default async function ShipmentsProfitabilityReportPage() {
           <CardContent className="p-6">
             <p className="text-xs text-muted-foreground font-medium">إجمالي الإيرادات (Gross Revenue)</p>
             <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1 font-mono">
-              {summary.totalRevenue.toLocaleString("ar-EG", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}{" "}
-              ج.م
+              {formatCurrency(summary.totalRevenue)}
             </h3>
           </CardContent>
         </Card>
@@ -66,11 +63,7 @@ export default async function ShipmentsProfitabilityReportPage() {
           <CardContent className="p-6">
             <p className="text-xs text-muted-foreground font-medium">إجمالي التكاليف (Total Cost)</p>
             <h3 className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1 font-mono">
-              {summary.totalCost.toLocaleString("ar-EG", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}{" "}
-              ج.م
+              {formatCurrency(summary.totalCost)}
             </h3>
           </CardContent>
         </Card>
@@ -104,7 +97,7 @@ export default async function ShipmentsProfitabilityReportPage() {
                 <th className="p-3 text-right">العميل</th>
                 <th className="p-3 text-right">رقم الحاوية</th>
                 <th className="p-3 text-center">الكمية (كجم)</th>
-                <th className="p-3 text-center">سعر البائع (EUR)</th>
+                <th className="p-3 text-center">سعر البيع (ج.م)</th>
                 <th className="p-3 text-center">الإيراد الإجمالي (ج.م)</th>
                 <th className="p-3 text-center">التكلفة الكلية (ج.م)</th>
                 <th className="p-3 text-center">صافي الربح (ج.م)</th>
@@ -132,25 +125,16 @@ export default async function ShipmentsProfitabilityReportPage() {
                       {sh.shippedQtyKg.toLocaleString("ar-EG")}
                     </td>
                     <td className="p-3 text-center font-mono font-medium">
-                      €{sh.sellingPriceEur.toFixed(3)}
+                      {formatCurrency(sh.sellingPriceEur)}
                     </td>
                     <td className="p-3 text-center font-mono font-semibold text-emerald-600 dark:text-emerald-400">
-                      {sh.grossRevenueEgp.toLocaleString("ar-EG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {formatCurrency(sh.grossRevenueEgp)}
                     </td>
                     <td className="p-3 text-center font-mono font-semibold text-rose-600 dark:text-rose-400">
-                      {sh.totalCostEgp.toLocaleString("ar-EG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {formatCurrency(sh.totalCostEgp)}
                     </td>
                     <td className="p-3 text-center font-mono font-bold text-primary">
-                      {sh.netProfitEgp.toLocaleString("ar-EG", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {formatCurrency(sh.netProfitEgp)}
                     </td>
                     <td className="p-3 text-center font-mono font-bold text-emerald-600 dark:text-emerald-400">
                       {sh.marginPercent.toFixed(2)}%

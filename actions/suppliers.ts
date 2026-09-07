@@ -1,9 +1,11 @@
 "use server";
 
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
+import { unstable_cache } from 'next/cache';
+import { safeRevalidatePath, safeRevalidateTag } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, can } from '@/lib/auth';
 import { SupplierSchema } from '@/lib/validations/supplier';
+import { generateSupplierId } from '@/lib/id-generator';
 
 export async function createSupplier(formData: FormData) {
   const user = await getCurrentUser();
@@ -18,14 +20,24 @@ export async function createSupplier(formData: FormData) {
   }
 
   try {
-    const supplier = await prisma.supplier.create({
-      data: validated.data,
+    const supplier = await prisma.$transaction(async (tx) => {
+      const generatedId = validated.data.id || (await generateSupplierId(tx));
+      const code = validated.data.code?.trim() || generatedId;
+
+      return await tx.supplier.create({
+        data: {
+          ...validated.data,
+          id: generatedId,
+          code,
+        },
+      });
     });
-    revalidateTag('suppliers');
-    revalidatePath('/suppliers');
+
+    safeRevalidateTag('suppliers');
+    safeRevalidatePath('/suppliers');
     return {
       success: true,
-      message: `تم تسجيل المورد ${supplier.name} بنجاح`,
+      message: `تم تسجيل المورد ${supplier.name} بالكود ${supplier.code} بنجاح`,
     };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -80,8 +92,8 @@ export async function updateSupplier(id: string, formData: FormData) {
       where: { id },
       data: validated.data,
     });
-    revalidateTag('suppliers');
-    revalidatePath('/suppliers');
+    safeRevalidateTag('suppliers');
+    safeRevalidatePath('/suppliers');
     return { success: true, message: `تم تعديل بيانات المورد ${supplier.name} بنجاح` };
   } catch (error: any) {
     return { success: false, error: error.message || 'حدث خطأ أثناء تعديل المورد' };
@@ -98,8 +110,8 @@ export async function deleteSupplier(id: string) {
     await prisma.supplier.delete({
       where: { id },
     });
-    revalidateTag('suppliers');
-    revalidatePath('/suppliers');
+    safeRevalidateTag('suppliers');
+    safeRevalidatePath('/suppliers');
     return { success: true, message: 'تم حذف المورد بنجاح' };
   } catch (error: any) {
     if (error.code === 'P2003') {

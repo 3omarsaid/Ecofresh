@@ -15,21 +15,31 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-export function SupplyForm() {
+interface StationOption {
+  id: string;
+  name: string;
+  location?: string;
+}
+
+interface SupplyFormProps {
+  stations?: StationOption[];
+}
+
+export function SupplyForm({ stations = [] }: SupplyFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<SupplyFormValues>({
     resolver: zodResolver(SupplySchema),
     defaultValues: {
-      id: "SUP-",
-      code: "CTN-EXP-",
+      code: "",
       name: "",
       category: "كرتونة",
-      capacityKg: 10,
+      capacityKg: undefined,
       unit: "كرتونة",
       stock: 0,
-      unitPrice: 18.0,
+      unitPrice: 0,
+      stationId: "",
     },
   });
 
@@ -79,7 +89,7 @@ export function SupplyForm() {
           <div>
             <CardTitle className="text-xl font-bold text-white">إضافة مستلزم تعبئة وتغليف جديد</CardTitle>
             <CardDescription className="text-emerald-100 text-xs mt-1">
-              أدخل تكويد كرتونة أو أكياس أو مستلزمات التغليف والتبخير ورصيد الشراء الأول
+              أدخل تكويد كرتونة أو أكياس ومستلزمات التغليف ورصيد الشراء الأول (يتم التكويد تلقائياً)
             </CardDescription>
           </div>
         </div>
@@ -88,30 +98,15 @@ export function SupplyForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Supply ID */}
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">معرف المستلزم *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="مثال: SUP-06" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Code */}
+              {/* Code (Optional) */}
               <FormField
                 control={form.control}
                 name="code"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">كود المستلزم التصديري *</FormLabel>
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="font-semibold text-gray-700">كود المستلزم التصديري (اختياري)</FormLabel>
                     <FormControl>
-                      <Input placeholder="مثال: CTN-EXP-5K" {...field} />
+                      <Input placeholder="مثال: CTN-EXP-5K (أو اتركه فارغاً للتوليد التلقائي)" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -201,9 +196,35 @@ export function SupplyForm() {
                 name="stock"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">رصيد المخزون الأولي *</FormLabel>
+                    <FormLabel className="font-semibold text-gray-700">رصيد المخزون الأولي</FormLabel>
                     <FormControl>
                       <Input type="number" step="1" placeholder="2000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Station for Initial Stock */}
+              <FormField
+                control={form.control}
+                name="stationId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-semibold text-gray-700">محطة استلام الرصيد الأولي</FormLabel>
+                    <FormControl>
+                      <select
+                        {...field}
+                        value={field.value || ""}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <option value="">اختر المحطة (افتراضي: أول محطة نشطة)</option>
+                        {stations.map((stn) => (
+                          <option key={stn.id} value={stn.id}>
+                            {stn.name} ({stn.id})
+                          </option>
+                        ))}
+                      </select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -1,10 +1,18 @@
-import { getCustomersForOrderSelect } from "@/actions/client-orders";
+import {
+  getCustomersForOrderSelect,
+  getProductsForOrderSelect,
+  getPackagingForOrderSelect,
+} from "@/actions/client-orders";
 import { ClientOrderForm } from "@/components/modules/orders/client-order-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewClientOrderPage() {
-  const customers = await getCustomersForOrderSelect();
+  const [customers, products, packaging] = await Promise.all([
+    getCustomersForOrderSelect(),
+    getProductsForOrderSelect(),
+    getPackagingForOrderSelect(),
+  ]);
 
   return (
     <div className="p-6 space-y-6">
@@ -15,7 +23,11 @@ export default async function NewClientOrderPage() {
         </p>
       </div>
 
-      <ClientOrderForm customers={customers} />
+      <ClientOrderForm
+        customers={customers}
+        products={products}
+        packaging={packaging}
+      />
     </div>
   );
 }

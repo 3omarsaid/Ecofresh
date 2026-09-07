@@ -622,6 +622,12 @@ model FinancialTransaction {
   amountEgp      Decimal  @map("amount_egp") @db.Decimal(15, 2)
   amountCurrency Decimal? @map("amount_currency") @db.Decimal(15, 2)
   currency       String?  @default("EGP")
+  debit          Decimal  @default(0.0) @db.Decimal(15, 2)
+  credit         Decimal  @default(0.0) @db.Decimal(15, 2)
+  balanceAfter   Decimal? @map("balance_after") @db.Decimal(15, 2)
+  relatedEntityType String? @map("related_entity_type")
+  relatedEntityId   String? @map("related_entity_id")
+  paymentMethod     String? @default("CASH") @map("payment_method")
   refDoc         String?  @map("ref_doc")
   accountId      String?  @map("account_id")
   accountName    String?  @map("account_name")
@@ -638,6 +644,7 @@ model FinancialTransaction {
   @@index([date])
   @@index([type])
   @@index([accountId])
+  @@index([relatedEntityType, relatedEntityId])
   @@map("financial_transactions")
 }
 

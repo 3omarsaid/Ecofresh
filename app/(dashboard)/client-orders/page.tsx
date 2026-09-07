@@ -5,6 +5,7 @@ import { getClientOrders } from "@/actions/client-orders";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatCurrency } from "@/lib/currency";
 
 export const dynamic = "force-dynamic";
 
@@ -139,8 +140,8 @@ export default async function ClientOrdersPage() {
                         <td className="p-3 font-bold text-gray-900">
                           {ordered.toLocaleString()} كجم
                         </td>
-                        <td className="p-3 font-mono">
-                          {Number(o.unitPriceEur).toFixed(2)} {o.customer.currency}
+                        <td className="p-3 font-mono font-bold text-[#012d1d]">
+                          {formatCurrency(Number(o.unitPriceEur))} / كجم
                         </td>
                         <td className="p-3 text-xs text-gray-700">{o.destinationPort}</td>
                         <td className="p-3">

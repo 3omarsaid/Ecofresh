@@ -37,17 +37,17 @@ export function ShipmentWizard({
   const [formData, setFormData] = useState<ShipmentFormValues>({
     orderId: clientOrders.length > 0 ? clientOrders[0].orderId : "",
     dispatchDate: new Date().toISOString().substring(0, 10),
-    containerNo: "MSKU-987654-2",
-    sealNo: "EG-CUS-88210",
-    shippingLine: "Maersk Line",
-    bookingNo: "BKG-99201",
+    containerNo: "",
+    sealNo: "",
+    shippingLine: "",
+    bookingNo: "",
     allocatedBatches: [],
     costs: {
-      inlandTrucking: 6500,
-      oceanFreight: 22000,
-      customsClearance: 4500,
-      inspectionCertificates: 2500,
-      portTerminalCharges: 3500,
+      inlandTrucking: 0,
+      oceanFreight: 0,
+      customsClearance: 0,
+      inspectionCertificates: 0,
+      portTerminalCharges: 0,
     },
     notes: "",
   });
@@ -90,7 +90,20 @@ export function ShipmentWizard({
 
       for (const item of formData.allocatedBatches) {
         const batch = finishedGoodsBatches.find((b) => b.fgBatchId === item.fgBatchId);
-        const maxAvail = batch ? Number(batch.availableQty) : 0;
+        if (!batch) {
+          setStepError(`الباتش (${item.fgBatchId}) غير موجود بمخزن المنتج التام`);
+          return false;
+        }
+        if (
+          selectedOrder &&
+          batch.productName.trim().toLowerCase() !== selectedOrder.productName.trim().toLowerCase()
+        ) {
+          setStepError(
+            `الباتش (${item.fgBatchId} - ${batch.productName}) لا يطابق منتج الطلبية المحدد (${selectedOrder.productName})`
+          );
+          return false;
+        }
+        const maxAvail = Number(batch.availableQty);
         if (item.qty > maxAvail) {
           setStepError(
             `الكمية المخصصة بالباتش (${item.fgBatchId}) تتجاوز رصيد المخزن المتاح (${maxAvail.toLocaleString()} كجم)`
@@ -242,7 +255,16 @@ export function ShipmentWizard({
             selectedOrderId={formData.orderId}
             dispatchDate={formData.dispatchDate}
             notes={formData.notes}
-            onOrderSelect={(orderId) => setFormData((prev) => ({ ...prev, orderId }))}
+            onOrderSelect={(orderId) =>
+              setFormData((prev) => {
+                if (prev.orderId === orderId) return prev;
+                return {
+                  ...prev,
+                  orderId,
+                  allocatedBatches: [], // Clear child allocations when order changes!
+                };
+              })
+            }
             onChange={(fields) => setFormData((prev) => ({ ...prev, ...fields }))}
             errors={errors}
           />

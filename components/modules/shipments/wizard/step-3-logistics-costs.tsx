@@ -6,6 +6,7 @@ import { Truck, Calculator, DollarSign, FileText, CheckCircle } from "lucide-rea
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { AllocatedBatchItem } from "./step-2-batch-allocation";
+import { formatCurrency } from "@/lib/currency";
 
 interface Step3LogisticsCostsProps {
   selectedOrder?: ClientOrder | null;
@@ -42,10 +43,7 @@ export function Step3LogisticsCosts({
   const totalAllocatedKg = allocatedBatches.reduce((sum, item) => sum + (item.qty || 0), 0);
   const totalBatchCost = allocatedBatches.reduce((sum, item) => sum + (item.qty * item.costPerKg), 0);
 
-  const unitPriceEur = selectedOrder ? Number(selectedOrder.unitPriceEur) : 0;
-  const fxRate = selectedOrder ? Number(selectedOrder.fxRate) : 53.2;
-  const unitPriceEgp = unitPriceEur * fxRate;
-
+  const unitPriceEgp = selectedOrder ? Number(selectedOrder.unitPriceEur) : 0;
   const totalRevenueEgp = totalAllocatedKg * unitPriceEgp;
 
   const totalLogisticsCost =
@@ -149,7 +147,7 @@ export function Step3LogisticsCosts({
               <span>مصروفات الشحن والتصدير (بالجنيه)</span>
             </h3>
             <span className="font-mono font-bold text-xs bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full border border-emerald-200">
-              إجمالي اللوجستيات: {totalLogisticsCost.toLocaleString()} ج.م
+              إجمالي اللوجستيات: {formatCurrency(totalLogisticsCost)}
             </span>
           </div>
 
@@ -244,23 +242,23 @@ export function Step3LogisticsCosts({
             <div className="flex justify-between items-center text-white/80">
               <span className="font-sans">إجمالي المبيعات الإرادية:</span>
               <strong className="text-sm font-bold text-emerald-300">
-                {Math.round(totalRevenueEgp).toLocaleString()} ج.م
+                {formatCurrency(totalRevenueEgp)}
               </strong>
             </div>
 
             <div className="flex justify-between items-center text-white/70">
               <span className="font-sans">تكلفة تصنيع اللوطات المخصصة:</span>
-              <strong className="text-white font-bold">{Math.round(totalBatchCost).toLocaleString()} ج.م</strong>
+              <strong className="text-white font-bold">{formatCurrency(totalBatchCost)}</strong>
             </div>
 
             <div className="flex justify-between items-center text-white/70">
               <span className="font-sans">المصروفات اللوجستية والنولون:</span>
-              <strong className="text-white font-bold">{totalLogisticsCost.toLocaleString()} ج.م</strong>
+              <strong className="text-white font-bold">{formatCurrency(totalLogisticsCost)}</strong>
             </div>
 
             <div className="pt-3 border-t border-white/20 flex justify-between items-center text-xs font-bold text-white">
               <span className="font-sans">إجمالي تكلفة الشحنة الكلية:</span>
-              <strong className="text-sm text-red-300">{Math.round(grandTotalCost).toLocaleString()} ج.م</strong>
+              <strong className="text-sm text-red-300">{formatCurrency(grandTotalCost)}</strong>
             </div>
           </div>
 
@@ -270,7 +268,7 @@ export function Step3LogisticsCosts({
               <div>
                 <span className="text-xs text-emerald-300 block font-sans">صافي ربح الشحنة التقديري:</span>
                 <strong className="text-2xl font-bold text-emerald-300 font-mono">
-                  {Math.round(netProfitEgp).toLocaleString()} ج.م
+                  {formatCurrency(netProfitEgp)}
                 </strong>
               </div>
               <div className="text-left">
@@ -284,7 +282,7 @@ export function Step3LogisticsCosts({
             <div className="pt-2 border-t border-white/10 flex justify-between text-xs font-mono">
               <span className="text-white/80 font-sans">صافي ربح الكيلوجرام:</span>
               <strong className="text-emerald-300 font-bold">
-                {profitPerKg.toFixed(2)} ج.م / كجم
+                {formatCurrency(profitPerKg)} / كجم
               </strong>
             </div>
           </div>

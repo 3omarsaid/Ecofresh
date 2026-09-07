@@ -13,9 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { formatCurrency } from "@/lib/currency";
 import { transferBetweenTreasuryAccounts } from "@/actions/financials";
 import { getTreasuryAccounts } from "@/actions/treasury";
 import {
+  AlertCircle,
   ArrowRight,
   ArrowRightLeft,
   CheckCircle2,
@@ -61,21 +64,31 @@ export function TreasuryTransferModal({
         .then((accs) => {
           const active = accs.filter((a: any) => a.isActive);
           setAccounts(active);
-          if (active.length >= 2) {
-            setSourceAccountId(active[0].id);
-            setDestinationAccountId(active[1].id);
-          } else if (active.length === 1) {
+          if (active.length >= 1) {
             setSourceAccountId(active[0].id);
           }
         })
         .finally(() => setLoadingAccounts(false));
-    } else if (!sourceAccountId && accounts.length >= 2) {
+    } else if (!sourceAccountId && accounts.length >= 1) {
       setSourceAccountId(accounts[0].id);
-      setDestinationAccountId(accounts[1].id);
     }
   }, [accounts, sourceAccountId]);
 
   const sourceAccount = accounts.find((a) => a.id === sourceAccountId);
+
+  // Destination accounts can be any active account except source
+  const compatibleDestAccounts = accounts.filter((a) => a.id !== sourceAccountId);
+
+  useEffect(() => {
+    if (sourceAccount) {
+      const currentDest = accounts.find((a) => a.id === destinationAccountId);
+      if (!currentDest || currentDest.id === sourceAccountId) {
+        const firstMatching = accounts.find((a) => a.id !== sourceAccountId);
+        setDestinationAccountId(firstMatching ? firstMatching.id : "");
+      }
+    }
+  }, [sourceAccountId, sourceAccount, accounts, destinationAccountId]);
+
   const destAccount = accounts.find((a) => a.id === destinationAccountId);
 
   const sourceBalance = sourceAccount ? Number(sourceAccount.balance) : 0;
@@ -87,7 +100,7 @@ export function TreasuryTransferModal({
   const destAfter = destBalance + numAmount;
 
   const isOverdraft = numAmount > sourceBalance;
-  const isSameAccount = sourceAccountId === destinationAccountId;
+  const isSameAccount = Boolean(sourceAccountId && destinationAccountId && sourceAccountId === destinationAccountId);
 
   const handleProceedToConfirm = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,7 +123,7 @@ export function TreasuryTransferModal({
 
     if (isOverdraft) {
       setErrorMessage(
-        `رصيد الحساب المصدر (${sourceBalance.toLocaleString()} ج.م) لا يكفي لتحويل ${numAmount.toLocaleString()} ج.م`
+        `رصيد الحساب المصدر (${formatCurrency(sourceBalance)}) لا يكفي لتحويل ${formatCurrency(numAmount)}`
       );
       return;
     }
@@ -127,7 +140,7 @@ export function TreasuryTransferModal({
       sourceAccountId,
       destinationAccountId,
       amountEgp: numAmount,
-      notes: notes || "تحويل نقدية بين الحسابات",
+      notes: notes || `مناقلة نقدية داخلية من ${sourceAccount?.name} إلى ${destAccount?.name}`,
     };
 
     const res = await transferBetweenTreasuryAccounts(payload);
@@ -137,6 +150,7 @@ export function TreasuryTransferModal({
       setSuccessData({
         transferRef: res.data?.transferRef,
         amount: numAmount,
+        currency: "EGP",
         sourceName: sourceAccount?.name,
         destName: destAccount?.name,
         sourceAfter,
@@ -171,11 +185,11 @@ export function TreasuryTransferModal({
                 تحويل نقدية داخلي (مناقلة خزائن وبنوك)
               </DialogTitle>
               <p className="text-xs text-blue-200/90 mt-1">
-                نقل سيولة بين الحسابات بدون التأثير على الإيرادات أو الأرباح
+                نقل سيولة بين الحسابات بالجنيه المصري بدون التأثير على الإيرادات أو الأرباح
               </p>
             </div>
             <Badge variant="outline" className="bg-white/10 text-white border-white/20 text-xs">
-              مناقلة أرصدة ↔
+              جنيه مصري (ج.م)
             </Badge>
           </div>
         </DialogHeader>
@@ -188,19 +202,23 @@ export function TreasuryTransferModal({
                 <Label htmlFor="source" className="text-xs font-bold text-gray-700">
                   الحساب المالي المصدر (الخصم منه) *
                 </Label>
-                <select
-                  id="source"
-                  value={sourceAccountId}
-                  onChange={(e) => setSourceAccountId(e.target.value)}
-                  className="w-full bg-white border border-gray-300 rounded-lg p-2.5 text-xs font-bold text-gray-800 focus:outline-none focus:border-blue-900"
-                  required
-                >
-                  {accounts.map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.name} — رصيده الحالي: {Number(acc.balance).toLocaleString()} {acc.currency}
-                    </option>
-                  ))}
-                </select>
+                {loadingAccounts ? (
+                  <div className="text-xs text-gray-400">جاري تحميل الحسابات...</div>
+                ) : (
+                  <select
+                    id="source"
+                    value={sourceAccountId}
+                    onChange={(e) => setSourceAccountId(e.target.value)}
+                    className="w-full bg-white border border-gray-300 rounded-lg p-2.5 text-xs font-bold text-gray-800 focus:outline-none focus:border-blue-900"
+                    required
+                  >
+                    {accounts.map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.name} — رصيده الحالي: {formatCurrency(acc.balance)}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               {/* Destination Account */}
@@ -208,19 +226,27 @@ export function TreasuryTransferModal({
                 <Label htmlFor="dest" className="text-xs font-bold text-gray-700">
                   الحساب المالي المستلم (الإيداع إليه) *
                 </Label>
-                <select
-                  id="dest"
-                  value={destinationAccountId}
-                  onChange={(e) => setDestinationAccountId(e.target.value)}
-                  className="w-full bg-white border border-gray-300 rounded-lg p-2.5 text-xs font-bold text-gray-800 focus:outline-none focus:border-blue-900"
-                  required
-                >
-                  {accounts.map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.name} — رصيده الحالي: {Number(acc.balance).toLocaleString()} {acc.currency}
-                    </option>
-                  ))}
-                </select>
+                {compatibleDestAccounts.length === 0 ? (
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs font-medium flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+                    <span>لا توجد حسابات أخرى للتحويل إليها.</span>
+                  </div>
+                ) : (
+                  <select
+                    id="dest"
+                    value={destinationAccountId}
+                    onChange={(e) => setDestinationAccountId(e.target.value)}
+                    className="w-full bg-white border border-gray-300 rounded-lg p-2.5 text-xs font-bold text-gray-800 focus:outline-none focus:border-blue-900"
+                    required
+                  >
+                    <option value="">-- اختر الحساب المستلم --</option>
+                    {compatibleDestAccounts.map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.name} — رصيده الحالي: {formatCurrency(acc.balance)}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               {/* Amount */}
@@ -228,50 +254,39 @@ export function TreasuryTransferModal({
                 <Label htmlFor="amount" className="text-xs font-bold text-gray-700">
                   مبلغ التحويل (ج.م) *
                 </Label>
-                <div className="relative">
-                  <Input
-                    id="amount"
-                    type="number"
-                    min="1"
-                    step="any"
-                    value={amount}
-                    onChange={(e) =>
-                      setAmount(e.target.value === "" ? "" : parseFloat(e.target.value))
-                    }
-                    placeholder="أدخل مبلغ التحويل..."
-                    className="font-mono text-lg font-bold text-left dir-ltr pl-14"
-                    required
-                    autoFocus
-                  />
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
-                    EGP
-                  </span>
-                </div>
+                <CurrencyInput
+                  id="amount"
+                  value={amount}
+                  onChange={(val) => setAmount(typeof val === "number" ? val : "")}
+                  placeholder="0.00"
+                  required
+                  autoFocus
+                />
               </div>
 
-              {/* Live Dual Balance Preview */}
+              {/* Live Dual Balance Preview in Native Currency */}
               <div className="grid grid-cols-2 gap-3 p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-xs">
                 <div className="space-y-1">
-                  <span className="text-gray-500 font-semibold block">الحساب المصدر بعد التحويل:</span>
+                  <span className="text-gray-500 font-semibold block">المصدر بعد التحويل:</span>
                   <span
                     className={`font-mono font-bold block ${
                       isOverdraft ? "text-rose-600" : "text-gray-800"
                     }`}
                   >
-                    {sourceAfter.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(sourceAfter)}
                   </span>
                   <span className="text-[10px] text-gray-400">
-                    (قبل: {sourceBalance.toLocaleString()} ج.م)
+                    (قبل: {formatCurrency(sourceBalance)})
                   </span>
                 </div>
 
                 <div className="space-y-1 border-r border-gray-200 pr-3">
-                  <span className="text-gray-500 font-semibold block">الحساب المستلم بعد التحويل:</span>
+                  <span className="text-gray-500 font-semibold block">المستلم بعد التحويل:</span>
                   <span className="font-mono font-bold text-emerald-700 block">
-                    {destAfter.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(destAfter)}
                   </span>
                   <span className="text-[10px] text-gray-400">
-                    (قبل: {destBalance.toLocaleString()} ج.م)
+                    (قبل: {formatCurrency(destBalance)})
                   </span>
                 </div>
               </div>
@@ -279,7 +294,9 @@ export function TreasuryTransferModal({
               {isOverdraft && (
                 <div className="flex items-center gap-1.5 text-xs text-rose-700 bg-rose-50 p-2.5 rounded-lg border border-rose-200 font-bold">
                   <ShieldAlert className="w-4 h-4 shrink-0" />
-                  <span>رصيد الحساب المصدر لا يكفي لإجراء هذا التحويل.</span>
+                  <span>
+                    رصيد الحساب المصدر ({formatCurrency(sourceBalance)}) لا يكفي لإجراء هذا التحويل.
+                  </span>
                 </div>
               )}
 
@@ -331,7 +348,13 @@ export function TreasuryTransferModal({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={numAmount <= 0 || isOverdraft || isSameAccount}
+                  disabled={
+                    numAmount <= 0 ||
+                    isOverdraft ||
+                    isSameAccount ||
+                    !destinationAccountId ||
+                    compatibleDestAccounts.length === 0
+                  }
                   className="bg-blue-900 hover:bg-blue-950 text-white font-bold gap-2"
                 >
                   التالي: مراجعة التحويل
@@ -346,7 +369,7 @@ export function TreasuryTransferModal({
               <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1">
                 <h4 className="font-bold text-blue-900">مراجعة التحويل المالي:</h4>
                 <p className="text-blue-800">
-                  سيتم خصم المبلغ من الحساب المصدر وإضافته للحساب المستلم لحظياً في عملية واحدة متزامنة.
+                  سيتم خصم المبلغ من الحساب المصدر وإضافته للحساب المستلم لحظياً بالجنيه المصري.
                 </p>
               </div>
 
@@ -362,19 +385,19 @@ export function TreasuryTransferModal({
                 <div className="flex justify-between p-3 bg-gray-50/50 font-bold">
                   <span className="text-gray-500">قيمة التحويل:</span>
                   <span className="font-mono text-base text-blue-800">
-                    {numAmount.toLocaleString("ar-EG", { minimumFractionDigits: 2 })} ج.م
+                    {formatCurrency(numAmount)}
                   </span>
                 </div>
                 <div className="flex justify-between p-3">
                   <span className="text-gray-500">رصيد المصدر بعد الخصم:</span>
                   <span className="font-mono font-bold text-gray-800">
-                    {sourceAfter.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(sourceAfter)}
                   </span>
                 </div>
                 <div className="flex justify-between p-3 bg-emerald-50 font-bold">
                   <span className="text-emerald-900">رصيد المستلم بعد الإيداع:</span>
                   <span className="font-mono text-emerald-800">
-                    {destAfter.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(destAfter)}
                   </span>
                 </div>
               </div>
@@ -432,19 +455,19 @@ export function TreasuryTransferModal({
                 <div className="flex justify-between">
                   <span className="text-gray-500">المبلغ المحول:</span>
                   <span className="font-mono font-bold text-gray-900">
-                    {successData.amount.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(successData.amount)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">رصيد {successData.sourceName}:</span>
                   <span className="font-mono font-bold text-gray-700">
-                    {successData.sourceAfter.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(successData.sourceAfter)}
                   </span>
                 </div>
                 <div className="flex justify-between font-bold text-emerald-800">
                   <span>رصيد {successData.destName}:</span>
                   <span className="font-mono">
-                    {successData.destAfter.toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(successData.destAfter)}
                   </span>
                 </div>
               </div>

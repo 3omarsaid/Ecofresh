@@ -22,6 +22,7 @@ import { AgreementModal } from "@/components/modules/customers/agreement-modal";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/currency";
 
 export const metadata = {
   title: "تفاصيل العميل والاتفاقيات — Nilotic Frost ERP",
@@ -94,7 +95,7 @@ export default async function CustomerDetailsPage({ params }: CustomerDetailsPag
               <div className="flex flex-col text-right">
                 <span className="text-xs text-emerald-200 font-semibold">الحد الائتماني المعتمد</span>
                 <span className="text-lg font-bold text-white">
-                  {Number(customer.creditLimit).toLocaleString()} {customer.currency}
+                  {formatCurrency(Number(customer.creditLimit))}
                 </span>
               </div>
             </div>
@@ -151,7 +152,7 @@ export default async function CustomerDetailsPage({ params }: CustomerDetailsPag
           <AgreementModal
             customerId={customer.id}
             customerName={customer.name}
-            currency={customer.currency}
+            currency="EGP"
             products={products}
           />
         </div>
@@ -165,7 +166,7 @@ export default async function CustomerDetailsPage({ params }: CustomerDetailsPag
                     <th className="py-3.5 px-4">كود الصنف</th>
                     <th className="py-3.5 px-4">اسم المنتج التصديري</th>
                     <th className="py-3.5 px-4">فئة الصنف</th>
-                    <th className="py-3.5 px-4">السعر التعاقدي للكيلو ({customer.currency})</th>
+                    <th className="py-3.5 px-4">السعر التعاقدي للكيلو</th>
                     <th className="py-3.5 px-4">مواصفات التعبئة والتغليف</th>
                     <th className="py-3.5 px-4 text-center">حالة الاتفاقية</th>
                   </tr>
@@ -196,7 +197,7 @@ export default async function CustomerDetailsPage({ params }: CustomerDetailsPag
                             </Badge>
                           </td>
                           <td className="py-3.5 px-4 font-bold text-[#012d1d] text-base">
-                            {priceNum.toFixed(2)} {customer.currency} / كجم
+                            {formatCurrency(priceNum)} / كجم
                           </td>
                           <td className="py-3.5 px-4 text-gray-700 font-medium">
                             {agr.packagingSpec}

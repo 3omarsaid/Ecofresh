@@ -1,9 +1,12 @@
 "use server";
 
-import { revalidatePath } from 'next/cache';
+import { safeRevalidatePath, safeRevalidateTag } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, can } from '@/lib/auth';
 import { SupplySchema } from '@/lib/validations/supply';
+import { generateSupplyId } from '@/lib/id-generator';
+import { getStationLocation, updateStationSupplyStock, logStockMovement } from '@/lib/stock-service';
+import { WarehouseType } from '@prisma/client';
 
 export async function createSupply(formData: FormData) {
   const user = await getCurrentUser();
@@ -22,13 +25,62 @@ export async function createSupply(formData: FormData) {
   }
 
   try {
-    const supply = await prisma.supply.create({
-      data: validated.data,
+    const supply = await prisma.$transaction(async (tx) => {
+      const generatedId = validated.data.id || (await generateSupplyId(tx));
+      const code = validated.data.code?.trim() || generatedId;
+      const { stationId, ...supplyData } = validated.data;
+
+      const createdSupply = await tx.supply.create({
+        data: {
+          ...supplyData,
+          id: generatedId,
+          code,
+        },
+      });
+
+      const initialStock = Number(createdSupply.stock);
+      if (initialStock > 0) {
+        let targetStationId = stationId;
+        if (!targetStationId) {
+          const firstStation = await tx.station.findFirst({
+            where: { isActive: true },
+            orderBy: { createdAt: 'asc' },
+          });
+          if (firstStation) {
+            targetStationId = firstStation.id;
+          }
+        }
+
+        if (targetStationId) {
+          const suppliesLocation = await getStationLocation(tx, targetStationId, WarehouseType.SUPPLIES);
+          await updateStationSupplyStock(tx, suppliesLocation.id, createdSupply.id, initialStock);
+
+          await logStockMovement(tx, {
+            movementType: 'OPENING_BALANCE',
+            sourceLocationId: null,
+            destinationLocationId: suppliesLocation.id,
+            itemType: WarehouseType.SUPPLIES,
+            supplyId: createdSupply.id,
+            qty: initialStock,
+            unit: createdSupply.unit,
+            referenceType: 'INITIAL_STOCK',
+            referenceId: createdSupply.id,
+            notes: `رصيد افتتاحي عند قيد المستلزم بالدليل`,
+            createdById: user.id,
+          });
+        }
+      }
+
+      return createdSupply;
     });
-    revalidatePath('/supplies');
+
+    safeRevalidateTag('supplies');
+    safeRevalidatePath('/supplies');
+    safeRevalidatePath('/stations');
+    safeRevalidatePath('/inventory');
     return {
       success: true,
-      message: `تم قيد الكتالوج للمستلزم ${supply.name} بنجاح`,
+      message: `تم قيد الكتالوج للمستلزم ${supply.name} بالكود ${supply.code} بنجاح`,
     };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -105,7 +157,7 @@ export async function updateSupply(id: string, formData: FormData) {
       where: { id },
       data: validated.data,
     });
-    revalidatePath('/supplies');
+    safeRevalidatePath('/supplies');
     return { success: true, message: `تم تعديل بيانات المستلزم ${supply.name} بنجاح` };
   } catch (error: any) {
     return { success: false, error: error.message || 'حدث خطأ أثناء تعديل المستلزم' };
@@ -122,7 +174,7 @@ export async function deleteSupply(id: string) {
     await prisma.supply.delete({
       where: { id },
     });
-    revalidatePath('/supplies');
+    safeRevalidatePath('/supplies');
     return { success: true, message: 'تم حذف المستلزم بنجاح' };
   } catch (error: any) {
     if (error.code === 'P2003') {
@@ -131,3 +183,23 @@ export async function deleteSupply(id: string) {
     return { success: false, error: error.message || 'حدث خطأ أثناء حذف المستلزم' };
   }
 }
+
+export async function getStationsForSelect() {
+  try {
+    return await prisma.station.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+        location: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  } catch (error) {
+    console.error('Failed to fetch stations for supplies:', error);
+    return [];
+  }
+}
+

@@ -32,6 +32,7 @@ export function Step4CostingPreview({
   rawBatches,
   suppliesIssues,
   finishedOutputKg,
+  secondaryOutputKg = 0,
   otherCost,
   notes,
   onChange,

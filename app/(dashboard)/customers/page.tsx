@@ -5,6 +5,7 @@ import { CustomerTable } from "@/components/modules/customers/customer-table";
 import { PaginationControls } from "@/components/modules/common/pagination-controls";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/currency";
 
 export const metadata = {
   title: "دليل العملاء والاتفاقيات — Nilotic Frost ERP",
@@ -58,8 +59,8 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
               <p className="text-2xl font-bold text-gray-900 mt-1">
                 {stats.totalCustomers} عملاء
               </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {stats.eurCount} يورو (EUR) | {stats.usdCount} دولار (USD)
+              <p className="text-xs text-emerald-600 font-medium mt-1">
+                العملة المعتمدة: الجنيه المصري (EGP)
               </p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
@@ -71,9 +72,9 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
         <Card className="border-gray-200">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-gray-500">إجمالي حدود الائتمان (EUR)</p>
+              <p className="text-xs font-semibold text-gray-500">إجمالي حدود الائتمان</p>
               <p className="text-2xl font-bold text-[#012d1d] mt-1">
-                {stats.totalCreditLimitEur.toLocaleString()} EUR
+                {formatCurrency(stats.totalCreditLimitEur)}
               </p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-50 text-cyan-700">

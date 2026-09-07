@@ -8,6 +8,22 @@ import { TransferSchema } from '@/lib/validations/transfer';
 import { getStationLocation, updateStationSupplyStock, logStockMovement } from '@/lib/stock-service';
 import { WarehouseType } from '@prisma/client';
 
+/**
+ * Concurrency-safe, collision-free Transfer ID generator
+ */
+export async function generateTransferId(tx: any, date: Date = new Date()): Promise<string> {
+  const year = date.getFullYear();
+  const timestamp = Date.now().toString().slice(-4);
+  const random = Math.floor(100 + Math.random() * 900);
+  let transferId = `TRF-${year}-${timestamp}${random}`;
+
+  while (await tx.stockTransfer.findUnique({ where: { transferId } })) {
+    const newRandom = Math.floor(100 + Math.random() * 900);
+    transferId = `TRF-${year}-${Date.now().toString().slice(-4)}${newRandom}`;
+  }
+  return transferId;
+}
+
 export async function createStockTransfer(payload: unknown) {
   const user = await getCurrentUser();
   if (!user || !can(user.role, 'CREATE_OPERATION')) {
@@ -29,9 +45,19 @@ export async function createStockTransfer(payload: unknown) {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Resolve source and target locations
+      // 1. Validate stations exist and are active
+      const fromStation = await tx.station.findUnique({ where: { id: data.fromStationId } });
+      const toStation = await tx.station.findUnique({ where: { id: data.toStationId } });
+      if (!fromStation || !fromStation.isActive) throw new Error(`المحطة المصدر (${data.fromStationId}) غير موجودة أو غير نشطة`);
+      if (!toStation || !toStation.isActive) throw new Error(`المحطة الوجهة (${data.toStationId}) غير موجودة أو غير نشطة`);
+
+      // 2. Resolve source and target locations
       const fromLocation = await getStationLocation(tx, data.fromStationId, itemType);
       const toLocation = await getStationLocation(tx, data.toStationId, itemType);
+
+      if (fromLocation.stationId !== data.fromStationId || toLocation.stationId !== data.toStationId) {
+        throw new Error('فشل التحقق من تبعية المخازن للمحطات المحددة');
+      }
 
       // 2. Strict transfer rule: fromLocation.type must equal toLocation.type
       if (fromLocation.type !== toLocation.type) {
@@ -54,16 +80,27 @@ export async function createStockTransfer(payload: unknown) {
         });
 
         if (!sourceBatch) throw new Error('الباتش المراد نقله غير موجود');
+        if (sourceBatch.stationId !== data.fromStationId) {
+          throw new Error(`الباتش ${batchId} يتبع محطة أخرى ولا يتبع المحطة المصدر (${data.fromStationId})`);
+        }
+
         const available = Number(sourceBatch.availableQty);
         if (data.qtyKg > available) {
           throw new Error(`الكمية المطلوبة (${data.qtyKg} كجم) تتجاوز الرصيد المتاح (${available} كجم) بمخزن المصدر`);
         }
 
-        // Decrement source batch
-        await tx.finishedGoodsBatch.update({
-          where: { fgBatchId: batchId },
+        // Decrement source batch with optimistic concurrency guard
+        const decResult = await tx.finishedGoodsBatch.updateMany({
+          where: {
+            fgBatchId: batchId,
+            availableQty: { gte: data.qtyKg },
+          },
           data: { availableQty: { decrement: data.qtyKg } },
         });
+
+        if (decResult.count === 0) {
+          throw new Error(`تعذر تحويل الباتش ${batchId} نظراً لتغير الرصيد أثناء المعالجة المتزامنة`);
+        }
 
         productName = sourceBatch.productName;
         fgBatchId = batchId;
@@ -138,15 +175,29 @@ export async function createStockTransfer(payload: unknown) {
         });
 
         if (!sourceBatch) throw new Error('لوط الخام المراد نقله غير موجود');
+        if (sourceBatch.stationId !== data.fromStationId) {
+          throw new Error(`لوط الخام ${batchId} يتبع محطة أخرى ولا يتبع المحطة المصدر (${data.fromStationId})`);
+        }
+        if (sourceBatch.qcStatus !== 'APPROVED') {
+          throw new Error(`لوط الخام ${batchId} لم يجتز فحص الجودة بعد (الحالة: ${sourceBatch.qcStatus})`);
+        }
+
         const available = Number(sourceBatch.availableQty);
         if (data.qtyKg > available) {
           throw new Error(`الكمية المطلوبة (${data.qtyKg} كجم) تتجاوز الرصيد المتاح (${available} كجم) بمخزن الخامات المصدر`);
         }
 
-        await tx.rawBatch.update({
-          where: { batchId },
+        const decResult = await tx.rawBatch.updateMany({
+          where: {
+            batchId,
+            availableQty: { gte: data.qtyKg },
+          },
           data: { availableQty: { decrement: data.qtyKg } },
         });
+
+        if (decResult.count === 0) {
+          throw new Error(`تعذر تحويل لوط الخام ${batchId} نظراً لتغير الرصيد أثناء المعالجة المتزامنة`);
+        }
 
         productName = sourceBatch.rawProduct;
         rawBatchId = batchId;
@@ -252,9 +303,8 @@ export async function createStockTransfer(payload: unknown) {
         });
       }
 
-      // 4. Generate StockTransfer audit document number
-      const count = await tx.stockTransfer.count();
-      const transferId = `TRF-${transferDate.getFullYear()}-${String(count + 1).padStart(3, '0')}`;
+      // 4. Generate StockTransfer audit document number safely
+      const transferId = await generateTransferId(tx, transferDate);
 
       await tx.stockTransfer.create({
         data: {

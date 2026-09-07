@@ -45,8 +45,8 @@ async function runTests() {
   }
 
   try {
-    const station1 = await prisma.station.findFirst({ where: { id: 'STN-01' } }) || await prisma.station.findFirstOrThrow();
-    const station2 = await prisma.station.findFirst({ where: { id: 'STN-02' } }) || await prisma.station.findFirstOrThrow();
+    const station1 = await prisma.station.findFirst({ where: { id: 'STN-01', isActive: true } }) || await prisma.station.findFirstOrThrow({ where: { isActive: true } });
+    const station2 = await prisma.station.findFirst({ where: { id: 'STN-03', isActive: true } }) || await prisma.station.findFirstOrThrow({ where: { isActive: true, id: { not: station1.id } } });
     const supplier = await prisma.supplier.findFirstOrThrow();
     const contractor = await prisma.contractor.findFirstOrThrow();
     const supply = await prisma.supply.findFirstOrThrow();

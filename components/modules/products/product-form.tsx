@@ -63,42 +63,6 @@ export function ProductForm() {
           )}
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {/* Product ID */}
-            <div className="space-y-2">
-              <Label htmlFor="id" className="text-sm font-semibold text-gray-700">
-                معرف الصنف <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="id"
-                name="id"
-                placeholder="مثال: PRD-05"
-                className="font-mono"
-                required
-              />
-              {fieldErrors.id && (
-                <p className="text-xs text-red-500 font-medium">{fieldErrors.id[0]}</p>
-              )}
-            </div>
-
-            {/* Product Export Code */}
-            <div className="space-y-2">
-              <Label htmlFor="code" className="text-sm font-semibold text-gray-700">
-                كود الصنف التصديري <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="code"
-                name="code"
-                placeholder="مثال: PRD-STW-IQF"
-                className="font-mono uppercase"
-                required
-              />
-              {fieldErrors.code && (
-                <p className="text-xs text-red-500 font-medium">{fieldErrors.code[0]}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
             {/* Product Name */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
@@ -114,6 +78,23 @@ export function ProductForm() {
                 <p className="text-xs text-red-500 font-medium">{fieldErrors.name[0]}</p>
               )}
             </div>
+
+            {/* Product Export Code */}
+            <div className="space-y-2">
+              <Label htmlFor="code" className="text-sm font-semibold text-gray-700">
+                كود الصنف التصديري <span className="text-gray-400 font-normal">(اختياري)</span>
+              </Label>
+              <Input
+                id="code"
+                name="code"
+                placeholder="مثال: PRD-STW-IQF (تلقائي إن تُرِك فارغاً)"
+                className="font-mono uppercase"
+              />
+              {fieldErrors.code && (
+                <p className="text-xs text-red-500 font-medium">{fieldErrors.code[0]}</p>
+              )}
+            </div>
+          </div>
 
             {/* Category */}
             <div className="space-y-2">
@@ -133,7 +114,6 @@ export function ProductForm() {
                 <p className="text-xs text-red-500 font-medium">{fieldErrors.category[0]}</p>
               )}
             </div>
-          </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
             {/* Default Unit */}

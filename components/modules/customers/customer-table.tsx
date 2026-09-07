@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { deleteCustomer } from "@/actions/customers";
 import { toast } from "sonner";
+import { formatCurrency } from "@/lib/currency";
 
 interface CustomerItem {
   id: string;
@@ -93,13 +94,9 @@ export function CustomerTable({ customers }: CustomerTableProps) {
                           </Badge>
                           <Badge
                             variant="secondary"
-                            className={
-                              item.currency === "EUR"
-                                ? "bg-[#012d1d] text-cyan-300"
-                                : "bg-blue-900 text-blue-200"
-                            }
+                            className="bg-emerald-100 text-emerald-800 font-bold"
                           >
-                            {item.currency}
+                            ج.م
                           </Badge>
                         </div>
                       </td>
@@ -113,7 +110,7 @@ export function CustomerTable({ customers }: CustomerTableProps) {
                         <div className="flex flex-col">
                           <span className="font-bold text-gray-900 flex items-center gap-1">
                             <CreditCard className="h-3.5 w-3.5 text-amber-600" />
-                            {creditLimitNum.toLocaleString()} {item.currency}
+                            {formatCurrency(creditLimitNum)}
                           </span>
                           <span className="text-xs text-gray-500 font-normal">
                             {item.paymentTerms}

@@ -22,11 +22,10 @@ export function StationForm() {
   const form = useForm<StationFormValues>({
     resolver: zodResolver(StationSchema),
     defaultValues: {
-      id: "STN-",
       name: "",
       location: "",
-      coldStorageCapacityKg: 100000,
-      electricityRatePerKg: 2.5,
+      coldStorageCapacityKg: 0,
+      electricityRatePerKg: 0,
       supervisorName: "",
       phone: "",
     },
@@ -76,7 +75,7 @@ export function StationForm() {
           <div>
             <CardTitle className="text-xl font-bold text-white">إضافة محطة تجميد وتبريد جديد</CardTitle>
             <CardDescription className="text-emerald-100 text-xs mt-1">
-              أدخل بيانات المحطة التشغيلية وسعتها التخزينية وتكلفة التبريد والكهرباء
+              أدخل بيانات المحطة التشغيلية وسعتها التخزينية وتكلفة التبريد والكهرباء (يتم التكويد تلقائياً)
             </CardDescription>
           </div>
         </div>
@@ -85,20 +84,6 @@ export function StationForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Station ID */}
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">كود المحطة *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="مثال: STN-04" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               {/* Station Name */}
               <FormField
@@ -120,7 +105,7 @@ export function StationForm() {
                 control={form.control}
                 name="location"
                 render={({ field }) => (
-                  <FormItem className="md:col-span-2">
+                  <FormItem>
                     <FormLabel className="font-semibold text-gray-700">الموقع الجغرافي / المحافظة *</FormLabel>
                     <FormControl>
                       <Input placeholder="مثال: البحيرة - مركز كفر الدوار" {...field} />

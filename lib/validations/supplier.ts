@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { SupplierCategory } from '@prisma/client';
 
 export const SupplierSchema = z.object({
-  id: z.string().min(2, 'معرف المورد مطلوب (مثل SUPP-001)'),
-  code: z.string().min(3, 'كود المورد مطلوب (مثل SUPP-001)'),
+  id: z.string().optional(),
+  code: z.string().optional().or(z.literal('')),
   name: z.string().min(3, 'اسم المورد مطلوب'),
   type: z.nativeEnum(SupplierCategory, {
     errorMap: () => ({ message: 'فئة المورد غير صالحة' }),

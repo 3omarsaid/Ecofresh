@@ -177,7 +177,7 @@ export function CommercialInvoiceDoc({ shipment }: CommercialInvoiceProps) {
   const shippedQty = Number(shipment.shippedQtyKg || 0);
   const priceEur = Number(shipment.sellingPriceEur || 0);
   const totalAmount = shippedQty * priceEur;
-  const currency = shipment.customer?.currency || 'EUR';
+  const currency = 'EGP';
   const dispatchDate = shipment.dispatchDate
     ? new Date(shipment.dispatchDate).toISOString().split('T')[0]
     : new Date().toISOString().split('T')[0];

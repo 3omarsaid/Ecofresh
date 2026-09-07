@@ -1,20 +1,46 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TreasuryAccount, Customer, Supplier, Contractor } from "@prisma/client";
-import { Receipt, Wallet, ArrowUpCircle, ArrowDownCircle, AlertTriangle, CheckCircle2 } from "lucide-react";
+import {
+  Receipt,
+  Wallet,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  AlertTriangle,
+  CheckCircle2,
+  Coins,
+  Scale,
+  TrendingDown,
+  TrendingUp,
+  DollarSign,
+  ArrowRightLeft,
+  Calendar,
+  Building2,
+  Tag,
+} from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { addFinancialTransaction } from "@/actions/financials";
+import { Badge } from "@/components/ui/badge";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { formatCurrency } from "@/lib/currency";
+import { addFinancialTransaction, getFinancialTransactions } from "@/actions/financials";
 import { TransactionFormValues } from "@/lib/validations/transaction";
+
+interface PartyBalanceSummary {
+  totalDue: number;
+  totalPaidOrCollected: number;
+  remaining: number;
+}
 
 interface VoucherFormProps {
   treasuryAccounts: TreasuryAccount[];
   customers: Customer[];
   suppliers: Supplier[];
   contractors: Contractor[];
+  partyBalances?: Record<string, PartyBalanceSummary>;
 }
 
 export function VoucherForm({
@@ -22,6 +48,7 @@ export function VoucherForm({
   customers,
   suppliers,
   contractors,
+  partyBalances: initialPartyBalances,
 }: VoucherFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,10 +70,70 @@ export function VoucherForm({
     description: "",
   });
 
+  const [partyBalances, setPartyBalances] = useState<Record<string, PartyBalanceSummary>>(
+    initialPartyBalances || {}
+  );
+  const [loadingBalances, setLoadingBalances] = useState(!initialPartyBalances);
+
+  // Fetch balances if not passed
+  useEffect(() => {
+    if (!initialPartyBalances) {
+      setLoadingBalances(true);
+      getFinancialTransactions()
+        .then((txns) => {
+          const map: Record<string, PartyBalanceSummary> = {};
+          for (const t of txns) {
+            if (!t.partyId) continue;
+            if (!map[t.partyId]) {
+              map[t.partyId] = { totalDue: 0, totalPaidOrCollected: 0, remaining: 0 };
+            }
+            const amt = Number(t.amountEgp || 0);
+            const pType = t.partyType || "";
+            const isCust = pType.includes("عميل");
+            if (isCust) {
+              const isCol =
+                t.type.includes("تحصيل") || t.type.includes("وارد") || t.type.includes("Inflow");
+              if (isCol) map[t.partyId].totalPaidOrCollected += amt;
+              else map[t.partyId].totalDue += amt;
+            } else {
+              const isPay =
+                t.type.includes("سداد") || t.type.includes("منصرف") || t.type.includes("Outflow");
+              if (isPay) map[t.partyId].totalPaidOrCollected += amt;
+              else map[t.partyId].totalDue += amt;
+            }
+          }
+          for (const k of Object.keys(map)) {
+            map[k].remaining = map[k].totalDue - map[k].totalPaidOrCollected;
+          }
+          setPartyBalances(map);
+        })
+        .catch((err) => console.error("Failed to load party balances:", err))
+        .finally(() => setLoadingBalances(false));
+    }
+  }, [initialPartyBalances]);
+
+  // Selected Treasury
   const selectedAccount = treasuryAccounts.find((a) => a.id === formData.accountId);
   const accountBalance = selectedAccount ? Number(selectedAccount.balance) : 0;
-  const isCollection = direction === "COLLECTION" || (formData.type && (formData.type.includes("تحصيل") || formData.type.includes("Inflow")));
-  const isOverdraft = !isCollection && (formData.amountEgp || 0) > accountBalance;
+
+  const isCollection =
+    direction === "COLLECTION" ||
+    (formData.type && (formData.type.includes("تحصيل") || formData.type.includes("Inflow")));
+
+  // Native amount strictly in EGP
+  const effectiveAmount = Number(formData.amountEgp || 0);
+
+  // Overdraft check
+  const isOverdraft = !isCollection && effectiveAmount > accountBalance;
+
+  // Selected party current balance
+  const currentPartyBalance = formData.partyId ? partyBalances[formData.partyId] : null;
+  const rawRemaining = currentPartyBalance ? currentPartyBalance.remaining : 0;
+  const isCustomer = formData.partyType === "عميل تصدير";
+
+  // Simulated remaining balance after transaction
+  const voucherEgpAmount = Number(formData.amountEgp || 0);
+  const simulatedRemaining = rawRemaining - voucherEgpAmount;
 
   // Party options based on partyType
   const handlePartyTypeChange = (pType: string) => {
@@ -57,8 +144,10 @@ export function VoucherForm({
       firstPartyId = customers[0].id;
       firstPartyName = customers[0].name;
     } else if (pType === "مورد خام" && suppliers.length > 0) {
-      firstPartyId = suppliers[0].id;
-      firstPartyName = suppliers[0].name;
+      const rawSupps = suppliers.filter((s) => s.type === "RAW_AGRICULTURAL");
+      const chosen = rawSupps.length > 0 ? rawSupps[0] : suppliers[0];
+      firstPartyId = chosen.id;
+      firstPartyName = chosen.name;
     } else if (pType === "مقاول عمالة" && contractors.length > 0) {
       firstPartyId = contractors[0].id;
       firstPartyName = contractors[0].name;
@@ -90,12 +179,14 @@ export function VoucherForm({
       }));
     } else {
       const defaultType = "سداد مورد خام (AP)";
+      const rawSupps = suppliers.filter((s) => s.type === "RAW_AGRICULTURAL");
+      const chosen = rawSupps.length > 0 ? rawSupps[0] : suppliers[0];
       setFormData((prev) => ({
         ...prev,
         type: defaultType,
         partyType: "مورد خام",
-        partyId: suppliers.length > 0 ? suppliers[0].id : "",
-        partyName: suppliers.length > 0 ? suppliers[0].name : "",
+        partyId: chosen ? chosen.id : "",
+        partyName: chosen ? chosen.name : "",
       }));
     }
   };
@@ -125,17 +216,37 @@ export function VoucherForm({
     setFormError(null);
     setErrors({});
 
+    if (effectiveAmount <= 0) {
+      setFormError("يرجى إدخال قيمة صحيحة للسند المالي أكبر من صفر");
+      return;
+    }
+
     if (isOverdraft) {
       setFormError(
-        `رصيد الحساب ${selectedAccount?.name} (${accountBalance.toLocaleString()} ج.م) لا يكفي لسداد ${Number(
-          formData.amountEgp
-        ).toLocaleString()} ج.م`
+        `رصيد الحساب ${selectedAccount?.name} (${formatCurrency(accountBalance)}) لا يكفي لسداد ${formatCurrency(effectiveAmount)}`
       );
       return;
     }
 
     setIsSubmitting(true);
-    const res = await addFinancialTransaction(formData);
+
+    const payload = {
+      date: formData.date,
+      type: formData.type || (direction === "COLLECTION" ? "تحصيل عميل (AR)" : "سداد مورد خام (AP)"),
+      partyType: formData.partyType || "جهة متعاملة",
+      partyId: formData.partyId || "",
+      partyName: formData.partyName || "",
+      amountEgp: effectiveAmount,
+      amountCurrency: null,
+      currency: "EGP",
+      refDoc: formData.refDoc || null,
+      accountId: formData.accountId || "",
+      description:
+        formData.description ||
+        `${formData.type} لصالح ${formData.partyName || "الطرف"}`,
+    };
+
+    const res = await addFinancialTransaction(payload);
     setIsSubmitting(false);
 
     if (res.success) {
@@ -275,7 +386,7 @@ export function VoucherForm({
               {formData.partyType === "مقاول عمالة" &&
                 contractors.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name} (أجر: {Number(c.tariffRatePerKg)} ج.م/كجم)
+                    {c.name} (أجر: {formatCurrency(c.tariffRatePerKg)} / كجم)
                   </option>
                 ))}
               {formData.partyType === "مورد مستلزمات" &&
@@ -300,13 +411,92 @@ export function VoucherForm({
             >
               {treasuryAccounts.map((acc) => (
                 <option key={acc.id} value={acc.id}>
-                  {acc.name} — رصيد: {Number(acc.balance).toLocaleString()} {acc.currency}
+                  {acc.name} — رصيد: {formatCurrency(acc.balance)}
                 </option>
               ))}
             </select>
             {errors.accountId && <p className="text-xs text-red-600">{errors.accountId[0]}</p>}
           </div>
         </div>
+
+        {/* Counterparty Balance Live Card */}
+        {formData.partyId && (
+          <div className="p-4 bg-gradient-to-r from-gray-50 to-slate-100 rounded-xl border border-gray-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                <Scale className="h-4 w-4 text-emerald-800" />
+                كشف رصيد الجهة المتعاملة ({formData.partyName}):
+              </span>
+              <Badge variant="outline" className="bg-white text-gray-700 border-gray-300 text-[11px] font-mono">
+                {formData.partyType}
+              </Badge>
+            </div>
+
+            {loadingBalances ? (
+              <div className="text-xs text-gray-400 py-1 font-sans">جاري قراءة رصيد الأستاذ للجهة...</div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                <div className="bg-white p-2.5 rounded-lg border border-gray-200">
+                  <span className="text-[11px] text-gray-500 font-sans block">
+                    {isCustomer ? "إجمالي المطلوب (مبيعات)" : "إجمالي المستحق (مشتريات)"}
+                  </span>
+                  <span className="font-bold text-gray-800">
+                    {formatCurrency(currentPartyBalance?.totalDue || 0)}
+                  </span>
+                </div>
+
+                <div className="bg-white p-2.5 rounded-lg border border-gray-200">
+                  <span className="text-[11px] text-gray-500 font-sans block">
+                    {isCustomer ? "إجمالي المحصل" : "إجمالي المسدد"}
+                  </span>
+                  <span className="font-bold text-blue-700">
+                    {formatCurrency(currentPartyBalance?.totalPaidOrCollected || 0)}
+                  </span>
+                </div>
+
+                <div className="bg-white p-2.5 rounded-lg border border-gray-200">
+                  <span className="text-[11px] text-gray-500 font-sans block">الرصيد الدفتري الحالي</span>
+                  <span
+                    className={`font-bold ${
+                      rawRemaining > 0
+                        ? isCustomer
+                          ? "text-rose-700"
+                          : "text-blue-700"
+                        : rawRemaining < 0
+                        ? "text-purple-700"
+                        : "text-emerald-700"
+                    }`}
+                  >
+                    {formatCurrency(Math.abs(rawRemaining))}{" "}
+                    <span className="text-[10px] font-sans font-normal">
+                      {rawRemaining > 0
+                        ? isCustomer
+                          ? "(مدين)"
+                          : "(دائن له)"
+                        : rawRemaining < 0
+                        ? "(رصيد مقدم)"
+                        : "(مسدد)"}
+                    </span>
+                  </span>
+                </div>
+
+                <div className="bg-emerald-50 p-2.5 rounded-lg border border-emerald-200">
+                  <span className="text-[11px] text-emerald-900 font-sans block">الرصيد بعد تنفيذ السند</span>
+                  <span className="font-bold text-emerald-800">
+                    {formatCurrency(Math.abs(simulatedRemaining))}{" "}
+                    <span className="text-[10px] font-sans font-normal">
+                      {simulatedRemaining === 0
+                        ? "(خالص تماماً)"
+                        : simulatedRemaining > 0
+                        ? "(متبقي)"
+                        : "(فائض مقدم)"}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Selected Account Balance Live Badge & Overdraft Alert */}
         {selectedAccount && (
@@ -325,15 +515,15 @@ export function VoucherForm({
                   <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
                 )}
                 <span>
-                  رصيد الحساب المتاح الحقيقي:{" "}
-                  <strong className="text-sm">{accountBalance.toLocaleString()}</strong> {selectedAccount.currency}
+                  رصيد الحساب المالي المتاح:{" "}
+                  <strong className="text-sm">{formatCurrency(accountBalance)}</strong>
                 </span>
               </div>
 
               <div className="font-sans font-bold">
                 {isOverdraft
-                  ? `⚠️ السحب على المكشوف مرفوض: مبلغ السند (${Number(formData.amountEgp).toLocaleString()} ج.م) يتجاوز رصيد الحساب!`
-                  : "✓ رصيد الحساب كافٍ لإتمام العملية المحاسبية"}
+                  ? `⚠️ السحب على المكشوف مرفوض: مبلغ السند (${formatCurrency(effectiveAmount)}) يتجاوز رصيد الحساب!`
+                  : `✓ رصيد الحساب كافٍ لسداد ${formatCurrency(effectiveAmount)}`}
               </div>
             </div>
           </div>
@@ -342,39 +532,29 @@ export function VoucherForm({
 
       {/* Amount & Reference Details */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div className="space-y-1.5">
-            <Label className="font-bold text-gray-800 text-xs">قيمة السند (بالجنيه EGP) *</Label>
-            <Input
-              type="number"
-              step="0.01"
-              value={formData.amountEgp || ""}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, amountEgp: parseFloat(e.target.value) || 0 }))
-              }
-              placeholder="0.00"
-              className={`font-mono text-sm font-bold ${
-                isOverdraft ? "border-red-500 bg-red-50 text-red-900" : "border-gray-300"
-              }`}
-            />
-            {errors.amountEgp && <p className="text-xs text-red-600">{errors.amountEgp[0]}</p>}
-          </div>
+        <div className="border-b border-gray-100 pb-2">
+          <h4 className="font-bold text-xs text-gray-700 flex items-center gap-1.5">
+            <Coins className="h-4 w-4 text-emerald-800" />
+            بيانات القيمة النقدية (بالجنيه المصري)
+          </h4>
+        </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div className="space-y-1.5">
-            <Label className="font-bold text-gray-800 text-xs">المبلغ بالعملية الأجنبية (اختياري)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              value={formData.amountCurrency || ""}
-              onChange={(e) =>
+            <Label className="font-bold text-gray-800 text-xs">قيمة السند (ج.م) *</Label>
+            <CurrencyInput
+              placeholder="0.00"
+              value={formData.amountEgp || ""}
+              onChange={(val) =>
                 setFormData((prev) => ({
                   ...prev,
-                  amountCurrency: parseFloat(e.target.value) || undefined,
+                  amountEgp: typeof val === "number" ? val : 0,
                 }))
               }
-              placeholder="0.00 EUR / USD"
-              className="font-mono text-xs"
+              className={isOverdraft ? "border-red-500 bg-red-50 text-red-900" : ""}
+              required
             />
+            {errors.amountEgp && <p className="text-xs text-red-600">{errors.amountEgp[0]}</p>}
           </div>
 
           <div className="space-y-1.5">
@@ -422,7 +602,7 @@ export function VoucherForm({
         </Button>
         <Button
           type="submit"
-          disabled={isSubmitting || isOverdraft}
+          disabled={isSubmitting || isOverdraft || effectiveAmount <= 0}
           className={`gap-2 font-semibold text-xs text-white shadow-sm ${
             direction === "COLLECTION"
               ? "bg-emerald-700 hover:bg-emerald-800"

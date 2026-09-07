@@ -8,10 +8,12 @@ import { toast } from "sonner";
 import { Landmark, Loader2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+import { z } from "zod";
 import { TreasuryAccountSchema, type TreasuryAccountInput } from "@/lib/validations/treasury";
 import { createTreasuryAccount } from "@/actions/treasury";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
@@ -22,34 +24,58 @@ interface StationOption {
 
 interface TreasuryFormProps {
   stations?: StationOption[];
+  defaultStationId?: string;
+  initialData?: Partial<TreasuryAccountInput>;
+  isEdit?: boolean;
 }
 
-export function TreasuryForm({ stations = [] }: TreasuryFormProps) {
+const TreasuryFormSchema = TreasuryAccountSchema.omit({ id: true }).extend({
+  id: z.string().optional(),
+});
+
+type TreasuryFormInput = z.infer<typeof TreasuryFormSchema>;
+
+export function TreasuryForm({
+  stations = [],
+  defaultStationId,
+  initialData,
+  isEdit = false,
+}: TreasuryFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<TreasuryAccountInput>({
-    resolver: zodResolver(TreasuryAccountSchema),
+  const form = useForm<TreasuryFormInput>({
+    resolver: zodResolver(TreasuryFormSchema),
     defaultValues: {
-      id: "ACC-05",
-      name: "",
-      bankName: "",
-      accountNumber: "",
-      currency: "EGP",
-      balance: 0,
-      type: "حساب بنكي جاري",
-      stationId: "",
+      id: initialData?.id || "",
+      name: initialData?.name || "",
+      bankName: initialData?.bankName || "",
+      accountNumber: initialData?.accountNumber || "",
+      currency: initialData?.currency || "EGP",
+      balance: initialData?.balance ?? 0,
+      type: initialData?.type || "حساب بنكي جاري",
+      stationId: initialData?.stationId || defaultStationId || "",
     },
   });
 
   const watchType = form.watch("type");
 
-  async function onSubmit(values: TreasuryAccountInput) {
+  async function onSubmit(values: TreasuryFormInput) {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      Object.entries(values).forEach(([key, val]) => {
-        if (val !== undefined && val !== null) {
+      const valuesToSubmit = { ...values, currency: "EGP" };
+      if (valuesToSubmit.type === "خزينة نقدية") {
+        valuesToSubmit.bankName = "";
+        valuesToSubmit.accountNumber = "";
+      }
+
+      if (initialData?.id) {
+        formData.append("id", initialData.id);
+      }
+
+      Object.entries(valuesToSubmit).forEach(([key, val]) => {
+        if (key !== "id" && val !== undefined && val !== null) {
           formData.append(key, val.toString());
         }
       });
@@ -86,9 +112,11 @@ export function TreasuryForm({ stations = [] }: TreasuryFormProps) {
             <Landmark className="h-6 w-6" />
           </div>
           <div>
-            <CardTitle className="text-xl font-bold text-white">إضافة حساب بنكي / خزينة جديد</CardTitle>
+            <CardTitle className="text-xl font-bold text-white">
+              {isEdit ? "تعديل الحساب المالي / الخزينة" : "إضافة حساب بنكي / خزينة جديد"}
+            </CardTitle>
             <CardDescription className="text-emerald-100 text-xs mt-1">
-              أدخل بيانات الحساب البنكي أو الخزينة النقدية والرصيد الافتتاحي بالعملة المحددة
+              أدخل بيانات الحساب البنكي أو الخزينة النقدية والرصيد الافتتاحي بالجنيه المصري
             </CardDescription>
           </div>
         </div>
@@ -97,21 +125,6 @@ export function TreasuryForm({ stations = [] }: TreasuryFormProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Account ID */}
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">كود الحساب *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="مثال: ACC-05" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* Account Type */}
               <FormField
                 control={form.control}
@@ -133,6 +146,14 @@ export function TreasuryForm({ stations = [] }: TreasuryFormProps) {
                 )}
               />
 
+              {/* Currency (Fixed EGP) */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">عملة الحساب</label>
+                <div className="flex h-10 w-full items-center rounded-md border border-input bg-muted/50 px-3 py-2 text-sm font-bold text-gray-700">
+                  <span>الجنيه المصري (EGP / ج.م)</span>
+                </div>
+              </div>
+
               {/* Name */}
               <FormField
                 control={form.control}
@@ -141,7 +162,7 @@ export function TreasuryForm({ stations = [] }: TreasuryFormProps) {
                   <FormItem className="md:col-span-2">
                     <FormLabel className="font-semibold text-gray-700">اسم الحساب أو الخزينة *</FormLabel>
                     <FormControl>
-                      <Input placeholder="مثال: بنك QNB الجاري / الخزينة الرئيسية" {...field} />
+                      <Input placeholder="مثال: بنك QNB الجاري / الخزينة المركزية" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -174,7 +195,7 @@ export function TreasuryForm({ stations = [] }: TreasuryFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">رقم الحساب البنكي</FormLabel>
                       <FormControl>
-                        <Input placeholder="100200300400" dir="ltr" value={field.value ?? ""} onChange={field.onChange} />
+                        <Input placeholder="مثال: 12345678901234 (اختياري)" dir="ltr" value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -182,37 +203,19 @@ export function TreasuryForm({ stations = [] }: TreasuryFormProps) {
                 />
               )}
 
-              {/* Currency */}
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">عملة الحساب *</FormLabel>
-                    <FormControl>
-                      <select
-                        {...field}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      >
-                        <option value="EGP">EGP - جنيه مصري</option>
-                        <option value="EUR">EUR - يورو</option>
-                        <option value="USD">USD - دولار أمريكي</option>
-                      </select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* Initial Balance */}
               <FormField
                 control={form.control}
                 name="balance"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">الرصيد الافتتاحي *</FormLabel>
+                  <FormItem className={watchType === "حساب بنكي جاري" ? "" : "md:col-span-2"}>
+                    <FormLabel className="font-semibold text-gray-700">الرصيد الافتتاحي (ج.م) *</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" min="0" placeholder="0.00" {...field} />
+                      <CurrencyInput
+                        placeholder="0.00"
+                        value={field.value ?? ""}
+                        onChange={(val) => field.onChange(val)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

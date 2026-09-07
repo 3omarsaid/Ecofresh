@@ -10,8 +10,10 @@ import Link from "next/link";
 
 import { ClientOrderSchema, type ClientOrderFormValues } from "@/lib/validations/client-order";
 import { addClientOrder } from "@/actions/client-orders";
+import { formatCurrency } from "@/lib/currency";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
@@ -35,57 +37,76 @@ interface CustomerOption {
   }>;
 }
 
-interface ClientOrderFormProps {
-  customers: CustomerOption[];
+interface ProductOption {
+  id: string;
+  code: string;
+  name: string;
+  category?: string;
 }
 
-export function ClientOrderForm({ customers }: ClientOrderFormProps) {
+interface PackagingOption {
+  id: string;
+  code: string;
+  name: string;
+  category?: string;
+  unit?: string;
+  capacityKg?: any;
+}
+
+interface ClientOrderFormProps {
+  customers: CustomerOption[];
+  products?: ProductOption[];
+  packaging?: PackagingOption[];
+  defaultCustomerId?: string;
+  initialData?: Partial<ClientOrderFormValues>;
+}
+
+export function ClientOrderForm({
+  customers,
+  products = [],
+  packaging = [],
+  defaultCustomerId,
+  initialData,
+}: ClientOrderFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const defaultCustomer = customers[0];
-  const defaultAgreement = defaultCustomer?.agreements[0];
+  const initialCustId = initialData?.customerId || defaultCustomerId || "";
 
   const form = useForm<ClientOrderFormValues>({
     resolver: zodResolver(ClientOrderSchema),
     defaultValues: {
-      customerId: defaultCustomer?.id || "",
-      productName: defaultAgreement?.product.name || "فراولة مجمدة IQF",
-      packagingSpec: defaultAgreement?.packagingSpec || "كرتونة تصدير 10 كجم",
-      orderedQtyKg: 10000,
-      unitPriceEur: Number(defaultAgreement?.targetPriceEur || 1.85),
-      fxRate: 53.20,
-      deliveryTerms: "FOB - ميناء الإسكندرية",
-      destinationPort: defaultCustomer?.destinationPort || "ميناء روتردام",
-      notes: "طلبية تصدير تعاقدية موسمية",
+      customerId: initialCustId,
+      productName: initialData?.productName || "",
+      packagingSpec: initialData?.packagingSpec || "",
+      orderedQtyKg: initialData?.orderedQtyKg,
+      unitPriceEur: initialData?.unitPriceEur,
+      fxRate: 1.0,
+      deliveryTerms: initialData?.deliveryTerms || "FOB - ميناء الإسكندرية",
+      destinationPort: initialData?.destinationPort || "",
+      notes: initialData?.notes || "",
     },
   });
 
   const selectedCustomerId = form.watch("customerId");
-  const selectedCustomer = customers.find((c) => c.id === selectedCustomerId) || defaultCustomer;
+  const selectedCustomer = customers.find((c) => c.id === selectedCustomerId) || null;
 
-  const orderedQtyKg = form.watch("orderedQtyKg") || 0;
-  const unitPriceEur = form.watch("unitPriceEur") || 0;
-  const fxRate = form.watch("fxRate") || 53.20;
+  const orderedQtyKg = Number(form.watch("orderedQtyKg")) || 0;
+  const unitPriceEur = Number(form.watch("unitPriceEur")) || 0;
 
-  const totalValueEur = orderedQtyKg * unitPriceEur;
-  const totalValueEgp = totalValueEur * fxRate;
+  const totalValueEgp = orderedQtyKg * unitPriceEur;
 
   // Auto-fill details when customer changes
   const handleCustomerChange = (cust: CustomerOption) => {
-    form.setValue("destinationPort", cust.destinationPort);
-    if (cust.agreements && cust.agreements.length > 0) {
-      const firstAgr = cust.agreements[0];
-      form.setValue("productName", firstAgr.product.name);
-      form.setValue("packagingSpec", firstAgr.packagingSpec);
-      form.setValue("unitPriceEur", Number(firstAgr.targetPriceEur));
+    if (cust.destinationPort) {
+      form.setValue("destinationPort", cust.destinationPort);
     }
   };
 
   async function onSubmit(values: ClientOrderFormValues) {
     setIsSubmitting(true);
     try {
-      const res = await addClientOrder(values);
+      const res = await addClientOrder({ ...values, fxRate: 1.0 });
       if (res.success) {
         toast.success(res.message);
         router.push("/client-orders");
@@ -115,25 +136,21 @@ export function ClientOrderForm({ customers }: ClientOrderFormProps) {
       <Card className="bg-gradient-to-r from-[#012d1d] to-emerald-900 text-white shadow-md border-none">
         <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
           <div>
-            <span className="text-xs text-emerald-200 block font-semibold">إجمالي قيمة الطلبية بالعملة الأجنبية</span>
+            <span className="text-xs text-emerald-200 block font-semibold">إجمالي قيمة الطلبية</span>
             <span className="text-3xl font-bold text-amber-300 mt-1 block">
-              {totalValueEur.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}{" "}
-              {selectedCustomer?.currency || "EUR"}
+              {formatCurrency(totalValueEgp)}
             </span>
             <span className="text-xs text-emerald-300 mt-1 block">
-              طلب {orderedQtyKg.toLocaleString()} كجم بسعر {unitPriceEur.toFixed(3)} {selectedCustomer?.currency || "EUR"}/كجم
+              طلب {orderedQtyKg.toLocaleString()} كجم بسعر {formatCurrency(unitPriceEur)} / كجم
             </span>
           </div>
           <div className="flex items-center justify-between md:justify-end gap-4 border-t md:border-t-0 md:border-r border-emerald-700/50 pt-3 md:pt-0 md:pr-6">
             <div className="text-right">
-              <span className="text-xs text-emerald-200 block font-semibold">القيمة التقديرية بالجنيه (EGP)</span>
+              <span className="text-xs text-emerald-200 block font-semibold">العملة المعتمدة</span>
               <span className="text-2xl font-bold text-cyan-300 mt-1 block">
-                {totalValueEgp.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م
+                الجنيه المصري (EGP)
               </span>
-              <span className="text-xs text-emerald-300">سعر الصرف المحسوب: {fxRate} ج.م</span>
+              <span className="text-xs text-emerald-300">عملة موحدة للنظام المالي بالكامل</span>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-cyan-300">
               <Calculator className="h-6 w-6" />
@@ -177,9 +194,10 @@ export function ClientOrderForm({ customers }: ClientOrderFormProps) {
                           }}
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
+                          <option value="" disabled>-- اختر عميل التصدير --</option>
                           {customers.map((c) => (
                             <option key={c.id} value={c.id}>
-                              {c.name} ({c.country} — {c.destinationPort}) [{c.currency}]
+                              {c.name} ({c.country} — {c.destinationPort})
                             </option>
                           ))}
                         </select>
@@ -190,13 +208,15 @@ export function ClientOrderForm({ customers }: ClientOrderFormProps) {
                 />
 
                 {/* Agreement Preset Select */}
-                {selectedCustomer?.agreements && selectedCustomer.agreements.length > 0 && (
+                {selectedCustomer && selectedCustomer.agreements && selectedCustomer.agreements.length > 0 && (
                   <div className="md:col-span-2 p-3 bg-emerald-50/60 rounded-lg border border-emerald-200">
                     <label className="block text-xs font-bold text-emerald-900 mb-1">
                       اختيار من الاتفاقيات السعرية المعتمدة للعميل:
                     </label>
                     <select
+                      defaultValue=""
                       onChange={(e) => {
+                        if (!e.target.value) return;
                         const agr = selectedCustomer.agreements.find((a) => a.id.toString() === e.target.value);
                         if (agr) {
                           form.setValue("productName", agr.product.name);
@@ -206,39 +226,72 @@ export function ClientOrderForm({ customers }: ClientOrderFormProps) {
                       }}
                       className="flex h-9 w-full rounded-md border border-emerald-300 bg-white px-3 py-1 text-xs"
                     >
+                      <option value="">-- اختر من الاتفاقيات السعرية المعتمدة (اختياري) --</option>
                       {selectedCustomer.agreements.map((a) => (
                         <option key={a.id} value={a.id}>
-                          {a.product.name} — بسعر {Number(a.targetPriceEur)} {selectedCustomer.currency} — ({a.packagingSpec})
+                          {a.product.name} — بسعر {formatCurrency(Number(a.targetPriceEur))} / كجم — ({a.packagingSpec})
                         </option>
                       ))}
                     </select>
                   </div>
                 )}
 
-                {/* Product Name */}
+                {/* Product Name Select */}
                 <FormField
                   control={form.control}
                   name="productName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold text-gray-700">المنتج التصديري المطلوب *</FormLabel>
+                      <FormLabel className="font-semibold text-gray-700">المنتج التصديري المطلوب من الكتالوج *</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: فراولة مجمدة IQF" {...field} />
+                        <select
+                          {...field}
+                          value={field.value || ""}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          <option value="" disabled>-- اختر الصنف التصديري --</option>
+                          {products.map((p) => (
+                            <option key={p.id} value={p.name}>
+                              {p.name} ({p.code}) — {p.category}
+                            </option>
+                          ))}
+                        </select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Packaging Spec */}
+                {/* Packaging Spec Select */}
                 <FormField
                   control={form.control}
                   name="packagingSpec"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold text-gray-700">مواصفة التعبئة والتغليف *</FormLabel>
+                      <FormLabel className="font-semibold text-gray-700">مواصفة التعبئة والتغليف من المستلزمات *</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: كرتونة تصدير 10 كجم" {...field} />
+                        <select
+                          {...field}
+                          value={field.value || ""}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          <option value="" disabled>-- اختر مواصفة التعبئة والتغليف --</option>
+                          {packaging.length > 0 ? (
+                            packaging.map((pkg) => (
+                              <option key={pkg.id} value={pkg.name}>
+                                {pkg.name} ({pkg.code}) {pkg.capacityKg ? `[سعة ${pkg.capacityKg} كجم]` : ""}
+                              </option>
+                            ))
+                          ) : (
+                            <>
+                              <option value="كرتونة تصدير 10 كجم">كرتونة تصدير 10 كجم</option>
+                              <option value="كرتونة تصدير 15 كجم - تلسكوبيك">كرتونة تصدير 15 كجم - تلسكوبيك</option>
+                              <option value="شيكارة 25 كجم">شيكارة 25 كجم</option>
+                              <option value="أكياس 2.5 كجم داخل كرتونة 10 كجم">أكياس 2.5 كجم داخل كرتونة 10 كجم</option>
+                              <option value="براميل 200 كجم">براميل 200 كجم</option>
+                            </>
+                          )}
+                        </select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -253,39 +306,36 @@ export function ClientOrderForm({ customers }: ClientOrderFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">الكمية المطلوبة (كجم) *</FormLabel>
                       <FormControl>
-                        <Input type="number" step="500" placeholder="10000" {...field} />
+                        <Input
+                          type="number"
+                          step="500"
+                          placeholder="أدخل الكمية المطلوبة (كجم)"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Unit Price EUR / Foreign Currency */}
+                {/* Unit Price EGP */}
                 <FormField
                   control={form.control}
                   name="unitPriceEur"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">
-                        سعر البيع للوحدة ({selectedCustomer?.currency || "EUR"}) *
+                        سعر بيع الكيلو (ج.م) *
                       </FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.05" placeholder="1.85" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* FX Rate */}
-                <FormField
-                  control={form.control}
-                  name="fxRate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-semibold text-gray-700">سعر الصرف المعياري (ج.م) *</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.1" placeholder="53.20" {...field} />
+                        <CurrencyInput
+                          placeholder="0.00"
+                          value={field.value ?? ""}
+                          onChange={(val) => field.onChange(val)}
+                          step="0.01"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -300,22 +350,32 @@ export function ClientOrderForm({ customers }: ClientOrderFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">ميناء الوصول النهائي *</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: ميناء روتردام" {...field} />
+                        <Input placeholder="ميناء الوصول النهائي (يُحدد تلقائياً أو يُدخل يدوياً)" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Delivery Terms */}
+                {/* Delivery Terms Select */}
                 <FormField
                   control={form.control}
                   name="deliveryTerms"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel className="font-semibold text-gray-700">شروط التسليم الشحن (Incoterms)</FormLabel>
+                      <FormLabel className="font-semibold text-gray-700">شروط التسليم والشحن الدولية (Incoterms) *</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: FOB - ميناء الإسكندرية" {...field} />
+                        <select
+                          {...field}
+                          value={field.value || "FOB - ميناء الإسكندرية"}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          <option value="FOB - ميناء الإسكندرية">FOB - تسليم على ظهر السفينة (ميناء الإسكندرية / الدخيلة)</option>
+                          <option value="CIF - ميناء الوصول النهائي">CIF - التكلفة والتأمين والشحن حتى ميناء المشتري</option>
+                          <option value="CFR - ميناء الوصول النهائي">CFR - التكلفة والشحن دون تأمين</option>
+                          <option value="EXW - أرض المحطة / المصنع">EXW - تسليم أرض المحطة (مصر)</option>
+                          <option value="FCA - محطة الشحن">FCA - تسليم الناقل الحر</option>
+                        </select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -330,7 +390,7 @@ export function ClientOrderForm({ customers }: ClientOrderFormProps) {
                     <FormItem className="md:col-span-2">
                       <FormLabel className="font-semibold text-gray-700">ملاحظات وشروط خاصة بالطلبية</FormLabel>
                       <FormControl>
-                        <Input placeholder="تعليمات الشحن والتلغيم أو مواصفات الجودة الخاصة" value={field.value ?? ""} onChange={field.onChange} />
+                        <Input placeholder="تعليمات الشحن والتغليف أو مواصفات الجودة الخاصة (اختياري)..." value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

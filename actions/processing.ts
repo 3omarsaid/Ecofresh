@@ -69,7 +69,11 @@ export async function createProcessingOperation(payload: unknown) {
       const suppliesLocation = await getStationLocation(tx, data.stationId, WarehouseType.SUPPLIES);
       const fgLocation = await getStationLocation(tx, data.stationId, WarehouseType.FINISHED);
 
-      if (rawLocation.stationId !== data.stationId || fgLocation.stationId !== data.stationId) {
+      if (
+        rawLocation.stationId !== data.stationId ||
+        fgLocation.stationId !== data.stationId ||
+        suppliesLocation.stationId !== data.stationId
+      ) {
         throw new Error('فشل التحقق من ارتباط المخازن بالمحطة المحددة');
       }
 
@@ -262,7 +266,13 @@ export async function createProcessingOperation(payload: unknown) {
 
       // 7. Costing Calculations
       const contractor = await tx.contractor.findUnique({ where: { id: data.contractorId } });
-      const contractorRate = contractor ? Number(contractor.tariffRatePerKg) : 2.0;
+      if (!contractor || !contractor.isActive) {
+        throw new Error(`المقاول المحدد (${data.contractorId}) غير موجود أو غير نشط`);
+      }
+      if (contractor.stationId && contractor.stationId !== data.stationId) {
+        throw new Error(`المقاول (${contractor.name}) غير تابع لمحطة التشغيل المحددة`);
+      }
+      const contractorRate = Number(contractor.tariffRatePerKg);
       const contractorCost = Math.round(outputKg * contractorRate * 100) / 100;
 
       const stationRate = Number(station.electricityRatePerKg || 2.5);
@@ -368,13 +378,11 @@ export async function createProcessingOperation(payload: unknown) {
       }
 
       // 10. Contractor AP Financial Transaction
+      // 10. Contractor AP Financial Transaction via AccountingService
       if (contractorCost > 0) {
-        const { generateTxnId } = await import('@/actions/financials');
-        const txnId = await generateTxnId(tx, opDate);
-
-        await tx.financialTransaction.create({
-          data: {
-            txnId,
+        const { AccountingService } = await import('@/lib/accounting/accounting-service');
+        await AccountingService.recordTransaction(
+          {
             date: opDate,
             type: 'استحقاق تشغيل وفرز (AP)',
             partyType: 'مقاول عمالة',
@@ -382,12 +390,15 @@ export async function createProcessingOperation(payload: unknown) {
             partyName: contractor?.name || 'مقاول معتمد',
             amountEgp: contractorCost,
             currency: 'EGP',
+            relatedEntityType: 'PROCESSING_OP',
+            relatedEntityId: opId,
             refDoc: opId,
+            paymentMethod: 'CREDIT',
             description: `استحقاق أتعاب تشغيل ${outputKg.toLocaleString()} كجم جاهز بالعملية ${opId}`,
-            status: 'معتمد',
             createdById: user.id,
           },
-        });
+          tx
+        );
       }
 
       return {
@@ -585,6 +596,18 @@ export async function cancelProcessingOperation(operationId: string, cancelReaso
         : null;
 
       if (fgBatch) {
+        const allocatedCount = await tx.shipmentAllocatedBatch.count({
+          where: {
+            fgBatchId: fgBatch.fgBatchId,
+            shipment: { status: { not: 'CANCELLED' } },
+          },
+        });
+        if (allocatedCount > 0) {
+          throw new Error(
+            `لا يمكن إلغاء التشغيلة. الباتش الجاهز الناتج (${fgBatch.fgBatchId}) مخصص بالفعل في شحنة تصدير قائمة.`
+          );
+        }
+
         const available = Number(fgBatch.availableQty);
         const initial = Number(fgBatch.initialQty);
         if (available < initial) {

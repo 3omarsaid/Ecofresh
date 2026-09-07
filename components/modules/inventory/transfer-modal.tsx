@@ -1,8 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Station, FinishedGoodsBatch, RawBatch } from "@prisma/client";
-import { ArrowRightLeft, AlertCircle, Truck, User, CheckCircle2, Box, Package, Layers } from "lucide-react";
+import {
+  ArrowRightLeft,
+  AlertCircle,
+  Truck,
+  User,
+  CheckCircle2,
+  Box,
+  Package,
+  Layers,
+  Building2,
+  Calendar,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,9 +59,12 @@ export function TransferModal({
 
   const availableFgBatches = fgBatches.length > 0 ? fgBatches : batches;
 
+  const initialFromStation = stations.length > 0 ? stations[0].id : "";
+  const initialToStation = stations.length > 1 ? stations[1].id : "";
+
   const [formData, setFormData] = useState<TransferFormValues>({
-    fromStationId: "",
-    toStationId: "",
+    fromStationId: initialFromStation,
+    toStationId: initialToStation,
     itemType: "FINISHED",
     batchId: "",
     rawBatchId: "",
@@ -63,16 +77,48 @@ export function TransferModal({
     notes: "",
   });
 
-  // Calculate max available based on itemType
+  // Contextual items strictly filtered by the source station (fromStationId)
+  const contextualFgBatches = useMemo(() => {
+    if (!formData.fromStationId) return [];
+    return availableFgBatches.filter(
+      (b) => b.stationId === formData.fromStationId && Number(b.availableQty) > 0
+    );
+  }, [availableFgBatches, formData.fromStationId]);
+
+  const contextualRawBatches = useMemo(() => {
+    if (!formData.fromStationId) return [];
+    return rawBatches.filter(
+      (b) =>
+        b.stationId === formData.fromStationId &&
+        Number(b.availableQty) > 0 &&
+        b.qcStatus === "APPROVED"
+    );
+  }, [rawBatches, formData.fromStationId]);
+
+  const contextualStationSupplies = useMemo(() => {
+    if (!formData.fromStationId) return [];
+    return stationSupplies.filter(
+      (s) => s.location?.stationId === formData.fromStationId && Number(s.stock) > 0
+    );
+  }, [stationSupplies, formData.fromStationId]);
+
+  // Destination stations list: strictly excludes the current source station
+  const destinationStations = useMemo(() => {
+    return stations.filter((st) => st.id !== formData.fromStationId);
+  }, [stations, formData.fromStationId]);
+
+  // Calculate max available based on itemType within the source station context
   let maxAvailable = 0;
   if (formData.itemType === "FINISHED") {
-    const selected = availableFgBatches.find((b) => b.fgBatchId === (formData.fgBatchId || formData.batchId));
+    const selected = contextualFgBatches.find(
+      (b) => b.fgBatchId === (formData.fgBatchId || formData.batchId)
+    );
     maxAvailable = selected ? Number(selected.availableQty) : 0;
   } else if (formData.itemType === "RAW") {
-    const selected = rawBatches.find((b) => b.batchId === formData.rawBatchId);
+    const selected = contextualRawBatches.find((b) => b.batchId === formData.rawBatchId);
     maxAvailable = selected ? Number(selected.availableQty) : 0;
   } else if (formData.itemType === "SUPPLIES") {
-    const selected = stationSupplies.find(
+    const selected = contextualStationSupplies.find(
       (s) => s.supplyId === formData.supplyId && s.location?.stationId === formData.fromStationId
     );
     maxAvailable = selected ? Number(selected.stock) : 0;
@@ -80,32 +126,68 @@ export function TransferModal({
 
   const isQtyOver = formData.qtyKg > maxAvailable;
 
+  // Cascading Handlers
+  const handleFromStationChange = (newFromStationId: string) => {
+    setFormData((prev) => {
+      let nextToStationId = prev.toStationId;
+      if (nextToStationId === newFromStationId) {
+        const alt = stations.find((s) => s.id !== newFromStationId);
+        nextToStationId = alt ? alt.id : "";
+      }
+      return {
+        ...prev,
+        fromStationId: newFromStationId,
+        toStationId: nextToStationId,
+        // Invalidate child item selections and quantity
+        batchId: "",
+        fgBatchId: "",
+        rawBatchId: "",
+        supplyId: "",
+        qtyKg: 0,
+      };
+    });
+  };
+
+  const handleToStationChange = (newToStationId: string) => {
+    if (newToStationId === formData.fromStationId) return;
+    setFormData((prev) => ({ ...prev, toStationId: newToStationId }));
+  };
+
+  const handleItemTypeChange = (newItemType: "FINISHED" | "RAW" | "SUPPLIES") => {
+    setFormData((prev) => ({
+      ...prev,
+      itemType: newItemType,
+      batchId: "",
+      fgBatchId: "",
+      rawBatchId: "",
+      supplyId: "",
+      qtyKg: 0,
+    }));
+  };
+
   const handleFgSelect = (fgBatchId: string) => {
-    const b = availableFgBatches.find((item) => item.fgBatchId === fgBatchId);
     setFormData((prev) => ({
       ...prev,
       fgBatchId,
       batchId: fgBatchId,
-      fromStationId: b ? b.stationId : prev.fromStationId,
+      qtyKg: 0,
     }));
   };
 
   const handleRawSelect = (rawBatchId: string) => {
-    const b = rawBatches.find((item) => item.batchId === rawBatchId);
     setFormData((prev) => ({
       ...prev,
       rawBatchId,
       batchId: rawBatchId,
-      fromStationId: b ? b.stationId : prev.fromStationId,
+      qtyKg: 0,
     }));
   };
 
   const handleSupplySelect = (supplyId: string) => {
-    const item = stationSupplies.find((s) => s.supplyId === supplyId && (formData.fromStationId ? s.location?.stationId === formData.fromStationId : true));
     setFormData((prev) => ({
       ...prev,
       supplyId,
-      fromStationId: item?.location?.stationId || prev.fromStationId,
+      qtyKg: 0,
     }));
   };
 
@@ -114,13 +196,55 @@ export function TransferModal({
     setErrorMessage(null);
     setErrors({});
 
+    if (!formData.fromStationId) {
+      setErrorMessage("يرجى اختيار المحطة المصدر");
+      return;
+    }
+
+    if (!formData.toStationId) {
+      setErrorMessage("يرجى اختيار المحطة الوجهة");
+      return;
+    }
+
     if (formData.fromStationId === formData.toStationId) {
       setErrorMessage("لا يمكن التحويل لنفس المحطة المصدر والوجهة");
       return;
     }
 
+    if (formData.itemType === "FINISHED" && !formData.fgBatchId && !formData.batchId) {
+      setErrorMessage("يرجى اختيار الباتش التام المراد نقله");
+      return;
+    }
+
+    if (formData.itemType === "RAW" && !formData.rawBatchId) {
+      setErrorMessage("يرجى اختيار لوط الخام المراد نقله");
+      return;
+    }
+
+    if (formData.itemType === "SUPPLIES" && !formData.supplyId) {
+      setErrorMessage("يرجى اختيار المستلزم المراد نقله");
+      return;
+    }
+
+    if (!formData.qtyKg || formData.qtyKg <= 0) {
+      setErrorMessage("الكمية المنقولة يجب أن تكون أكبر من الصفر");
+      return;
+    }
+
     if (isQtyOver) {
-      setErrorMessage(`الكمية المنقولة تتجاوز الرصيد المتاح بالمخزن (${maxAvailable.toLocaleString()})`);
+      setErrorMessage(
+        `الكمية المنقولة (${formData.qtyKg.toLocaleString()}) تتجاوز الرصيد المتاح بالمخزن المصدر (${maxAvailable.toLocaleString()})`
+      );
+      return;
+    }
+
+    if (!formData.truckPlate || formData.truckPlate.trim().length < 2) {
+      setErrorMessage("رقم لوحة سيارة النقل مطلوب");
+      return;
+    }
+
+    if (!formData.driverName || formData.driverName.trim().length < 2) {
+      setErrorMessage("اسم السائق مطلوب");
       return;
     }
 
@@ -130,8 +254,8 @@ export function TransferModal({
       if (res.success) {
         setOpen(false);
         setFormData({
-          fromStationId: "",
-          toStationId: "",
+          fromStationId: stations.length > 0 ? stations[0].id : "",
+          toStationId: stations.length > 1 ? stations[1].id : "",
           itemType: "FINISHED",
           batchId: "",
           rawBatchId: "",
@@ -155,6 +279,8 @@ export function TransferModal({
       setIsSubmitting(false);
     }
   };
+
+  const selectedFromStationName = stations.find((s) => s.id === formData.fromStationId)?.name || "";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -184,13 +310,60 @@ export function TransferModal({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {/* Warehouse Type Selector */}
+          {/* 1. Contextual Stations Grid: From Station -> To Station */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-gray-700 flex items-center gap-1">
+                <Building2 className="w-3.5 h-3.5 text-[#012d1d]" />
+                <span>المحطة المصدر</span> <span className="text-red-500">*</span>
+              </Label>
+              <select
+                value={formData.fromStationId}
+                onChange={(e) => handleFromStationChange(e.target.value)}
+                className="w-full h-9 px-2 rounded-lg border border-gray-300 bg-white text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
+              >
+                <option value="">-- اختر المحطة المصدر --</option>
+                {stations.map((st) => (
+                  <option key={st.id} value={st.id}>
+                    {st.name} ({st.id})
+                  </option>
+                ))}
+              </select>
+              {errors?.fromStationId && (
+                <p className="text-[10px] text-red-600 font-semibold">{errors.fromStationId[0]}</p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-gray-700 flex items-center gap-1">
+                <Building2 className="w-3.5 h-3.5 text-blue-700" />
+                <span>المحطة الوجهة (مختلفة)</span> <span className="text-red-500">*</span>
+              </Label>
+              <select
+                value={formData.toStationId}
+                onChange={(e) => handleToStationChange(e.target.value)}
+                className="w-full h-9 px-2 rounded-lg border border-gray-300 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
+              >
+                <option value="">-- اختر المحطة الوجهة --</option>
+                {destinationStations.map((st) => (
+                  <option key={st.id} value={st.id}>
+                    {st.name} ({st.id})
+                  </option>
+                ))}
+              </select>
+              {errors?.toStationId && (
+                <p className="text-[10px] text-red-600 font-semibold">{errors.toStationId[0]}</p>
+              )}
+            </div>
+          </div>
+
+          {/* 2. Warehouse Type Selector */}
           <div className="space-y-1.5">
             <Label className="text-xs font-bold text-gray-700">نوع المخزن والأصناف المنقولة</Label>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => setFormData((p) => ({ ...p, itemType: "FINISHED", batchId: "", fgBatchId: "", rawBatchId: "", supplyId: "" }))}
+                onClick={() => handleItemTypeChange("FINISHED")}
                 className={`flex items-center justify-center gap-1.5 p-2 rounded-lg text-xs font-bold border transition-all ${
                   formData.itemType === "FINISHED"
                     ? "bg-emerald-700 text-white border-emerald-800 shadow-sm"
@@ -202,7 +375,7 @@ export function TransferModal({
 
               <button
                 type="button"
-                onClick={() => setFormData((p) => ({ ...p, itemType: "RAW", batchId: "", fgBatchId: "", rawBatchId: "", supplyId: "" }))}
+                onClick={() => handleItemTypeChange("RAW")}
                 className={`flex items-center justify-center gap-1.5 p-2 rounded-lg text-xs font-bold border transition-all ${
                   formData.itemType === "RAW"
                     ? "bg-amber-700 text-white border-amber-800 shadow-sm"
@@ -214,7 +387,7 @@ export function TransferModal({
 
               <button
                 type="button"
-                onClick={() => setFormData((p) => ({ ...p, itemType: "SUPPLIES", batchId: "", fgBatchId: "", rawBatchId: "", supplyId: "" }))}
+                onClick={() => handleItemTypeChange("SUPPLIES")}
                 className={`flex items-center justify-center gap-1.5 p-2 rounded-lg text-xs font-bold border transition-all ${
                   formData.itemType === "SUPPLIES"
                     ? "bg-cyan-700 text-white border-cyan-800 shadow-sm"
@@ -226,124 +399,113 @@ export function TransferModal({
             </div>
           </div>
 
-          {/* Item Selector based on itemType */}
+          {/* 3. Contextual Item Selector based on itemType & Source Station */}
           {formData.itemType === "FINISHED" && (
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-gray-700">
-                الباتش الجاهز المراد نقله (Finished Goods) <span className="text-red-500">*</span>
+                الباتش الجاهز المراد نقله من {selectedFromStationName || "المحطة المصدر"}{" "}
+                <span className="text-red-500">*</span>
               </Label>
-              <select
-                value={formData.fgBatchId || formData.batchId || ""}
-                onChange={(e) => handleFgSelect(e.target.value)}
-                className="w-full h-9 px-3 rounded-lg border border-gray-300 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
-              >
-                <option value="">-- اختر الباتش من مخزن المنتج التام --</option>
-                {availableFgBatches.map((b) => (
-                  <option key={b.fgBatchId} value={b.fgBatchId}>
-                    {b.fgBatchId} — {b.productName} ({b.station?.name || b.stationId}) — متاح:{" "}
-                    {Number(b.availableQty).toLocaleString()} كجم
-                  </option>
-                ))}
-              </select>
+              {contextualFgBatches.length > 0 ? (
+                <select
+                  value={formData.fgBatchId || formData.batchId || ""}
+                  onChange={(e) => handleFgSelect(e.target.value)}
+                  className="w-full h-9 px-3 rounded-lg border border-gray-300 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
+                >
+                  <option value="">-- اختر الباتش من مخزن المنتج التام بالمحطة --</option>
+                  {contextualFgBatches.map((b) => (
+                    <option key={b.fgBatchId} value={b.fgBatchId}>
+                      {b.fgBatchId} — {b.productName} — متاح: {Number(b.availableQty).toLocaleString()} كجم
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs">
+                  لا توجد باتشات منتج تام متاحة للتحويل بمخزن هذه المحطة.
+                </div>
+              )}
             </div>
           )}
 
           {formData.itemType === "RAW" && (
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-gray-700">
-                لوط الخام المراد نقله (Raw Material) <span className="text-red-500">*</span>
+                لوط الخام المراد نقله من {selectedFromStationName || "المحطة المصدر"}{" "}
+                <span className="text-red-500">*</span>
               </Label>
-              <select
-                value={formData.rawBatchId || ""}
-                onChange={(e) => handleRawSelect(e.target.value)}
-                className="w-full h-9 px-3 rounded-lg border border-gray-300 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
-              >
-                <option value="">-- اختر اللوط من مخزن الخامات --</option>
-                {rawBatches.map((b) => (
-                  <option key={b.batchId} value={b.batchId}>
-                    {b.batchId} — {b.rawProduct} ({b.station?.name || b.stationId}) — متاح:{" "}
-                    {Number(b.availableQty).toLocaleString()} كجم
-                  </option>
-                ))}
-              </select>
+              {contextualRawBatches.length > 0 ? (
+                <select
+                  value={formData.rawBatchId || ""}
+                  onChange={(e) => handleRawSelect(e.target.value)}
+                  className="w-full h-9 px-3 rounded-lg border border-gray-300 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
+                >
+                  <option value="">-- اختر اللوط من مخزن الخامات بالمحطة --</option>
+                  {contextualRawBatches.map((b) => (
+                    <option key={b.batchId} value={b.batchId}>
+                      {b.batchId} — {b.rawProduct} — متاح: {Number(b.availableQty).toLocaleString()} كجم
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs">
+                  لا توجد لوطات خام معتمدة ومتاحة للتحويل بمخزن هذه المحطة.
+                </div>
+              )}
             </div>
           )}
 
           {formData.itemType === "SUPPLIES" && (
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-gray-700">
-                المستلزم المراد نقله من المحطة المصدر <span className="text-red-500">*</span>
+                المستلزم المراد نقله من {selectedFromStationName || "المحطة المصدر"}{" "}
+                <span className="text-red-500">*</span>
               </Label>
-              <select
-                value={formData.supplyId || ""}
-                onChange={(e) => handleSupplySelect(e.target.value)}
-                className="w-full h-9 px-3 rounded-lg border border-gray-300 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
-              >
-                <option value="">-- اختر المستلزم من مخزن المستلزمات --</option>
-                {stationSupplies.map((s) => (
-                  <option key={`${s.locationId}-${s.supplyId}`} value={s.supplyId}>
-                    {s.supply?.name} ({s.location?.station?.name || 'محطة'}) — متاح:{" "}
-                    {Number(s.stock).toLocaleString()} {s.supply?.unit}
-                  </option>
-                ))}
-              </select>
+              {contextualStationSupplies.length > 0 ? (
+                <select
+                  value={formData.supplyId || ""}
+                  onChange={(e) => handleSupplySelect(e.target.value)}
+                  className="w-full h-9 px-3 rounded-lg border border-gray-300 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
+                >
+                  <option value="">-- اختر المستلزم من مخزن المستلزمات بالمحطة --</option>
+                  {contextualStationSupplies.map((s) => (
+                    <option key={`${s.locationId}-${s.supplyId}`} value={s.supplyId}>
+                      {s.supply?.name} — متاح بالمحطة: {Number(s.stock).toLocaleString()} {s.supply?.unit || "وحدة"}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs">
+                  لا توجد مستلزمات تعبئة متاحة للتحويل بمخزن هذه المحطة.
+                </div>
+              )}
             </div>
           )}
 
-          {/* From Station -> To Station */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-gray-700">المحطة المصدر</Label>
-              <select
-                value={formData.fromStationId}
-                onChange={(e) => setFormData((p) => ({ ...p, fromStationId: e.target.value }))}
-                className="w-full h-9 px-2 rounded-lg border border-gray-200 bg-gray-100 text-xs font-bold cursor-not-allowed"
-              >
-                <option value="">-- اختر المصدر --</option>
-                {stations.map((st) => (
-                  <option key={st.id} value={st.id}>
-                    {st.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-bold text-gray-700">
-                المحطة الوجهة (نفس نوع المخزن) <span className="text-red-500">*</span>
-              </Label>
-              <select
-                value={formData.toStationId}
-                onChange={(e) => setFormData((p) => ({ ...p, toStationId: e.target.value }))}
-                className="w-full h-9 px-2 rounded-lg border border-gray-300 bg-white text-xs focus:outline-none focus:ring-1 focus:ring-[#012d1d]"
-              >
-                <option value="">-- اختر المحطة الوجهة --</option>
-                {stations
-                  .filter((st) => st.id !== formData.fromStationId)
-                  .map((st) => (
-                    <option key={st.id} value={st.id}>
-                      {st.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Quantity Input */}
+          {/* 4. Quantity Input */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center">
               <Label className="text-xs font-bold text-gray-700">
                 الكمية المنقولة <span className="text-red-500">*</span>
               </Label>
               {maxAvailable > 0 && (
-                <span className="text-[11px] text-gray-500">
-                  المتاح بالمخزن: <strong className="text-gray-900">{maxAvailable.toLocaleString()}</strong>
-                </span>
+                <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                  <span>
+                    المتاح بمخزن المحطة: <strong className="text-gray-900 font-mono">{maxAvailable.toLocaleString()}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setFormData((p) => ({ ...p, qtyKg: maxAvailable }))}
+                    className="text-[10px] text-indigo-700 hover:text-indigo-900 font-bold underline"
+                  >
+                    سحب الكل
+                  </button>
+                </div>
               )}
             </div>
             <Input
               type="number"
               min={0}
+              max={maxAvailable}
               step="any"
               value={formData.qtyKg || ""}
               onChange={(e) => setFormData((p) => ({ ...p, qtyKg: Number(e.target.value) }))}
@@ -353,13 +515,13 @@ export function TransferModal({
               placeholder="0"
             />
             {isQtyOver && (
-              <p className="text-[11px] text-red-600">
+              <p className="text-[11px] text-red-600 font-semibold">
                 الكمية تتجاوز الرصيد المتاح بالمخزن المصدر ({maxAvailable.toLocaleString()})
               </p>
             )}
           </div>
 
-          {/* Truck Plate & Driver Name */}
+          {/* 5. Logistics: Truck Plate & Driver Name */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-gray-700 flex items-center gap-1">
@@ -390,16 +552,31 @@ export function TransferModal({
             </div>
           </div>
 
-          {/* Notes */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-bold text-gray-700">ملاحظات التحويل</Label>
-            <Input
-              type="text"
-              value={formData.notes || ""}
-              onChange={(e) => setFormData((p) => ({ ...p, notes: e.target.value }))}
-              placeholder="ملاحظات حول وسيلة النقل أو ظروف الشحن..."
-              className="h-9 text-xs"
-            />
+          {/* 6. Date & Notes */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-gray-700 flex items-center gap-1">
+                <Calendar className="h-3.5 w-3.5 text-gray-500" />
+                <span>تاريخ التحويل</span>
+              </Label>
+              <Input
+                type="date"
+                value={formData.date || ""}
+                onChange={(e) => setFormData((p) => ({ ...p, date: e.target.value }))}
+                className="h-9 text-xs"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-gray-700">ملاحظات التحويل</Label>
+              <Input
+                type="text"
+                value={formData.notes || ""}
+                onChange={(e) => setFormData((p) => ({ ...p, notes: e.target.value }))}
+                placeholder="ملاحظات الشحن والسيارة..."
+                className="h-9 text-xs"
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-3 border-t">
@@ -413,7 +590,7 @@ export function TransferModal({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || isQtyOver}
+              disabled={isSubmitting || isQtyOver || !formData.fromStationId || !formData.toStationId}
               className="bg-[#012d1d] hover:bg-[#02472e] text-white gap-2 font-semibold text-xs h-9 shadow-sm"
             >
               <CheckCircle2 className="h-4 w-4" />

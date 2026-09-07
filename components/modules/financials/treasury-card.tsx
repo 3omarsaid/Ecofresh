@@ -14,6 +14,7 @@ import {
   FileText,
   SlidersHorizontal,
 } from "lucide-react";
+import { formatCurrency } from "@/lib/currency";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,20 +48,6 @@ export function TreasuryCard({ account, onAdjustClick }: TreasuryCardProps) {
   const numericBalance = Number(account.balance) || 0;
   const isBalanced = account.reconciliationStatus !== 'MISMATCH';
 
-  const currencySymbol =
-    account.currency === "EGP"
-      ? "ج.م"
-      : account.currency === "EUR"
-      ? "€"
-      : account.currency === "USD"
-      ? "$"
-      : account.currency;
-
-  const formattedBalance = new Intl.NumberFormat("ar-EG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(numericBalance);
-
   return (
     <Card className="border-gray-200 hover:shadow-md transition-shadow bg-white flex flex-col justify-between overflow-hidden">
       <div>
@@ -81,15 +68,9 @@ export function TreasuryCard({ account, onAdjustClick }: TreasuryCardProps) {
           <div className="flex items-center gap-1.5 flex-wrap justify-end">
             <Badge
               variant="outline"
-              className={
-                account.currency === "EUR"
-                  ? "bg-purple-50 text-purple-700 border-purple-200 font-bold text-[11px]"
-                  : account.currency === "USD"
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-[11px]"
-                  : "bg-blue-50 text-blue-700 border-blue-200 font-bold text-[11px]"
-              }
+              className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-[11px]"
             >
-              {account.currency}
+              ج.م
             </Badge>
             <Badge
               variant="secondary"
@@ -105,8 +86,7 @@ export function TreasuryCard({ account, onAdjustClick }: TreasuryCardProps) {
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-500">السيولة المتاحة</span>
             <div className="text-left dir-ltr">
-              <span className="text-2xl font-extrabold text-[#012d1d]">{formattedBalance}</span>{" "}
-              <span className="text-sm font-bold text-gray-600">{currencySymbol}</span>
+              <span className="text-2xl font-extrabold text-[#012d1d]">{formatCurrency(numericBalance)}</span>
             </div>
           </div>
 
@@ -121,7 +101,7 @@ export function TreasuryCard({ account, onAdjustClick }: TreasuryCardProps) {
             ) : (
               <span className="inline-flex items-center gap-1 text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
                 <AlertTriangle className="w-3.5 h-3.5" />
-                يوجد فرق دفتري ({account.difference?.toLocaleString()} {account.currency})
+                يوجد فرق دفتري ({formatCurrency(account.difference || 0)})
               </span>
             )}
           </div>

@@ -33,6 +33,7 @@ import {
   Wallet,
   XCircle,
 } from "lucide-react";
+import { formatCurrency } from "@/lib/currency";
 
 export interface TransactionDetailData {
   txnId: string;
@@ -160,14 +161,8 @@ export function TransactionDetailsDrawer({
                 }`}
               >
                 <span>{isCollection ? "+" : "-"}</span>
-                <span>{Number(transaction.amountEgp).toLocaleString("ar-EG", { minimumFractionDigits: 2 })}</span>
-                <span className="text-xs font-normal text-gray-500 font-sans">ج.م</span>
+                <span>{formatCurrency(transaction.amountEgp)}</span>
               </div>
-              {transaction.amountCurrency && transaction.currency && transaction.currency !== "EGP" && (
-                <span className="text-xs font-mono text-gray-500 block mt-0.5">
-                  ({transaction.amountCurrency.toLocaleString()} {transaction.currency})
-                </span>
-              )}
             </div>
 
             <div className="text-left font-mono text-xs text-gray-500 space-y-1">
@@ -175,7 +170,7 @@ export function TransactionDetailsDrawer({
                 <div>
                   <span className="text-[10px] text-gray-400 block">الرصيد قبل:</span>
                   <span className="font-bold text-gray-700">
-                    {Number(transaction.balanceBefore).toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(transaction.balanceBefore)}
                   </span>
                 </div>
               )}
@@ -183,7 +178,7 @@ export function TransactionDetailsDrawer({
                 <div>
                   <span className="text-[10px] text-gray-400 block">الرصيد بعد:</span>
                   <span className="font-bold text-emerald-700">
-                    {Number(transaction.balanceAfter).toLocaleString("ar-EG")} ج.م
+                    {formatCurrency(transaction.balanceAfter)}
                   </span>
                 </div>
               )}

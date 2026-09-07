@@ -27,32 +27,64 @@ interface StationOption {
   location?: string;
 }
 
+interface ProductOption {
+  id: string;
+  code: string;
+  name: string;
+  category?: string;
+  defaultUnit?: string;
+}
+
+interface PackagingOption {
+  id: string;
+  code: string;
+  name: string;
+  category?: string;
+  unit?: string;
+  capacityKg?: any;
+}
+
 interface DirectDealFormProps {
   suppliers: SupplierOption[];
   stations: StationOption[];
+  products?: ProductOption[];
+  packagingSupplies?: PackagingOption[];
+  defaultStationId?: string;
+  defaultSupplierId?: string;
+  initialData?: Partial<DirectDealFormValues>;
 }
 
-export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
+export function DirectDealForm({
+  suppliers,
+  stations,
+  products = [],
+  packagingSupplies = [],
+  defaultStationId,
+  defaultSupplierId,
+  initialData,
+}: DirectDealFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<DirectDealFormValues>({
     resolver: zodResolver(DirectDealSchema),
     defaultValues: {
-      supplierId: suppliers[0]?.id || "",
-      stationId: stations[0]?.id || "",
-      productName: "برتقال أبو سرة (فرز أول ممتاز)",
-      qtyKg: 5000,
-      purchasePricePerKg: 14.5,
-      transportCost: 1500,
-      packageType: "كرتونة 15 كجم - جامبو",
-      notes: "صفقة شراء جاهز مباشرة شاملة الفرز والتعبئة",
+      supplierId: initialData?.supplierId || defaultSupplierId || "",
+      stationId: initialData?.stationId || defaultStationId || "",
+      productName: initialData?.productName || "",
+      qtyKg: initialData?.qtyKg,
+      purchasePricePerKg: initialData?.purchasePricePerKg,
+      transportCost: initialData?.transportCost ?? 0,
+      packageType: initialData?.packageType || "",
+      packageCount: initialData?.packageCount ?? null,
+      notes: initialData?.notes || "",
+      invoiceNo: initialData?.invoiceNo || "",
     },
   });
 
-  const qtyKg = form.watch("qtyKg") || 0;
-  const purchasePricePerKg = form.watch("purchasePricePerKg") || 0;
-  const transportCost = form.watch("transportCost") || 0;
+  const qtyKg = Number(form.watch("qtyKg")) || 0;
+  const purchasePricePerKg = Number(form.watch("purchasePricePerKg")) || 0;
+  const transportCost = Number(form.watch("transportCost")) || 0;
 
   const rawCost = qtyKg * purchasePricePerKg;
   const totalCost = rawCost + transportCost;
@@ -135,15 +167,26 @@ export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Product Name */}
+                {/* Product Name Select */}
                 <FormField
                   control={form.control}
                   name="productName"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel className="font-semibold text-gray-700">اسم المنتج / الصنف والدرجة *</FormLabel>
+                      <FormLabel className="font-semibold text-gray-700">الصنف التصديري المعتمد بالسيستم *</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: برتقال أبو سرة (فرز أول ممتاز)" {...field} />
+                        <select
+                          {...field}
+                          value={field.value || ""}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          <option value="" disabled>-- اختر الصنف من كتالوج المنتجات المعرفة --</option>
+                          {products.map((p) => (
+                            <option key={p.id} value={p.name}>
+                              {p.name} ({p.code}) — {p.category}
+                            </option>
+                          ))}
+                        </select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -162,6 +205,7 @@ export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
                           {...field}
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
+                          <option value="" disabled>-- اختر المورد الخارجي / تاجر الجاهز --</option>
                           {suppliers.map((sup) => (
                             <option key={sup.id} value={sup.id}>
                               {sup.name} ({sup.code})
@@ -186,6 +230,7 @@ export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
                           {...field}
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
+                          <option value="" disabled>-- اختر محطة الاستلام والتخزين --</option>
                           {stations.map((st) => (
                             <option key={st.id} value={st.id}>
                               {st.name} {st.location ? `(${st.location})` : ""}
@@ -206,7 +251,14 @@ export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">الكمية الصافية بالجيلوجرام (كجم) *</FormLabel>
                       <FormControl>
-                        <Input type="number" step="100" placeholder="5000" {...field} />
+                        <Input
+                          type="number"
+                          step="100"
+                          placeholder="أدخل الكمية الصافية بالكيلوجرام"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -221,22 +273,50 @@ export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">سعر الكيلو من المورد (ج.م) *</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.5" placeholder="14.50" {...field} />
+                        <Input
+                          type="number"
+                          step="any"
+                          placeholder="0.00"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Packaging Type */}
+                {/* Packaging Type Select */}
                 <FormField
                   control={form.control}
                   name="packageType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold text-gray-700">نوع العبوة / التعبئة</FormLabel>
+                      <FormLabel className="font-semibold text-gray-700">نوع العبوة / التعبئة من المستلزمات *</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: كرتونة 15 كجم - جامبو" value={field.value ?? ""} onChange={field.onChange} />
+                        <select
+                          {...field}
+                          value={field.value || ""}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            const matchedSupply = packagingSupplies.find((s) => s.name === e.target.value);
+                            if (matchedSupply && matchedSupply.capacityKg && qtyKg > 0) {
+                              const cap = Number(matchedSupply.capacityKg);
+                              if (cap > 0) {
+                                form.setValue("packageCount", Math.ceil(qtyKg / cap));
+                              }
+                            }
+                          }}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          <option value="">-- اختر نوع العبوة من دليل المستلزمات --</option>
+                          {packagingSupplies.map((s) => (
+                            <option key={s.id} value={s.name}>
+                              {s.name} ({s.code}) {s.capacityKg ? `[سعة: ${s.capacityKg} كجم]` : ""}
+                            </option>
+                          ))}
+                        </select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -251,7 +331,14 @@ export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
                     <FormItem>
                       <FormLabel className="font-semibold text-gray-700">تكلفة النقل والنولون (ج.م)</FormLabel>
                       <FormControl>
-                        <Input type="number" step="100" placeholder="1500" {...field} />
+                        <Input
+                          type="number"
+                          step="100"
+                          placeholder="0.00 (اختياري)"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -266,7 +353,7 @@ export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
                     <FormItem className="md:col-span-2">
                       <FormLabel className="font-semibold text-gray-700">رقم الفاتورة / المستند</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: INV-DIR-2026-001" value={field.value ?? ""} onChange={field.onChange} />
+                        <Input placeholder="مثال: INV-DIR-2026-001 (اختياري)" value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -281,7 +368,7 @@ export function DirectDealForm({ suppliers, stations }: DirectDealFormProps) {
                     <FormItem className="md:col-span-2">
                       <FormLabel className="font-semibold text-gray-700">ملاحظات الصفقة</FormLabel>
                       <FormControl>
-                        <Input placeholder="تفاصيل إضافية عن جودة البضاعة أو مواصفات التصدير" value={field.value ?? ""} onChange={field.onChange} />
+                        <Input placeholder="تفاصيل إضافية عن جودة البضاعة أو مواصفات التصدير (اختياري)..." value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

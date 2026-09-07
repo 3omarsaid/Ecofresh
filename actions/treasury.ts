@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, can } from '@/lib/auth';
 import { TreasuryAccountSchema } from '@/lib/validations/treasury';
+import { generateTreasuryAccountId } from '@/lib/id-generator';
 import { reconcileAllTreasuryAccounts, reconcileTreasuryAccount } from '@/lib/treasury-reconciliation';
 
 export async function createTreasuryAccount(formData: FormData) {
@@ -18,11 +19,22 @@ export async function createTreasuryAccount(formData: FormData) {
   }
 
   try {
-    const account = await prisma.treasuryAccount.create({
-      data: validated.data,
+    const account = await prisma.$transaction(async (tx) => {
+      // Ignore hardcoded 'ACC-05' default if present, and generate a true sequential ID
+      const generatedId = (validated.data.id && validated.data.id !== 'ACC-05')
+        ? validated.data.id
+        : await generateTreasuryAccountId(tx);
+
+      return await tx.treasuryAccount.create({
+        data: {
+          ...validated.data,
+          id: generatedId,
+        },
+      });
     });
+
     revalidatePath('/financials/treasury');
-    return { success: true, message: `تم تسجيل الحساب ${account.name} بنجاح` };
+    return { success: true, message: `تم تسجيل الحساب ${account.name} (${account.id}) بنجاح` };
   } catch (error: any) {
     if (error.code === 'P2002') {
       return { success: false, error: 'كود الحساب مسجل مسبقاً' };

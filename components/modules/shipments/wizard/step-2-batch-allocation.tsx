@@ -42,6 +42,16 @@ export function Step2BatchAllocation({
       )
     : availableBatches.filter((b) => Number(b.availableQty) > 0);
 
+  // Reactive cleanup: purge any batch from allocatedBatches that is not in filteredBatches
+  React.useEffect(() => {
+    if (!selectedOrder) return;
+    const validBatchIds = new Set(filteredBatches.map((b) => b.fgBatchId));
+    const validAllocations = allocatedBatches.filter((item) => validBatchIds.has(item.fgBatchId));
+    if (validAllocations.length !== allocatedBatches.length) {
+      onChange(validAllocations);
+    }
+  }, [filteredBatches, allocatedBatches, selectedOrder, onChange]);
+
   const unfulfilledQtyKg = selectedOrder ? Number(selectedOrder.unfulfilledQtyKg) : 0;
 
   // Calculate total allocated weight

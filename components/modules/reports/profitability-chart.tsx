@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/currency";
 
 interface ProfitabilityChartProps {
   totalRevenue: number;
@@ -42,11 +43,7 @@ export function ProfitabilityChart({
             <div className="flex justify-between text-xs font-semibold mb-1">
               <span className="text-muted-foreground">إجمالي الإيرادات (Gross Revenue)</span>
               <span className="text-emerald-600 dark:text-emerald-400 font-mono">
-                {totalRevenue.toLocaleString("ar-EG", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{" "}
-                ج.م
+                {formatCurrency(totalRevenue)}
               </span>
             </div>
             <div className="w-full h-4 bg-muted rounded-full overflow-hidden">
@@ -62,11 +59,7 @@ export function ProfitabilityChart({
             <div className="flex justify-between text-xs font-semibold mb-1">
               <span className="text-muted-foreground">إجمالي التكاليف (Total Shipment Costs)</span>
               <span className="text-rose-600 dark:text-rose-400 font-mono">
-                {totalCost.toLocaleString("ar-EG", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{" "}
-                ج.م
+                {formatCurrency(totalCost)}
               </span>
             </div>
             <div className="w-full h-4 bg-muted rounded-full overflow-hidden">
@@ -82,11 +75,7 @@ export function ProfitabilityChart({
             <div className="flex justify-between text-xs font-semibold mb-1">
               <span className="text-muted-foreground">صافي الربح التجميعي (Net Profit)</span>
               <span className="text-primary font-mono">
-                {totalProfit.toLocaleString("ar-EG", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}{" "}
-                ج.م
+                {formatCurrency(totalProfit)}
               </span>
             </div>
             <div className="w-full h-4 bg-muted rounded-full overflow-hidden">

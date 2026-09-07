@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { EmployeeForm } from "./EmployeeForm";
 import { AddTransactionDialog } from "./AddTransactionDialog";
+import { formatCurrency } from "@/lib/currency";
 
 interface EmployeeListProps {
   employees: any[];
@@ -96,7 +97,7 @@ export function EmployeeList({
             <Coins className="h-5 w-5 text-emerald-700" />
           </div>
           <div className="text-2xl font-bold text-emerald-800 font-mono">
-            {totalBasicSalary.toLocaleString()} ج.م
+            {formatCurrency(totalBasicSalary)}
           </div>
           <span className="text-[11px] text-gray-400">شهرياً قبل البدلات والخصم</span>
         </div>
@@ -107,7 +108,7 @@ export function EmployeeList({
             <Coins className="h-5 w-5 text-blue-700" />
           </div>
           <div className="text-2xl font-bold text-blue-800 font-mono">
-            {totalDueToEmployees.toLocaleString()} ج.م
+            {formatCurrency(totalDueToEmployees)}
           </div>
           <span className="text-[11px] text-gray-400">مستحق صرفه للكادر</span>
         </div>
@@ -118,7 +119,7 @@ export function EmployeeList({
             <Coins className="h-5 w-5 text-rose-700" />
           </div>
           <div className="text-2xl font-bold text-rose-800 font-mono">
-            {totalAdvancesOnEmployees.toLocaleString()} ج.م
+            {formatCurrency(totalAdvancesOnEmployees)}
           </div>
           <span className="text-[11px] text-gray-400">متبقي سداده أو خصمه</span>
         </div>
@@ -223,7 +224,7 @@ export function EmployeeList({
                   </td>
 
                   <td className="p-3.5 font-mono font-bold text-gray-800">
-                    {Number(emp.basicSalary).toLocaleString()} ج.م
+                    {formatCurrency(Number(emp.basicSalary))}
                   </td>
 
                   <td className="p-3.5 font-mono font-bold">
@@ -258,6 +259,7 @@ export function EmployeeList({
                       <AddTransactionDialog
                         employeeId={emp.id}
                         employeeName={emp.name}
+                        monthlySalary={emp.totalMonthlySalary}
                         treasuryAccounts={treasuryAccounts}
                         trigger={
                           <Button variant="outline" size="sm" className="h-7 text-xs px-2 gap-1 text-emerald-700 border-emerald-200 hover:bg-emerald-50">

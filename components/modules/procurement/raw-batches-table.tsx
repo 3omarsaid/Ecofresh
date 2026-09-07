@@ -1,6 +1,7 @@
 import { Scale, CheckCircle2, AlertTriangle, Building2, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/currency";
 
 interface RawBatchItem {
   batchId: string;
@@ -89,16 +90,12 @@ export function RawBatchesTable({ batches }: RawBatchesTableProps) {
                       </td>
                       <td className="py-3.5 px-4">
                         <span className="font-bold text-cyan-800">
-                          {unitCostNum.toFixed(2)} ج.م / كجم
+                          {formatCurrency(unitCostNum)} / كجم
                         </span>
                       </td>
                       <td className="py-3.5 px-4">
                         <span className="font-bold text-amber-800">
-                          {totalPayableNum.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}{" "}
-                          ج.م
+                          {formatCurrency(totalPayableNum)}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-center">

@@ -1,16 +1,12 @@
 import { z } from 'zod';
+import { cleanPositiveNumber, cleanNonNegativeNumber } from './common';
 
 export const StationSchema = z.object({
-  id: z.string().min(2, 'كود المحطة مطلوب (مثل STN-01)'),
+  id: z.string().optional(),
   name: z.string().min(3, 'اسم المحطة مطلوب'),
   location: z.string().min(3, 'الموقع الجغرافي مطلوب'),
-  coldStorageCapacityKg: z.coerce
-    .number()
-    .positive('سعة التخزين يجب أن تكون أكبر من 0'),
-  electricityRatePerKg: z.coerce
-    .number()
-    .min(0, 'سعر الكهرباء لا يمكن أن يكون سالباً')
-    .default(2.5),
+  coldStorageCapacityKg: cleanPositiveNumber('سعة التخزين يجب أن تكون أكبر من 0'),
+  electricityRatePerKg: cleanNonNegativeNumber('سعر الكهرباء لا يمكن أن يكون سالباً', 2.5),
   supervisorName: z.string().optional(),
   phone: z.string().optional(),
 });

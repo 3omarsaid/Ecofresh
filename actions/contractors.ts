@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from 'next/cache';
+import { safeRevalidatePath } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, can } from '@/lib/auth';
 import { ContractorSchema } from '@/lib/validations/contractor';
+import { generateContractorId } from '@/lib/id-generator';
 
 export async function createContractor(formData: FormData) {
   const user = await getCurrentUser();
@@ -18,14 +19,22 @@ export async function createContractor(formData: FormData) {
   }
 
   try {
-    const contractor = await prisma.contractor.create({
-      data: validated.data,
-      include: { station: true },
+    const contractor = await prisma.$transaction(async (tx) => {
+      const generatedId = validated.data.id || (await generateContractorId(tx));
+
+      return await tx.contractor.create({
+        data: {
+          ...validated.data,
+          id: generatedId,
+        },
+        include: { station: true },
+      });
     });
-    revalidatePath('/contractors');
+
+    safeRevalidatePath('/contractors');
     return {
       success: true,
-      message: `تم تسجيل المقاول ${contractor.name} بتعريفة ${contractor.tariffRatePerKg} ج.م/كجم`,
+      message: `تم تسجيل المقاول ${contractor.name} (${contractor.id}) بتعريفة ${contractor.tariffRatePerKg} ج.م/كجم`,
     };
   } catch (error: any) {
     if (error.code === 'P2003') {
@@ -100,7 +109,7 @@ export async function updateContractor(id: string, formData: FormData) {
       data: validated.data,
       include: { station: true },
     });
-    revalidatePath('/contractors');
+    safeRevalidatePath('/contractors');
     return { success: true, message: `تم تعديل بيانات المقاول ${contractor.name} بنجاح` };
   } catch (error: any) {
     return { success: false, error: error.message || 'حدث خطأ أثناء تعديل المقاول' };
@@ -117,7 +126,7 @@ export async function deleteContractor(id: string) {
     await prisma.contractor.delete({
       where: { id },
     });
-    revalidatePath('/contractors');
+    safeRevalidatePath('/contractors');
     return { success: true, message: 'تم حذف المقاول بنجاح' };
   } catch (error: any) {
     if (error.code === 'P2003') {

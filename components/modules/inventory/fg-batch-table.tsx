@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { BatchDnaBadge } from "./batch-dna-badge";
+import { formatCurrency } from "@/lib/currency";
 
 export interface FgBatchWithRelations {
   fgBatchId: string;
@@ -301,12 +302,12 @@ export function FgBatchTable({ batches }: FgBatchTableProps) {
 
                         {/* 7. Weighted Unit Cost */}
                         <td className="py-3.5 px-4 font-bold text-cyan-900">
-                          {costPerKgNum.toFixed(2)} ج.م/كجم
+                          {formatCurrency(costPerKgNum)} / كجم
                         </td>
 
                         {/* 8. Total Batch Value */}
                         <td className="py-3.5 px-4 font-bold text-[#0054cd]">
-                          {totalValNum.toLocaleString()} ج.م
+                          {formatCurrency(totalValNum)}
                         </td>
 
                         {/* 9. DNA Supplier Tree */}

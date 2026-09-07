@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { deleteSupply } from "@/actions/supplies";
 import { toast } from "sonner";
+import { formatCurrency } from "@/lib/currency";
 
 interface StationSupplyRecord {
   id: string;
@@ -172,14 +173,10 @@ export function SupplyTable({ supplies }: SupplyTableProps) {
                           {displayStock.toLocaleString()} {item.unit}
                         </td>
                         <td className="py-3.5 px-4 font-semibold text-gray-700">
-                          {priceNum.toFixed(2)} ج.م
+                          {formatCurrency(priceNum)}
                         </td>
                         <td className="py-3.5 px-4 font-bold text-[#012d1d]">
-                          {totalValuation.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}{" "}
-                          ج.م
+                          {formatCurrency(totalValuation)}
                         </td>
                         <td className="py-3.5 px-4 text-center">
                           {isLowStock ? (

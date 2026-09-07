@@ -1,9 +1,11 @@
 "use server";
 
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
+import { unstable_cache } from 'next/cache';
+import { safeRevalidatePath, safeRevalidateTag } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser, can } from '@/lib/auth';
 import { ProductSchema } from '@/lib/validations/product';
+import { generateProductId } from '@/lib/id-generator';
 
 export async function createProduct(formData: FormData) {
   const user = await getCurrentUser();
@@ -17,11 +19,21 @@ export async function createProduct(formData: FormData) {
   }
 
   try {
-    const product = await prisma.product.create({
-      data: validated.data,
+    const product = await prisma.$transaction(async (tx) => {
+      const generatedId = validated.data.id || (await generateProductId(tx));
+      const code = validated.data.code?.trim() || generatedId;
+
+      return await tx.product.create({
+        data: {
+          ...validated.data,
+          id: generatedId,
+          code,
+        },
+      });
     });
-    revalidateTag('products');
-    revalidatePath('/products');
+
+    safeRevalidateTag('products');
+    safeRevalidatePath('/products');
     return { success: true, message: `تم قيد الصنف ${product.name} بالكود ${product.code} بنجاح` };
   } catch (error: any) {
     if (error.code === 'P2002') {
@@ -69,7 +81,7 @@ export async function updateProduct(id: string, formData: FormData) {
       where: { id },
       data: validated.data,
     });
-    revalidatePath('/products');
+    safeRevalidatePath('/products');
     return { success: true, message: `تم تعديل الصنف ${product.name} بنجاح` };
   } catch (error: any) {
     return { success: false, error: error.message || 'حدث خطأ أثناء تعديل المنتج' };
@@ -86,7 +98,7 @@ export async function deleteProduct(id: string) {
     await prisma.product.delete({
       where: { id },
     });
-    revalidatePath('/products');
+    safeRevalidatePath('/products');
     return { success: true, message: 'تم حذف المنتج بنجاح' };
   } catch (error: any) {
     if (error.code === 'P2003') {

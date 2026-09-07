@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ShoppingBag, Loader2, ArrowRight, Calculator } from "lucide-react";
+import { ShoppingBag, Loader2, ArrowRight, Calculator, Building2, Tag, Calendar } from "lucide-react";
 import Link from "next/link";
 
 import { PackagingPurchaseSchema, type PackagingPurchaseFormValues } from "@/lib/validations/purchases";
-import { addPackagingPurchase } from "@/actions/packaging-purchases";
+import { addPackagingPurchase, getStationsForPackagingSelect } from "@/actions/packaging-purchases";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -30,34 +30,80 @@ interface SupplierOption {
   name: string;
 }
 
+interface StationOption {
+  id: string;
+  name: string;
+  location?: string | null;
+}
+
 interface PackagingPurchaseFormProps {
   supplies: SupplyOption[];
   suppliers: SupplierOption[];
+  stations?: StationOption[];
+  defaultStationId?: string;
 }
 
-export function PackagingPurchaseForm({ supplies, suppliers }: PackagingPurchaseFormProps) {
+export function PackagingPurchaseForm({
+  supplies,
+  suppliers,
+  stations: initialStations = [],
+  defaultStationId,
+}: PackagingPurchaseFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stations, setStations] = useState<StationOption[]>(initialStations);
+  const [loadingStations, setLoadingStations] = useState(initialStations.length === 0);
+
+  // Contextual station fetching if not passed via props
+  useEffect(() => {
+    if (initialStations.length > 0) {
+      setStations(initialStations);
+      setLoadingStations(false);
+    } else {
+      setLoadingStations(true);
+      getStationsForPackagingSelect()
+        .then((data) => {
+          if (Array.isArray(data) && data.length > 0) {
+            setStations(data);
+          }
+        })
+        .catch((err) => console.error("Failed to load stations:", err))
+        .finally(() => setLoadingStations(false));
+    }
+  }, [initialStations]);
 
   const defaultSupply = supplies[0];
+  const initialStation = defaultStationId || initialStations[0]?.id || "";
 
   const form = useForm<PackagingPurchaseFormValues>({
     resolver: zodResolver(PackagingPurchaseSchema),
     defaultValues: {
+      stationId: initialStation,
       supplyId: defaultSupply?.id || "",
       supplierId: suppliers[0]?.id || "",
-      qty: 1000,
-      unitPrice: Number(defaultSupply?.unitPrice || 18.0),
-      invoiceNo: "INV-CTN-001",
+      qty: 0,
+      unitPrice: Number(defaultSupply?.unitPrice || 0),
+      invoiceNo: "",
+      date: new Date().toISOString().substring(0, 10),
     },
   });
 
+  // Keep stationId synced once stations load if not already set
+  useEffect(() => {
+    const currentVal = form.getValues("stationId");
+    if (!currentVal && stations.length > 0) {
+      form.setValue("stationId", defaultStationId || stations[0].id, { shouldValidate: true });
+    }
+  }, [stations, defaultStationId, form]);
+
   const selectedSupplyId = form.watch("supplyId");
   const currentSupply = supplies.find((s) => s.id === selectedSupplyId) || defaultSupply;
+  const catalogPrice = Number(currentSupply?.unitPrice || 0);
 
-  const qty = form.watch("qty") || 0;
-  const unitPrice = form.watch("unitPrice") || 0;
+  const qty = Number(form.watch("qty")) || 0;
+  const unitPrice = Number(form.watch("unitPrice")) || 0;
   const totalCost = qty * unitPrice;
+  const isCustomPrice = Math.abs(unitPrice - catalogPrice) > 0.001;
 
   async function onSubmit(values: PackagingPurchaseFormValues) {
     setIsSubmitting(true);
@@ -128,6 +174,47 @@ export function PackagingPurchaseForm({ supplies, suppliers }: PackagingPurchase
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Station Selection (Contextual & Strict) */}
+                <FormField
+                  control={form.control}
+                  name="stationId"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <FormLabel className="font-semibold text-gray-700 flex items-center gap-1.5">
+                          <Building2 className="h-4 w-4 text-emerald-800" />
+                          المحطة المستلمة للمستلزمات *
+                        </FormLabel>
+                        {defaultStationId && (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-300 text-[11px]">
+                            محددة سياقياً للمحطة الحالية
+                          </Badge>
+                        )}
+                      </div>
+                      <FormControl>
+                        {loadingStations ? (
+                          <div className="text-xs text-gray-400 py-2">جاري تحميل المحطات المعتمدة...</div>
+                        ) : (
+                          <select
+                            {...field}
+                            value={field.value || ""}
+                            disabled={Boolean(defaultStationId && stations.some((s) => s.id === defaultStationId))}
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:bg-gray-100 disabled:text-gray-600"
+                          >
+                            <option value="">-- اختر المحطة المستلمة للمخزن --</option>
+                            {stations.map((st) => (
+                              <option key={st.id} value={st.id}>
+                                {st.name} ({st.id}) {st.location ? `— ${st.location}` : ""}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 {/* Supply Select */}
                 <FormField
                   control={form.control}
@@ -149,7 +236,7 @@ export function PackagingPurchaseForm({ supplies, suppliers }: PackagingPurchase
                         >
                           {supplies.map((s) => (
                             <option key={s.id} value={s.id}>
-                              {s.name} ({s.code})
+                              {s.name} ({s.code}) — السعر المعتمد: {Number(s.unitPrice).toFixed(2)} ج.م
                             </option>
                           ))}
                         </select>
@@ -193,22 +280,57 @@ export function PackagingPurchaseForm({ supplies, suppliers }: PackagingPurchase
                         الكمية المشتراة ({currentSupply?.unit || "وحدة"}) *
                       </FormLabel>
                       <FormControl>
-                        <Input type="number" step="10" placeholder="1000" {...field} />
+                        <Input type="number" step="1" min="1" placeholder="1000" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Unit Price */}
+                {/* Unit Price with Catalog Price Benchmark */}
                 <FormField
                   control={form.control}
                   name="unitPrice"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold text-gray-700">سعر شراء الوحدة (ج.م) *</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel className="font-semibold text-gray-700">سعر شراء الوحدة (ج.م) *</FormLabel>
+                        {isCustomPrice && (
+                          <button
+                            type="button"
+                            onClick={() => form.setValue("unitPrice", catalogPrice)}
+                            className="text-[11px] text-emerald-700 hover:underline flex items-center gap-1 font-medium"
+                          >
+                            <Tag className="h-3 w-3" /> استعادة الكتالوج ({catalogPrice.toFixed(2)})
+                          </button>
+                        )}
+                      </div>
                       <FormControl>
-                        <Input type="number" step="0.5" placeholder="18.00" {...field} />
+                        <Input type="number" step="any" min="0.01" placeholder="18.00" {...field} />
+                      </FormControl>
+                      <div className="flex items-center justify-between text-[11px] text-gray-500 pt-0.5">
+                        <span>سعر الكتالوج المعتمد: {catalogPrice.toFixed(2)} ج.م</span>
+                        {isCustomPrice && (
+                          <span className="text-amber-700 font-medium">سعر فاتورة مخصص</span>
+                        )}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Date */}
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold text-gray-700 flex items-center gap-1.5">
+                        <Calendar className="h-3.5 w-3.5 text-gray-500" />
+                        تاريخ فاتورة الشراء
+                      </FormLabel>
+                      <FormControl>
+                        <Input type="date" value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -220,10 +342,10 @@ export function PackagingPurchaseForm({ supplies, suppliers }: PackagingPurchase
                   control={form.control}
                   name="invoiceNo"
                   render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel className="font-semibold text-gray-700">رقم فاتورة الشراء</FormLabel>
+                    <FormItem>
+                      <FormLabel className="font-semibold text-gray-700">رقم فاتورة الشراء (اختياري)</FormLabel>
                       <FormControl>
-                        <Input placeholder="مثال: INV-CTN-2026-001" value={field.value ?? ""} onChange={field.onChange} />
+                        <Input placeholder="مثال: INV-2026-001 أو رقم إيصال المورد" value={field.value ?? ""} onChange={field.onChange} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

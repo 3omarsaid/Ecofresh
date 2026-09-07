@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { RawBatch, Supplier, Station } from "@prisma/client";
 import {
   AlertCircle,
@@ -41,6 +41,7 @@ type ExtendedStation = Station & {
 
 interface Step2RawIssuesProps {
   stationId: string;
+  rawProduct?: string;
   stations?: ExtendedStation[];
   rawBatches: ExtendedRawBatch[];
   targetRawKg?: number;
@@ -52,6 +53,7 @@ interface Step2RawIssuesProps {
 
 export function Step2RawIssues({
   stationId,
+  rawProduct = "",
   stations = [],
   rawBatches,
   targetRawKg = 0,
@@ -75,15 +77,27 @@ export function Step2RawIssues({
     rawWarehouse?.name ||
     (selectedStation ? `${selectedStation.name} — مخزن الخامات` : "مخزن الخامات");
 
-  // Filter available batches for this station's RAW warehouse with availableQty > 0 and QC APPROVED
+  // Filter available batches for this station's RAW warehouse matching rawProduct with availableQty > 0 and QC APPROVED
   const availableBatches = useMemo(() => {
+    const normCrop = rawProduct.trim().toLowerCase();
     return rawBatches.filter(
       (b) =>
         b.stationId === stationId &&
+        (!normCrop || b.rawProduct.trim().toLowerCase() === normCrop) &&
         Number(b.availableQty) > 0 &&
-        b.qcStatus === "APPROVED"
+        b.qcStatus === "APPROVED" &&
+        (!rawWarehouse || !b.locationId || b.locationId === rawWarehouse.id)
     );
-  }, [rawBatches, stationId]);
+  }, [rawBatches, stationId, rawProduct, rawWarehouse]);
+
+  // Reactive cleanup: purge any batch from rawIssues that is not in availableBatches
+  useEffect(() => {
+    const validBatchIds = new Set(availableBatches.map((b) => b.batchId));
+    const validIssues = rawIssues.filter((i) => validBatchIds.has(i.batchId));
+    if (validIssues.length !== rawIssues.length) {
+      onChange(validIssues);
+    }
+  }, [availableBatches, rawIssues, onChange]);
 
   // Search filtered batches
   const filteredBatches = useMemo(() => {
@@ -213,6 +227,11 @@ export function Step2RawIssues({
           <Badge variant="outline" className="bg-blue-50 border-blue-300 text-blue-800 text-xs py-1 px-2.5 gap-1.5 font-semibold font-mono">
             <span>الرصيد المتاح بالمحطة: {totalAvailableStockInWarehouse.toLocaleString()} كجم</span>
           </Badge>
+          {rawProduct && (
+            <Badge variant="outline" className="bg-amber-50 border-amber-300 text-amber-900 text-xs py-1 px-2.5 gap-1.5 font-semibold">
+              <span>المحصول المستهدف: {rawProduct}</span>
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -347,7 +366,8 @@ export function Step2RawIssues({
           <AlertCircle className="h-8 w-8 text-amber-600 mb-1" />
           <strong className="font-bold">لا توجد لوطات خام متاحة حالياً بمخزن خامات هذه المحطة</strong>
           <p className="text-xs text-amber-700 max-w-md">
-            لم يتم العثور على لوطات خام برصيد متاح &gt; 0 ومعتمدة جودة (QC APPROVED) في {rawWarehouseName}.
+            لم يتم العثور على لوطات خام برصيد متاح &gt; 0 ومعتمدة جودة (QC APPROVED) في {rawWarehouseName}
+            {rawProduct ? ` مطابقة لمحصول "${rawProduct}"` : ""}.
             يرجى إضافة أو استلام لوط خام للمحطة أولاً من شاشة مشتريات الخام.
           </p>
         </div>
